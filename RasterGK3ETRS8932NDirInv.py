@@ -72,10 +72,10 @@ class RasterGK3ETRS8932NDirInv(GdalAlgorithm):
           return False, None
 
     def defineCharacteristics(self):
-        self.name = 'Direct and inverse Raster Tranformation'
-        self.group = '[DE] Gauss-Krüger zone 3 <-> ETRS89 / UTM Zone 32N'
+        self.name = '[DE] Direct and inverse Raster Tranformation'
+        self.group = '[DE] Germany'
         self.addParameter(ParameterRaster(self.INPUT, 'Input raster', False))
-        self.addParameter(ParameterSelection(self.TRANSF, 'Transformations',
+        self.addParameter(ParameterSelection(self.TRANSF, 'Transformation',
                           self.TRANSF_OPTIONS))
         self.addParameter(ParameterSelection(self.CRS, 'Old Datum',
                           self.CRS_OPTIONS))

@@ -74,8 +74,8 @@ class VectorGK3ETRS8932NDirInv(OgrAlgorithm):
           return False, None
 
     def defineCharacteristics(self):
-        self.name = 'Direct and inverse Vector Tranformation'
-        self.group = '[DE] Gauss-Krüger zone 3 <-> ETRS89 / UTM Zone 32N'
+        self.name = '[DE] Direct and inverse Vector tranformation'
+        self.group = '[DE] Germany'
         self.addParameter(ParameterVector(self.INPUT, 'Input vector',
                           [ParameterVector.VECTOR_TYPE_ANY]))
         self.addParameter(ParameterSelection(self.TRANSF, 'Transformation',
