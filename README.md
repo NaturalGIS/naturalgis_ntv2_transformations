@@ -15,7 +15,7 @@ The plugin needs QGIS 2.8 to work.
 
 Supported transformations:
 
-![](/icons/de.png) Germany
+![](/icons/de.png)
 
-- Gauss-Krüger zone 3 <-> ETRS89 / UTM Zone 32N, grid BETA2007.gsb
+-  Germany: Gauss-Krüger zone 3 <-> ETRS89/UTM Zone 32N [BETA2007.gsb]
 
