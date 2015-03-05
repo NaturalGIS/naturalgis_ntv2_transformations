@@ -1,4 +1,4 @@
-A plugin for the QGIS Processing toolbox to allow users do Datum tranformations with NTv2 grids
+A plugin for the QGIS Processing toolbox to allow users do Datum transformations with NTv2 grids
 --------------------------------------
 
 ![](/icons/naturalgis.png)
