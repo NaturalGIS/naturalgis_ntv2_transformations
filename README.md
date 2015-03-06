@@ -35,3 +35,8 @@ http://www.fc.up.pt/pessoas/jagoncal/coordenadas/
 
 Source for [D73_ETRS89_geo.gsb] and [DLX_ETRS89_geo.gsb], Direção-Geral do Território:
 http://www.dgterritorio.pt/cartografia_e_geodesia/geodesia/transformacao_de_coordenadas/grelhas_em_ntv2/
+
+
+If you have a NTv2 grid that can be legally redistributed and you would like to have it added to this plugin please file a feature request here:
+
+https://github.com/NaturalGIS/ntv2_transformations/issues
