@@ -13,6 +13,8 @@ This plugin allows QGIS user to do easily direct/inverse Datum transformations (
 
 The plugin needs QGIS 2.8 to work.
 
+This plugin is directly derived from https://github.com/qgispt/processing_pttransform originally developer by Alexander Bruy, Pedro Venâncio and NaturalGIS (http://www.naturalgis.pt/), with the support of the Portuguese QGIS user group (http://www.qgis.pt/).
+
 If you have a NTv2 grid that can be legally redistributed and you would like to have it added to this plugin please file a feature request here:
 
 https://github.com/NaturalGIS/ntv2_transformations/issues
