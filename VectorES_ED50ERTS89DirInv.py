@@ -2,7 +2,7 @@
 
 """
 ***************************************************************************
-    VectorGK3ETRS8932NDirInv.py
+    VectorES_ED50ERTS89DirInv.py
     ---------------------
     Date                 : March 2015
     Copyright            : (C) 2015 by Giovanni Manghi
@@ -49,20 +49,22 @@ from processing.algs.gdal.OgrAlgorithm import OgrAlgorithm
 from processing.algs.gdal.GdalUtils import GdalUtils
 
 
-class VectorGK3ETRS8932NDirInv(OgrAlgorithm):
+class VectorES_ED50ERTS89DirInv(OgrAlgorithm):
 
     INPUT = 'INPUT'
     OUTPUT = 'OUTPUT'
     TRANSF = 'TRANSF'
-    TRANSF_OPTIONS = ['Direct: Gauss-Krüger zone 3 [EPSG:31467] -> ETRS89/UTM Zone 32N [EPSG:25832]',
-                      'Inverse: ETRS89/UTM Zone 32N [EPSG:25832] -> Gauss-Krüger zone 3 [EPSG:31467]']
+    TRANSF_OPTIONS = ['Direct: Old Data -> ETRS89/UTM zones 29/30/31N [EPSG:25829/EPSG:25830/EPSG:25831]',
+                      'Inverse: ETRS89/UTM zones 29/30/31N [EPSG:25829/EPSG:25830/EPSG:25831] -> Old Data']
     CRS = 'CRS'
-    CRS_OPTIONS = ['Gauss-Krüger zone 3 [EPSG:31467]']
+    CRS_OPTIONS = ['ED50/UTM 29N [EPSG:23029]',
+                   'ED50/UTM 29N [EPSG:23030]',
+                   'ED50/UTM 29N [EPSG:23031]']
     GRID = 'GRID'
-    GRID_OPTIONS = ['BETA2007']
+    GRID_OPTIONS = ['PENR2009']
 
     def getIcon(self):
-        return  QIcon(os.path.dirname(__file__) + '/icons/de.png')
+        return  QIcon(os.path.dirname(__file__) + '/icons/es.png')
 
     def help(self):
         name = self.commandLineName().split(':')[1].lower()
@@ -74,15 +76,15 @@ class VectorGK3ETRS8932NDirInv(OgrAlgorithm):
           return False, None
 
     def defineCharacteristics(self):
-        self.name = '[DE] Direct and inverse Vector tranformation'
-        self.group = '[DE] Germany'
+        self.name = '[ES] Direct and inverse Vector transformation'
+        self.group = '[ES] Spain (mainland)'
         self.addParameter(ParameterVector(self.INPUT, 'Input vector',
                           [ParameterVector.VECTOR_TYPE_ANY]))
         self.addParameter(ParameterSelection(self.TRANSF, 'Transformation',
                           self.TRANSF_OPTIONS))
         self.addParameter(ParameterSelection(self.CRS, 'Old Datum',
                           self.CRS_OPTIONS))
-        self.addParameter(ParameterSelection(self.GRID, 'Ntv2 Grid',
+        self.addParameter(ParameterSelection(self.GRID, 'NTv2 Grid',
                           self.GRID_OPTIONS))
         self.addOutput(OutputVector(self.OUTPUT, 'Output'))
 
@@ -97,22 +99,50 @@ class VectorGK3ETRS8932NDirInv(OgrAlgorithm):
             # Direct transformation
             arguments = ['-s_srs']
             if self.getParameterValue(self.CRS) == 0:
-                # Gauss-Krüger zone 3
+                # ED50/UTM 29N [EPSG:23029]
                 if self.getParameterValue(self.GRID) == 0:
-                    # BETA2007
-                    arguments.append('+proj=tmerc +lat_0=0 +lon_0=9 +k=1 +x_0=3500000 +y_0=0 +ellps=bessel +nadgrids=' + os.path.dirname(__file__) + '/grids/BETA2007.gsb +wktext +units=m +no_defs')
-            arguments.append('-t_srs')
-            arguments.append('EPSG:25832')
+                    # PENR2009
+                    arguments.append('+proj=utm +zone=29 +ellps=intl +nadgrids=' + os.path.dirname(__file__) + '/grids/PENR2009.gsb +wktext +units=m +no_defs')
+                    arguments.append('-t_srs')
+                    arguments.append('EPSG:25829')
+            elif self.getParameterValue(self.CRS) == 1:
+                # ED50/UTM 30N [EPSG:23030]
+                if self.getParameterValue(self.GRID) == 0:
+                    # PENR2009
+                    arguments.append('+proj=utm +zone=30 +ellps=intl +nadgrids=' + os.path.dirname(__file__) + '/grids/PENR2009.gsb +wktext +units=m +no_defs')
+                    arguments.append('-t_srs')
+                    arguments.append('EPSG:25830')
+            elif self.getParameterValue(self.CRS) == 2:
+                # ED50/UTM 31N [EPSG:23031]
+                if self.getParameterValue(self.GRID) == 0:
+                    # PENR2009
+                    arguments.append('+proj=utm +zone=31 +ellps=intl +nadgrids=' + os.path.dirname(__file__) + '/grids/PENR2009.gsb +wktext +units=m +no_defs')
+                    arguments.append('-t_srs')
+                    arguments.append('EPSG:25831')
         else:
             # Inverse transformation
-            arguments = ['-s_srs']
-            arguments.append('EPSG:25832')
-            arguments.append('-t_srs')
+            arguments = ['-t_srs']
             if self.getParameterValue(self.CRS) == 0:
-                # Gauss-Krüger zone 3
+                # ED50/UTM 29N [EPSG:23029]
                 if self.getParameterValue(self.GRID) == 0:
-                    # BETA2007
-                    arguments.append('+proj=tmerc +lat_0=0 +lon_0=9 +k=1 +x_0=3500000 +y_0=0 +ellps=bessel +nadgrids=' + os.path.dirname(__file__) + '/grids/BETA2007.gsb +wktext +units=m +no_defs')
+                    # PENR2009
+                    arguments.append('+proj=utm +zone=29 +ellps=intl +nadgrids=' + os.path.dirname(__file__) + '/grids/PENR2009.gsb +wktext +units=m +no_defs')
+                    arguments.append('-s_srs')
+                    arguments.append('EPSG:25829')
+            elif self.getParameterValue(self.CRS) == 1:
+                # ED50/UTM 30N [EPSG:23030]
+                if self.getParameterValue(self.GRID) == 0:
+                    # PENR2009
+                    arguments.append('+proj=utm +zone=30 +ellps=intl +nadgrids=' + os.path.dirname(__file__) + '/grids/PENR2009.gsb +wktext +units=m +no_defs')
+                    arguments.append('-s_srs')
+                    arguments.append('EPSG:25830')
+            elif self.getParameterValue(self.CRS) == 2:
+                # ED50/UTM 31N [EPSG:23031]
+                if self.getParameterValue(self.GRID) == 0:
+                    # PENR2009
+                    arguments.append('+proj=utm +zone=31 +ellps=intl +nadgrids=' + os.path.dirname(__file__) + '/grids/PENR2009.gsb +wktext +units=m +no_defs')
+                    arguments.append('-s_srs')
+                    arguments.append('EPSG:25831')
 
         arguments.append('-f')
         arguments.append('ESRI Shapefile')

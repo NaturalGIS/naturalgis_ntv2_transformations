@@ -34,10 +34,19 @@ http://crs.bkg.bund.de/crseu/crs/descrtrans/BeTA/de_dhdn2etrs_beta.php
 -  Portugal: Datum 73 <==> ETRS89/PT-TM06 [D73_ETRS89_geo.gsb]
 -  Portugal: Datum Lisboa <==> ETRS89/PT-TM06 [ptLX_e89.gsb]
 -  Portugal: Datum Lisboa <==> ETRS89/PT-TM06 [DLX_ETRS89_geo.gsb]
--  Portugal: Datum Europeu 1950 <==> ETRS89/PT-TM06 [ptED_e89.gsb]
+-  Portugal: Datum Europeu 1950 (ED50) <==> ETRS89/PT-TM06 [ptED_e89.gsb]
 
 Source for [pt73_e89.gsb], [ptED_e89.gsb] and [ptLX_e89.gsb], Prof. José Alberto Gonçalves:
 http://www.fc.up.pt/pessoas/jagoncal/coordenadas/
 
 Source for [D73_ETRS89_geo.gsb] and [DLX_ETRS89_geo.gsb], Direção-Geral do Território:
 http://www.dgterritorio.pt/cartografia_e_geodesia/geodesia/transformacao_de_coordenadas/grelhas_em_ntv2/
+
+![](/icons/es.png)
+
+-  Spain: ED50/UTM 29N <==> ETRS89/UTM 29N [PENR2009.gsb]
+-  Spain: ED50/UTM 30N <==> ETRS89/UTM 30N [PENR2009.gsb]
+-  Spain: ED50/UTM 31N <==> ETRS89/UTM 31N [PENR2009.gsb]
+
+Source for [PENR2009.gsb]:
+http://www.ign.es/ign/layoutIn/herramientas.do

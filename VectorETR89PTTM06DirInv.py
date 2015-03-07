@@ -57,9 +57,9 @@ class VectorETR89PTTM06DirInv(OgrAlgorithm):
     TRANSF_OPTIONS = ['Direct: Old Data -> PT-TM06/ETRS89 [EPSG:3763]',
                       'Inverse: PT-TM06/ETRS89 [EPSG:3763] -> Old Data']
     CRS = 'CRS'
-    CRS_OPTIONS = ['Datum Lisboa [EPSG:20791 / EPSG:5018 / ESRI:102165]',
-                   'Datum Lisboa Militar [EPSG:20790 / ESRI:102164]',
-                   'Datum 73 [EPSG:27493 / ESRI:102161]',
+    CRS_OPTIONS = ['Datum Lisboa [EPSG:20791/EPSG:5018/ESRI:102165]',
+                   'Datum Lisboa Militar [EPSG:20790/ESRI:102164]',
+                   'Datum 73 [EPSG:27493/ESRI:102161]',
                    'Datum 73 Militar [ESRI:102160]',
                    'ED50 UTM 29N [EPSG:23029] (Only grid from José Alberto Gonçalves)']
     GRID = 'GRID'
@@ -80,10 +80,10 @@ class VectorETR89PTTM06DirInv(OgrAlgorithm):
 
     def defineCharacteristics(self):
         self.name = '[PT] Direct and inverse Vector transformation'
-        self.group = '[PT] Portugal'
+        self.group = '[PT] Portugal (mainland)'
         self.addParameter(ParameterVector(self.INPUT, 'Input vector',
                           [ParameterVector.VECTOR_TYPE_ANY]))
-        self.addParameter(ParameterSelection(self.TRANSF, 'Transformatoin',
+        self.addParameter(ParameterSelection(self.TRANSF, 'Transformation',
                           self.TRANSF_OPTIONS))
         self.addParameter(ParameterSelection(self.CRS, 'Old Datum',
                           self.CRS_OPTIONS))

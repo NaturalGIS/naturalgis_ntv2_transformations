@@ -1,9 +1,8 @@
 [general]
 name=NTv2 Datum Transformations
 description=NTv2 Datum Transformations for the QGIS Processing toolbox. This plugin is directly derived from https://github.com/qgispt/processing_pttransform originally developed by Alexander Bruy, Pedro Venâncio and NaturalGIS (http://www.naturalgis.pt/), with the support of the Portuguese QGIS user group (http://www.qgis.pt/).
-about=Developed by Giovanni Manghi/NaturalGIS (http://www.naturalgis.pt/)
 category=Plugins
-version=0.1
+version=0.2
 qgisMinimumVersion=2.8
 icon=icons/naturalgis_32.png
 tags=processing,grids,ntv2,transformations,datum
@@ -14,6 +13,8 @@ tracker=https://github.com/NaturalGIS/ntv2_transfomations/issues
 repository=https://github.com/NaturalGIS/ntv2_transfomations
 experimental=True
 deprecated=False
-changelog=0.1
+changelog=0.2
+    - Support for Spain (Mainland) "PENR2009.gsb" NTv2 grid for transformations between "ED50/UTM Zones 29/30/31N" and "ETRS89/UTM Zones 29/30/31N" coordinate reference systems
+    0.1
     - Support for Germany "BETA2007.gsb" NTv2 grid for transformations between "Gauss-Krüger zone 3" and "ETRS89/UTM Zone 32N" coordinate reference systems
     - Support for Portugal "pt73_e89.gsb", "ptLX_e89.gsb", "ptED_e89.gsb", "D73_ETRS89_geo.gsb", "DLX_ETRS89_geo.gsb" NTv2 grid for transformations between "Datum 73"/"Datum Lisboa"/"Datum Europeu 1950" and "ETRS89/PT-TM06" coordinate reference systems

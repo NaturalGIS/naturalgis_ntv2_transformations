@@ -37,7 +37,8 @@ from ntv2_transformations.VectorGK3ETRS8932NDirInv import VectorGK3ETRS8932NDirI
 from ntv2_transformations.RasterGK3ETRS8932NDirInv import RasterGK3ETRS8932NDirInv
 from ntv2_transformations.VectorETR89PTTM06DirInv import VectorETR89PTTM06DirInv
 from ntv2_transformations.RasterETR89PTTM06DirInv import RasterETR89PTTM06DirInv
-
+from ntv2_transformations.VectorES_ED50ERTS89DirInv import VectorES_ED50ERTS89DirInv
+from ntv2_transformations.RasterES_ED50ERTS89DirInv import RasterES_ED50ERTS89DirInv
 
 class DETransformProvider(AlgorithmProvider):
 
@@ -46,7 +47,8 @@ class DETransformProvider(AlgorithmProvider):
 
         self.activate = False
 
-        self.alglist = [VectorETR89PTTM06DirInv(),RasterGK3ETRS8932NDirInv(),RasterETR89PTTM06DirInv(),VectorGK3ETRS8932NDirInv()]
+        self.alglist = [VectorETR89PTTM06DirInv(),RasterGK3ETRS8932NDirInv(),RasterETR89PTTM06DirInv(),VectorGK3ETRS8932NDirInv(),
+			VectorES_ED50ERTS89DirInv(),RasterES_ED50ERTS89DirInv()]
         for alg in self.alglist:
             alg.provider = self
 
