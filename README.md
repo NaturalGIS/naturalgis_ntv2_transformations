@@ -28,13 +28,21 @@ Supported transformations:
 Source for [BETA2007.gsb]: 
 http://crs.bkg.bund.de/crseu/crs/descrtrans/BeTA/de_dhdn2etrs_beta.php
 
+![](/icons/it.png)
+
+-  Italy (Emilia-Romagna): Monte Mario - GBO [EPSG:3003] <==> ETRS89/UTM zone 32N [EPSG:25832] [RER_AD400_MM_ETRS89_V1A.gsb]
+-  Italy (Emilia-Romagna): UTM - ED50 [EPSG:23032] <==> ETRS89/UTM zone 32N [EPSG:25832] [RER_ED50_ETRS89_GPS7_K2.GSB]
+
+Source for [RER_ED50_ETRS89_GPS7_K2.gsb] and [RER_AD400_MM_ETRS89_V1A.gsb]:
+http://geoportale.regione.emilia-romagna.it/it/services/servizi%20tecnici/servizio-di-conversione/grigliati-ntv2-rer-2013-la-trasformazione-di-coordinate-in-emilia-romagna
+
 ![](/icons/pt.png)
 
--  Portugal: Datum 73 <==> ETRS89/PT-TM06 [pt73_e89.gsb]
--  Portugal: Datum 73 <==> ETRS89/PT-TM06 [D73_ETRS89_geo.gsb]
--  Portugal: Datum Lisboa <==> ETRS89/PT-TM06 [ptLX_e89.gsb]
--  Portugal: Datum Lisboa <==> ETRS89/PT-TM06 [DLX_ETRS89_geo.gsb]
--  Portugal: Datum Europeu 1950 (ED50) <==> ETRS89/PT-TM06 [ptED_e89.gsb]
+-  Portugal (mainland): Datum 73 <==> ETRS89/PT-TM06 [pt73_e89.gsb]
+-  Portugal (mainland): Datum 73 <==> ETRS89/PT-TM06 [D73_ETRS89_geo.gsb]
+-  Portugal (mainland): Datum Lisboa <==> ETRS89/PT-TM06 [ptLX_e89.gsb]
+-  Portugal (mainland): Datum Lisboa <==> ETRS89/PT-TM06 [DLX_ETRS89_geo.gsb]
+-  Portugal (mainland): Datum Europeu 1950 (ED50) <==> ETRS89/PT-TM06 [ptED_e89.gsb]
 
 Source for [pt73_e89.gsb], [ptED_e89.gsb] and [ptLX_e89.gsb], Prof. José Alberto Gonçalves:
 http://www.fc.up.pt/pessoas/jagoncal/coordenadas/
@@ -44,9 +52,9 @@ http://www.dgterritorio.pt/cartografia_e_geodesia/geodesia/transformacao_de_coor
 
 ![](/icons/es.png)
 
--  Spain: ED50/UTM 29N <==> ETRS89/UTM 29N [PENR2009.gsb]
--  Spain: ED50/UTM 30N <==> ETRS89/UTM 30N [PENR2009.gsb]
--  Spain: ED50/UTM 31N <==> ETRS89/UTM 31N [PENR2009.gsb]
+-  Spain (mainland): ED50/UTM 29N <==> ETRS89/UTM 29N [PENR2009.gsb]
+-  Spain (mainland): ED50/UTM 30N <==> ETRS89/UTM 30N [PENR2009.gsb]
+-  Spain (mainland): ED50/UTM 31N <==> ETRS89/UTM 31N [PENR2009.gsb]
 
 Source for [PENR2009.gsb]:
 http://www.ign.es/ign/layoutIn/herramientas.do
