@@ -54,8 +54,8 @@ class VectorES_ED50ERTS89DirInv(OgrAlgorithm):
     INPUT = 'INPUT'
     OUTPUT = 'OUTPUT'
     TRANSF = 'TRANSF'
-    TRANSF_OPTIONS = ['Direct: Old Data -> ETRS89/UTM zones 29/30/31N [EPSG:25829/EPSG:25830/EPSG:25831]',
-                      'Inverse: ETRS89/UTM zones 29/30/31N [EPSG:25829/EPSG:25830/EPSG:25831] -> Old Data']
+    TRANSF_OPTIONS = ['Direct: Old Data -> ETRS89/UTM zones 29/30/31N [EPSG:25829/30/31]',
+                      'Inverse: ETRS89/UTM zones 29/30/31N [EPSG:25829/30/31] -> Old Data']
     CRS = 'CRS'
     CRS_OPTIONS = ['ED50/UTM 29N [EPSG:23029]',
                    'ED50/UTM 29N [EPSG:23030]',

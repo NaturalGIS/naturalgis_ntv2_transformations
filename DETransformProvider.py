@@ -33,16 +33,19 @@ from processing.core.AlgorithmProvider import AlgorithmProvider
 from processing.core.ProcessingConfig import Setting, ProcessingConfig
 from processing.tools import system
 
-from ntv2_transformations.VectorGK3ETRS8932NDirInv import VectorGK3ETRS8932NDirInv
-from ntv2_transformations.RasterGK3ETRS8932NDirInv import RasterGK3ETRS8932NDirInv
-from ntv2_transformations.VectorETR89PTTM06DirInv import VectorETR89PTTM06DirInv
-from ntv2_transformations.RasterETR89PTTM06DirInv import RasterETR89PTTM06DirInv
+from ntv2_transformations.VectorDE_GK3ETRS8932NDirInv import VectorDE_GK3ETRS8932NDirInv
+from ntv2_transformations.RasterDE_GK3ETRS8932NDirInv import RasterDE_GK3ETRS8932NDirInv
+from ntv2_transformations.VectorPT_ETR89PTTM06DirInv import VectorPT_ETR89PTTM06DirInv
+from ntv2_transformations.RasterPT_ETR89PTTM06DirInv import RasterPT_ETR89PTTM06DirInv
 from ntv2_transformations.VectorES_ED50ERTS89DirInv import VectorES_ED50ERTS89DirInv
 from ntv2_transformations.RasterES_ED50ERTS89DirInv import RasterES_ED50ERTS89DirInv
-from ntv2_transformations.VectorITRER_ETRS896DirInv import VectorITRER_ETRS896DirInv
-from ntv2_transformations.RasterITRER_ETRS89DirInv import RasterITRER_ETRS89DirInv
+from ntv2_transformations.VectorIT_RER_ETRS89DirInv import VectorIT_RER_ETRS89DirInv
+from ntv2_transformations.RasterIT_RER_ETRS89DirInv import RasterIT_RER_ETRS89DirInv
 from ntv2_transformations.VectorCH_LV95ETRS89DirInv import VectorCH_LV95ETRS89DirInv
 from ntv2_transformations.RasterCH_LV95ETRS89DirInv import RasterCH_LV95ETRS89DirInv
+from ntv2_transformations.VectorUK_OSGB36ETRS89DirInv import VectorUK_OSGB36ETRS89DirInv
+from ntv2_transformations.RasterUK_OSGB36ETRS89DirInv import RasterUK_OSGB36ETRS89DirInv
+
 
 class DETransformProvider(AlgorithmProvider):
 
@@ -51,9 +54,9 @@ class DETransformProvider(AlgorithmProvider):
 
         self.activate = False
 
-        self.alglist = [VectorETR89PTTM06DirInv(),RasterGK3ETRS8932NDirInv(),RasterETR89PTTM06DirInv(),VectorGK3ETRS8932NDirInv(),
-			VectorES_ED50ERTS89DirInv(),RasterES_ED50ERTS89DirInv(),VectorITRER_ETRS896DirInv(),RasterITRER_ETRS89DirInv()
-			,VectorCH_LV95ETRS89DirInv(), RasterCH_LV95ETRS89DirInv()
+        self.alglist = [VectorPT_ETR89PTTM06DirInv(),RasterDE_GK3ETRS8932NDirInv(),RasterPT_ETR89PTTM06DirInv(),VectorDE_GK3ETRS8932NDirInv(),
+			VectorES_ED50ERTS89DirInv(),RasterES_ED50ERTS89DirInv(),VectorIT_RER_ETRS89DirInv(),RasterIT_RER_ETRS89DirInv()
+			,VectorCH_LV95ETRS89DirInv(), RasterCH_LV95ETRS89DirInv(),VectorUK_OSGB36ETRS89DirInv(),RasterUK_OSGB36ETRS89DirInv()
 			]
         for alg in self.alglist:
             alg.provider = self
