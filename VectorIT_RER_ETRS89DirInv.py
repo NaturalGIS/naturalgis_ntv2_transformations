@@ -54,8 +54,8 @@ class VectorIT_RER_ETRS89DirInv(OgrAlgorithm):
     INPUT = 'INPUT'
     OUTPUT = 'OUTPUT'
     TRANSF = 'TRANSF'
-    TRANSF_OPTIONS = ['Direct: Old Data -> ETRS89/UTM zone 32N [EPSG:25832]',
-                      'Inverse: ETRS89/UTM zone 32N [EPSG:25832] -> Old Data']
+    TRANSF_OPTIONS = ['Direct: Old Data -> ETRS89 [EPSG:4258]',
+                      'Inverse: ETRS89 [EPSG:4258] -> Old Data']
     CRS = 'CRS'
     CRS_OPTIONS = ['Monte Mario - GBO [EPSG:3003]',
                    'UTM - ED50 [EPSG:23032]']
@@ -108,27 +108,60 @@ class VectorIT_RER_ETRS89DirInv(OgrAlgorithm):
                     # Grigliati NTv2 RER 2013 la trasformazione di coordinate in Emilia-Romagna
                     arguments.append('+proj=utm +zone=32 +ellps=intl +nadgrids=' + os.path.dirname(__file__) + '/grids/RER_ED50_ETRS89_GPS7_K2.GSB +wktext +units=m +no_defs')
             arguments.append('-t_srs')
-            arguments.append('EPSG:25832')
+            arguments.append('EPSG:4258')
+
+            arguments.append('-f')
+            arguments.append('ESRI Shapefile')
+        
+            arguments.append(outFile)
+            arguments.append(conn)       
+
         else:
             # Inverse transformation
             arguments = ['-s_srs']
-            arguments.append('EPSG:25832')
+            arguments.append('EPSG:4258')
             arguments.append('-t_srs')
             if self.getParameterValue(self.CRS) == 0:
                 # Monte Mario - GBO
                 if self.getParameterValue(self.GRID) == 0:
                     # Grigliati NTv2 RER 2013 la trasformazione di coordinate in Emilia-Romagna
                     arguments.append('+proj=tmerc +lat_0=0 +lon_0=9 +k=0.9996 +x_0=1500000 +y_0=0 +ellps=intl +nadgrids=' + os.path.dirname(__file__) + '/grids/RER_AD400_MM_ETRS89_V1A.gsb +wktext +units=m +no_defs')
+                arguments.append('-f')
+                arguments.append('\"Geojson\"')
+                arguments.append('/vsistdout/')
+                arguments.append(conn)
+                arguments.append('-lco') 
+                arguments.append('ENCODING=UTF-8')
+                arguments.append('|')
+                arguments.append('ogr2ogr')
+                arguments.append('-f')               
+                arguments.append('ESRI Shapefile') 
+                arguments.append('-a_srs') 
+                arguments.append('EPSG:3003') 
+                arguments.append(outFile)    
+                arguments.append('/vsistdin/')
             else:
                 # UTM - ED50
                 if self.getParameterValue(self.GRID) == 0:
                     # Grigliati NTv2 RER 2013 la trasformazione di coordinate in Emilia-Romagna
                     arguments.append('+proj=utm +zone=32 +ellps=intl +nadgrids=' + os.path.dirname(__file__) + '/grids/RER_ED50_ETRS89_GPS7_K2.GSB +wktext +units=m +no_defs')
-        arguments.append('-f')
-        arguments.append('ESRI Shapefile')
+                arguments.append('-f')
+                arguments.append('\"Geojson\"')
+                arguments.append('/vsistdout/')
+                arguments.append(conn)
+                arguments.append('-lco') 
+                arguments.append('ENCODING=UTF-8')
+                arguments.append('|')
+                arguments.append('ogr2ogr')
+                arguments.append('-f')               
+                arguments.append('ESRI Shapefile') 
+                arguments.append('-a_srs') 
+                arguments.append('EPSG:23032') 
+                arguments.append(outFile)    
+                arguments.append('/vsistdin/')
 
-        arguments.append(outFile)
-        arguments.append(conn)
-
+        arguments.append('-lco') 
+        arguments.append('ENCODING=UTF-8')
+        
         commands = ['ogr2ogr', GdalUtils.escapeAndJoin(arguments)]
         GdalUtils.runGdal(commands, progress)

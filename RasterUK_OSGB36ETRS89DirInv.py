@@ -105,10 +105,8 @@ class RasterUK_OSGB36ETRS89DirInv(GdalAlgorithm):
                 if self.getParameterValue(self.GRID) == 0:
                     # OSTN02_NTv2
                     arguments.append('+proj=tmerc +lat_0=49 +lon_0=-2 +k=0.9996012717 +x_0=400000 +y_0=-100000 +ellps=airy +nadgrids=' + os.path.dirname(__file__) + '/grids/OSTN02_NTv2.gsb +wktext +units=m +no_defs')
-        arguments.append('-r')
-        arguments.append('bilinear')
-        arguments.append('-dstnodata')
-        arguments.append('nan')
+
+        arguments.append('-multi')
         arguments.append('-of')
         out = self.getOutputValue(self.OUTPUT)
         arguments.append(GdalUtils.getFormatShortNameFromFilename(out))

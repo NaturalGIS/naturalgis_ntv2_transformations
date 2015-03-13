@@ -54,8 +54,8 @@ class VectorDE_GK3ETRS8932NDirInv(OgrAlgorithm):
     INPUT = 'INPUT'
     OUTPUT = 'OUTPUT'
     TRANSF = 'TRANSF'
-    TRANSF_OPTIONS = ['Direct: Old Data -> ETRS89/UTM Zone 32N [EPSG:25832]',
-                      'Inverse: ETRS89/UTM Zone 32N [EPSG:25832] -> Old Data']
+    TRANSF_OPTIONS = ['Direct: Old Data -> ETRS89 [EPSG:4258]',
+                      'Inverse: ETRS89 [EPSG:4258] -> Old Data']
     CRS = 'CRS'
     CRS_OPTIONS = ['Gauss-Krüger zone 3 [EPSG:31467]']
     GRID = 'GRID'
@@ -101,24 +101,41 @@ class VectorDE_GK3ETRS8932NDirInv(OgrAlgorithm):
                 if self.getParameterValue(self.GRID) == 0:
                     # BETA2007
                     arguments.append('+proj=tmerc +lat_0=0 +lon_0=9 +k=1 +x_0=3500000 +y_0=0 +ellps=bessel +nadgrids=' + os.path.dirname(__file__) + '/grids/BETA2007.gsb +wktext +units=m +no_defs')
-            arguments.append('-t_srs')
-            arguments.append('EPSG:25832')
+                    arguments.append('-t_srs')
+                    arguments.append('EPSG:4258')                 
+            arguments.append('-f')
+            arguments.append('ESRI Shapefile')
+
+            arguments.append(outFile)
+            arguments.append(conn)
+            
         else:
             # Inverse transformation
             arguments = ['-s_srs']
-            arguments.append('EPSG:25832')
+            arguments.append('EPSG:4258')
             arguments.append('-t_srs')
             if self.getParameterValue(self.CRS) == 0:
                 # Gauss-Krüger zone 3
                 if self.getParameterValue(self.GRID) == 0:
                     # BETA2007
                     arguments.append('+proj=tmerc +lat_0=0 +lon_0=9 +k=1 +x_0=3500000 +y_0=0 +ellps=bessel +nadgrids=' + os.path.dirname(__file__) + '/grids/BETA2007.gsb +wktext +units=m +no_defs')
-
-        arguments.append('-f')
-        arguments.append('ESRI Shapefile')
-
-        arguments.append(outFile)
-        arguments.append(conn)
-
+                arguments.append('-f')
+                arguments.append('\"Geojson\"')
+                arguments.append('/vsistdout/')
+                arguments.append(conn)
+                arguments.append('-lco') 
+                arguments.append('ENCODING=UTF-8')
+                arguments.append('|')
+                arguments.append('ogr2ogr')
+                arguments.append('-f')               
+                arguments.append('ESRI Shapefile') 
+                arguments.append('-a_srs') 
+                arguments.append('EPSG:31467') 
+                arguments.append(outFile)    
+                arguments.append('/vsistdin/')
+        
+        arguments.append('-lco') 
+        arguments.append('ENCODING=UTF-8')
+           
         commands = ['ogr2ogr', GdalUtils.escapeAndJoin(arguments)]
         GdalUtils.runGdal(commands, progress)

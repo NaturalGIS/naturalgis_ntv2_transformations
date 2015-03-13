@@ -55,8 +55,9 @@ class RasterCH_LV95ETRS89DirInv(GdalAlgorithm):
     TRANSF_OPTIONS = ['Direct: CH1903/LV03 [EPSG:21781] -> New Data]',
                       'Inverse: New Data -> CH1903/LV03 [EPSG:21781]']
     CRS = 'CRS'
-    CRS_OPTIONS = ['CH1903+/LV95 [EPSG:2056]',
-                   'ETRS89/UTM zone 32N [EPSG:25832]']
+    CRS_OPTIONS = ['ETRS89 [EPSG:4258]',
+                  'CH1903+ [EPSG:2056]']
+
     GRID = 'GRID'
     GRID_OPTIONS = ['CHENyx06']
 
@@ -93,13 +94,13 @@ class RasterCH_LV95ETRS89DirInv(GdalAlgorithm):
                 # CH1903+/LV95
                 if self.getParameterValue(self.GRID) == 0:
                     # CHENyx06
-                    arguments.append('EPSG:2056')
+                    arguments.append('+proj=somerc +lat_0=46.95240555555556 +lon_0=7.439583333333333 +k_0=1 +x_0=2600000 +y_0=1200000 +ellps=bessel +nadgrids=@null +wktext +units=m')
                     gridname = 'CHENYX06a.gsb'
             else:
-                # ETRS89/UTM zone 32N
+                # ETRS89
                 if self.getParameterValue(self.GRID) == 0:
                     # CHENyx06
-                    arguments.append('EPSG:25832')
+                    arguments.append('EPSG:4258')
                     gridname = 'chenyx06etrs.gsb'                    
             arguments.append('-s_srs')
             arguments.append('+proj=somerc +lat_0=46.95240555555556 +lon_0=7.439583333333333 +k_0=1 +x_0=600000 +y_0=200000 +ellps=bessel +nadgrids=' + os.path.dirname(__file__) + '/grids/' + gridname + ' +wktext +units=m +no_defs')
@@ -110,20 +111,18 @@ class RasterCH_LV95ETRS89DirInv(GdalAlgorithm):
                 # CH1903+/LV95
                 if self.getParameterValue(self.GRID) == 0:
                     # CHENyx06
-                    arguments.append('EPSG:2056')
+                    arguments.append('+proj=somerc +lat_0=46.95240555555556 +lon_0=7.439583333333333 +k_0=1 +x_0=2600000 +y_0=1200000 +ellps=bessel +nadgrids=@null +wktext +units=m')
                     gridname = 'CHENYX06a.gsb'
             else:
-                # ETRS89/UTM zone 32N
+                # ETRS89
                 if self.getParameterValue(self.GRID) == 0:
                     # CHENyx06
-                    arguments.append('EPSG:25832')
+                    arguments.append('EPSG:4258')
                     gridname = 'chenyx06etrs.gsb'  
             arguments.append('-t_srs')
             arguments.append('+proj=somerc +lat_0=46.95240555555556 +lon_0=7.439583333333333 +k_0=1 +x_0=600000 +y_0=200000 +ellps=bessel +nadgrids=' + os.path.dirname(__file__) + '/grids/' + gridname + ' +wktext +units=m +no_defs')
-        arguments.append('-r')
-        arguments.append('bilinear')
-        arguments.append('-dstnodata')
-        arguments.append('nan')
+
+        arguments.append('-multi')
         arguments.append('-of')
         out = self.getOutputValue(self.OUTPUT)
         arguments.append(GdalUtils.getFormatShortNameFromFilename(out))

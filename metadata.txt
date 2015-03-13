@@ -3,7 +3,7 @@ name=NTv2 Datum Transformations
 description=NTv2 Datum Transformations for the QGIS Processing toolbox. This plugin is directly derived from https://github.com/qgispt/processing_pttransform originally developed by Alexander Bruy, Pedro Venâncio and NaturalGIS (http://www.naturalgis.pt/), with the support of the Portuguese QGIS user group (http://www.qgis.pt/).
 about=Developed by Giovanni Manghi for NaturalGIS (http://www.naturalgis.pt/)
 category=Plugins
-version=0.3
+version=0.4
 qgisMinimumVersion=2.8
 icon=icons/naturalgis_32.png
 tags=processing,grids,ntv2,transformations,datum
@@ -14,10 +14,15 @@ tracker=https://github.com/NaturalGIS/ntv2_transfomations/issues
 repository=https://github.com/NaturalGIS/ntv2_transfomations
 experimental=True
 deprecated=False
-changelog=0.3
-    - Support for Italy (Emilia-Romagna) "RER_AD400_MM_ETRS89_V1A.gsb" and "RER_ED50_ETRS89_GPS7_K2.GSB" NTv2 grids for transformations between "Monte Mario - GBO [EPSG:3003]"/"UTM - ED50 [EPSG:23032]" and "ETRS89/UTM Zone 32N [EPSG:25832]"
+changelog=0.4
+    - Support for Switzerland "CHENYX06a.gsb" and "chenyx06etrs.gsb" NTv2 grids for transformations between "CH1903 [EPSG:21781]" and "ETRS89 [EPSG:4258]"/"CH1903+ [EPSG:2056]"
+    - Support for United Kingdom "OSTN02_NTv2.gsb" NTv2 grid for transformations between "OSGB 1936/British National Grid [EPSG:27700]" and "ETRS89 [EPSG:4258]"
+    - Overhauled ogr2ogr process in order to get better results while doing inverse transformations
+    - Removed some parameters from raster (gdalwarp) transformations to avoid problems with palletted rasters and with certain no data values
+    0.3
+    - Support for Italy (Emilia-Romagna) "RER_AD400_MM_ETRS89_V1A.gsb" and "RER_ED50_ETRS89_GPS7_K2.GSB" NTv2 grids for transformations between "Monte Mario - GBO [EPSG:3003]"/"UTM - ED50 [EPSG:23032]" and "ETRS89 [EPSG:4258]"
    0.2
-    - Support for Spain (mainland) "PENR2009.gsb" NTv2 grid for transformations between "ED50/UTM Zones 29/30/31N" and "ETRS89/UTM Zones 29/30/31N" coordinate reference systems
-    0.1
-    - Support for Germany "BETA2007.gsb" NTv2 grid for transformations between "Gauss-Krüger zone 3" and "ETRS89/UTM Zone 32N" coordinate reference systems
-    - Support for Portugal (mainland) "pt73_e89.gsb", "ptLX_e89.gsb", "ptED_e89.gsb", "D73_ETRS89_geo.gsb" and "DLX_ETRS89_geo.gsb" NTv2 grids for transformations between "Datum 73"/"Datum Lisboa"/"Datum Europeu 1950" and "ETRS89/PT-TM06" coordinate reference systems
+    - Support for Spain (mainland) "PENR2009.gsb" NTv2 grid for transformations between "ED50/UTM Zones 29/30/31N [EPSG:23029/30/31]" and "ETRS89 [EPSG:4258]" coordinate reference systems
+   0.1
+    - Support for Germany "BETA2007.gsb" NTv2 grid for transformations between "Gauss-Krüger zone 3 [EPSG:31467]" and "ETRS89 [EPSG:4258]" coordinate reference systems
+    - Support for Portugal (mainland) "pt73_e89.gsb", "ptLX_e89.gsb", "ptED_e89.gsb", "D73_ETRS89_geo.gsb" and "DLX_ETRS89_geo.gsb" NTv2 grids for transformations between "Datum 73"/"Datum Lisboa"/"Datum Europeu 1950 [EPSG:20791/EPSG:5018/ESRI:102165/EPSG:20790/ESRI:102164/EPSG:27493/ESRI:102161/ESRI:102160/EPSG:23029]" and "ETRS89/PT-TM06 [EPSG:3763]" coordinate reference systems

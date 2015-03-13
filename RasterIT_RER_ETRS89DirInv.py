@@ -52,11 +52,12 @@ class RasterIT_RER_ETRS89DirInv(GdalAlgorithm):
     INPUT = 'INPUT'
     OUTPUT = 'OUTPUT'
     TRANSF = 'TRANSF'
-    TRANSF_OPTIONS = ['Direct: Old Data -> ETRS89/UTM zone 32N [EPSG:25832]',
-                      'Inverse: ETRS89/UTM zone 32N [EPSG:25832] -> Old Data']
+    TRANSF_OPTIONS = ['Direct: Old Data -> ETRS89 [EPSG:4258]',
+                      'Inverse: ETRS89 [EPSG:4258] -> Old Data']
     CRS = 'CRS'
     CRS_OPTIONS = ['Monte Mario - GBO [EPSG:3003]',
-                   'UTM - ED50 [EPSG:23032]']
+                  'UTM - ED50 [EPSG:23032]']
+
     GRID = 'GRID'
     GRID_OPTIONS = ['Grigliati NTv2 RER 2013 la trasformazione di coordinate in Emilia-Romagna']
 
@@ -100,11 +101,11 @@ class RasterIT_RER_ETRS89DirInv(GdalAlgorithm):
                     # Grigliati NTv2 RER 2013 la trasformazione di coordinate in Emilia-Romagna
                     arguments.append('+proj=utm +zone=32 +ellps=intl +nadgrids=' + os.path.dirname(__file__) + '/grids/RER_ED50_ETRS89_GPS7_K2.gsb +wktext +units=m +no_defs')
             arguments.append('-t_srs')
-            arguments.append('EPSG:25832')
+            arguments.append('EPSG:4258')
         else:
             # Inverse transformation
             arguments = ['-s_srs']
-            arguments.append('EPSG:25832')
+            arguments.append('EPSG:4258')
             arguments.append('-t_srs')
             if self.getParameterValue(self.CRS) == 0:
                 # Monte Mario - GBO
@@ -116,10 +117,8 @@ class RasterIT_RER_ETRS89DirInv(GdalAlgorithm):
                 if self.getParameterValue(self.GRID) == 0:
                     # Grigliati NTv2 RER 2013 la trasformazione di coordinate in Emilia-Romagna
                     arguments.append('+proj=utm +zone=32 +ellps=intl +nadgrids=' + os.path.dirname(__file__) + '/grids/RER_ED50_ETRS89_GPS7_K2.gsb +wktext +units=m +no_defs')
-        arguments.append('-r')
-        arguments.append('bilinear')
-        arguments.append('-dstnodata')
-        arguments.append('nan')
+
+        arguments.append('-multi')
         arguments.append('-of')
         out = self.getOutputValue(self.OUTPUT)
         arguments.append(GdalUtils.getFormatShortNameFromFilename(out))

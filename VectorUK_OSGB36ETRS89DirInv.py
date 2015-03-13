@@ -58,6 +58,7 @@ class VectorUK_OSGB36ETRS89DirInv(OgrAlgorithm):
                       'Inverse: ETRS89 [EPSG:4258] -> Old Data']
     CRS = 'CRS'
     CRS_OPTIONS = ['OSGB 1936/British National Grid [EPSG:27700]']
+
     GRID = 'GRID'
     GRID_OPTIONS = ['OSTN02_NTv2']
 
@@ -103,6 +104,13 @@ class VectorUK_OSGB36ETRS89DirInv(OgrAlgorithm):
                     arguments.append('+proj=tmerc +lat_0=49 +lon_0=-2 +k=0.9996012717 +x_0=400000 +y_0=-100000 +ellps=airy +nadgrids=' + os.path.dirname(__file__) + '/grids/OSTN02_NTv2.gsb +wktext +units=m +no_defs')
             arguments.append('-t_srs')
             arguments.append('EPSG:4258')
+
+            arguments.append('-f')
+            arguments.append('ESRI Shapefile')
+
+            arguments.append(outFile)
+            arguments.append(conn)
+
         else:
             # Inverse transformation
             arguments = ['-s_srs']
@@ -113,12 +121,23 @@ class VectorUK_OSGB36ETRS89DirInv(OgrAlgorithm):
                 if self.getParameterValue(self.GRID) == 0:
                     # OSTN02_NTv2
                     arguments.append('+proj=tmerc +lat_0=49 +lon_0=-2 +k=0.9996012717 +x_0=400000 +y_0=-100000 +ellps=airy +nadgrids=' + os.path.dirname(__file__) + '/grids/OSTN02_NTv2.gsb +wktext +units=m +no_defs')
+            arguments.append('-f')
+            arguments.append('\"Geojson\"')
+            arguments.append('/vsistdout/')
+            arguments.append(conn)
+            arguments.append('-lco') 
+            arguments.append('ENCODING=UTF-8')
+            arguments.append('|')
+            arguments.append('ogr2ogr')
+            arguments.append('-f')               
+            arguments.append('ESRI Shapefile') 
+            arguments.append('-a_srs') 
+            arguments.append('EPSG:27700') 
+            arguments.append(outFile)    
+            arguments.append('/vsistdin/')
 
-        arguments.append('-f')
-        arguments.append('ESRI Shapefile')
-
-        arguments.append(outFile)
-        arguments.append(conn)
+        arguments.append('-lco') 
+        arguments.append('ENCODING=UTF-8')
 
         commands = ['ogr2ogr', GdalUtils.escapeAndJoin(arguments)]
         GdalUtils.runGdal(commands, progress)

@@ -54,12 +54,12 @@ class VectorES_ED50ERTS89DirInv(OgrAlgorithm):
     INPUT = 'INPUT'
     OUTPUT = 'OUTPUT'
     TRANSF = 'TRANSF'
-    TRANSF_OPTIONS = ['Direct: Old Data -> ETRS89/UTM zones 29/30/31N [EPSG:25829/30/31]',
-                      'Inverse: ETRS89/UTM zones 29/30/31N [EPSG:25829/30/31] -> Old Data']
+    TRANSF_OPTIONS = ['Direct: Old Data -> ETRS89 [EPSG:4258]',
+                      'Inverse: ETRS89 [EPSG:4258] -> Old Data']
     CRS = 'CRS'
     CRS_OPTIONS = ['ED50/UTM 29N [EPSG:23029]',
-                   'ED50/UTM 29N [EPSG:23030]',
-                   'ED50/UTM 29N [EPSG:23031]']
+                   'ED50/UTM 30N [EPSG:23030]',
+                   'ED50/UTM 31N [EPSG:23031]']
     GRID = 'GRID'
     GRID_OPTIONS = ['PENR2009']
 
@@ -104,21 +104,27 @@ class VectorES_ED50ERTS89DirInv(OgrAlgorithm):
                     # PENR2009
                     arguments.append('+proj=utm +zone=29 +ellps=intl +nadgrids=' + os.path.dirname(__file__) + '/grids/PENR2009.gsb +wktext +units=m +no_defs')
                     arguments.append('-t_srs')
-                    arguments.append('EPSG:25829')
+                    arguments.append('EPSG:4258')
             elif self.getParameterValue(self.CRS) == 1:
                 # ED50/UTM 30N [EPSG:23030]
                 if self.getParameterValue(self.GRID) == 0:
                     # PENR2009
                     arguments.append('+proj=utm +zone=30 +ellps=intl +nadgrids=' + os.path.dirname(__file__) + '/grids/PENR2009.gsb +wktext +units=m +no_defs')
                     arguments.append('-t_srs')
-                    arguments.append('EPSG:25830')
+                    arguments.append('EPSG:4258')
             elif self.getParameterValue(self.CRS) == 2:
                 # ED50/UTM 31N [EPSG:23031]
                 if self.getParameterValue(self.GRID) == 0:
                     # PENR2009
                     arguments.append('+proj=utm +zone=31 +ellps=intl +nadgrids=' + os.path.dirname(__file__) + '/grids/PENR2009.gsb +wktext +units=m +no_defs')
                     arguments.append('-t_srs')
-                    arguments.append('EPSG:25831')
+                    arguments.append('EPSG:4258')
+            arguments.append('-f')
+            arguments.append('ESRI Shapefile')
+     
+            arguments.append(outFile)
+            arguments.append(conn)
+
         else:
             # Inverse transformation
             arguments = ['-t_srs']
@@ -128,27 +134,66 @@ class VectorES_ED50ERTS89DirInv(OgrAlgorithm):
                     # PENR2009
                     arguments.append('+proj=utm +zone=29 +ellps=intl +nadgrids=' + os.path.dirname(__file__) + '/grids/PENR2009.gsb +wktext +units=m +no_defs')
                     arguments.append('-s_srs')
-                    arguments.append('EPSG:25829')
+                    arguments.append('EPSG:4258')
+                    arguments.append('-f')
+                    arguments.append('\"Geojson\"')
+                    arguments.append('/vsistdout/')
+                    arguments.append(conn)
+                    arguments.append('-lco') 
+                    arguments.append('ENCODING=UTF-8')
+                    arguments.append('|')
+                    arguments.append('ogr2ogr')
+                    arguments.append('-f')               
+                    arguments.append('ESRI Shapefile') 
+                    arguments.append('-a_srs') 
+                    arguments.append('EPSG:23029') 
+                    arguments.append(outFile)    
+                    arguments.append('/vsistdin/')
             elif self.getParameterValue(self.CRS) == 1:
                 # ED50/UTM 30N [EPSG:23030]
                 if self.getParameterValue(self.GRID) == 0:
                     # PENR2009
                     arguments.append('+proj=utm +zone=30 +ellps=intl +nadgrids=' + os.path.dirname(__file__) + '/grids/PENR2009.gsb +wktext +units=m +no_defs')
                     arguments.append('-s_srs')
-                    arguments.append('EPSG:25830')
+                    arguments.append('EPSG:4258')
+                    arguments.append('-f')
+                    arguments.append('\"Geojson\"')
+                    arguments.append('/vsistdout/')
+                    arguments.append(conn)
+                    arguments.append('-lco') 
+                    arguments.append('ENCODING=UTF-8')
+                    arguments.append('|')
+                    arguments.append('ogr2ogr')
+                    arguments.append('-f')               
+                    arguments.append('ESRI Shapefile') 
+                    arguments.append('-a_srs') 
+                    arguments.append('EPSG:23030') 
+                    arguments.append(outFile)    
+                    arguments.append('/vsistdin/')
             elif self.getParameterValue(self.CRS) == 2:
                 # ED50/UTM 31N [EPSG:23031]
                 if self.getParameterValue(self.GRID) == 0:
                     # PENR2009
                     arguments.append('+proj=utm +zone=31 +ellps=intl +nadgrids=' + os.path.dirname(__file__) + '/grids/PENR2009.gsb +wktext +units=m +no_defs')
                     arguments.append('-s_srs')
-                    arguments.append('EPSG:25831')
+                    arguments.append('EPSG:4258')
+                    arguments.append('-f')
+                    arguments.append('\"Geojson\"')
+                    arguments.append('/vsistdout/')
+                    arguments.append(conn)
+                    arguments.append('-lco') 
+                    arguments.append('ENCODING=UTF-8')
+                    arguments.append('|')
+                    arguments.append('ogr2ogr')
+                    arguments.append('-f')               
+                    arguments.append('ESRI Shapefile') 
+                    arguments.append('-a_srs') 
+                    arguments.append('EPSG:23031') 
+                    arguments.append(outFile)    
+                    arguments.append('/vsistdin/')
 
-        arguments.append('-f')
-        arguments.append('ESRI Shapefile')
-
-        arguments.append(outFile)
-        arguments.append(conn)
-
+        arguments.append('-lco') 
+        arguments.append('ENCODING=UTF-8')
+                    
         commands = ['ogr2ogr', GdalUtils.escapeAndJoin(arguments)]
         GdalUtils.runGdal(commands, progress)

@@ -170,10 +170,8 @@ class RasterPT_ETR89PTTM06DirInv(GdalAlgorithm):
             else:
                 # ED50 UTM 29N - Jose Alberto Goncalves
                 arguments.append('+proj=utm +zone=29 +ellps=intl +nadgrids=' + os.path.dirname(__file__) + '/grids/ptED_e89.gsb +wktext +units=m +no_defs')
-        arguments.append('-r')
-        arguments.append('bilinear')
-        arguments.append('-dstnodata')
-        arguments.append('nan')
+
+        arguments.append('-multi')
         arguments.append('-of')
         out = self.getOutputValue(self.OUTPUT)
         arguments.append(GdalUtils.getFormatShortNameFromFilename(out))

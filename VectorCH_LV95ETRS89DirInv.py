@@ -54,11 +54,12 @@ class VectorCH_LV95ETRS89DirInv(OgrAlgorithm):
     INPUT = 'INPUT'
     OUTPUT = 'OUTPUT'
     TRANSF = 'TRANSF'
-    TRANSF_OPTIONS = ['Direct: CH1903/LV03 [EPSG:21781] -> New Data]',
-                      'Inverse: New Data -> CH1903/LV03 [EPSG:21781]']
+    TRANSF_OPTIONS = ['Direct: CH1903 [EPSG:21781] -> New Data',
+                      'Inverse: New Data -> CH1903 [EPSG:21781]']
     CRS = 'CRS'
-    CRS_OPTIONS = ['CH1903+/LV95 [EPSG:2056]',
-                   'ETRS89/UTM zone 32N [EPSG:25832]']
+    CRS_OPTIONS = ['ETRS89 [EPSG:4258]',
+		   'CH1903+ [EPSG:2056]']
+
     GRID = 'GRID'
     GRID_OPTIONS = ['CHENyx06']
 
@@ -98,42 +99,79 @@ class VectorCH_LV95ETRS89DirInv(OgrAlgorithm):
             # Direct transformation
             arguments = ['-t_srs']
             if self.getParameterValue(self.CRS) == 0:
-                # CH1903+/LV95
-                if self.getParameterValue(self.GRID) == 0:
-                    # CHENyx06
-                    arguments.append('EPSG:2056')
-                    gridname = 'CHENYX06a.gsb'
+               #untested
+               arguments.append('EPSG:4258')
+               gridname = 'chenyx06etrs.gsb' 
+               arguments.append('-s_srs')
+               arguments.append('+proj=somerc +lat_0=46.95240555555556 +lon_0=7.439583333333333 +k_0=1 +x_0=600000 +y_0=200000 +ellps=bessel +nadgrids=' + os.path.dirname(__file__) + '/grids/' + gridname + ' +wktext +units=m +no_defs')
+               arguments.append('-f')
+               arguments.append('ESRI Shapefile')
+               arguments.append(outFile)
+               arguments.append(conn)
             else:
-                # ETRS89/UTM zone 32N
-                if self.getParameterValue(self.GRID) == 0:
-                    # CHENyx06
-                    arguments.append('EPSG:25832')
-                    gridname = 'chenyx06etrs.gsb'                    
-            arguments.append('-s_srs')
-            arguments.append('+proj=somerc +lat_0=46.95240555555556 +lon_0=7.439583333333333 +k_0=1 +x_0=600000 +y_0=200000 +ellps=bessel +nadgrids=' + os.path.dirname(__file__) + '/grids/' + gridname + ' +wktext +units=m +no_defs')
+               arguments.append('+proj=somerc +lat_0=46.95240555555556 +lon_0=7.439583333333333 +k_0=1 +x_0=2600000 +y_0=1200000 +ellps=bessel +nadgrids=@null +wktext +units=m')
+               gridname = 'CHENYX06a.gsb'                   
+               arguments.append('-s_srs')
+               arguments.append('+proj=somerc +lat_0=46.95240555555556 +lon_0=7.439583333333333 +k_0=1 +x_0=600000 +y_0=200000 +ellps=bessel +nadgrids=' + os.path.dirname(__file__) + '/grids/' + gridname + ' +wktext +units=m +no_defs')
+               arguments.append('-f')
+               arguments.append('\"Geojson\"')
+               arguments.append('/vsistdout/')
+               arguments.append(conn)
+               arguments.append('-lco') 
+               arguments.append('ENCODING=UTF-8')                
+               arguments.append('|')
+               arguments.append('ogr2ogr')
+               arguments.append('-f')               
+               arguments.append('ESRI Shapefile') 
+               arguments.append('-a_srs') 
+               arguments.append('EPSG:2056') 
+               arguments.append(outFile)    
+               arguments.append('/vsistdin/') 
         else:
             # Inverse transformation
             arguments = ['-s_srs']
             if self.getParameterValue(self.CRS) == 0:
-                # CH1903+/LV95
-                if self.getParameterValue(self.GRID) == 0:
-                    # CHENyx06
-                    arguments.append('EPSG:2056')
-                    gridname = 'CHENYX06a.gsb'
+               #untested
+               arguments.append('EPSG:4258')
+               gridname = 'chenyx06etrs.gsb' 
+               arguments.append('-t_srs')
+               arguments.append('+proj=somerc +lat_0=46.95240555555556 +lon_0=7.439583333333333 +k_0=1 +x_0=600000 +y_0=200000 +ellps=bessel +nadgrids=' + os.path.dirname(__file__) + '/grids/' + gridname + ' +wktext +units=m +no_defs')
+               arguments.append('-f')
+               arguments.append('\"Geojson\"')
+               arguments.append('/vsistdout/')
+               arguments.append(conn)
+               arguments.append('-lco') 
+               arguments.append('ENCODING=UTF-8')
+               arguments.append('|')
+               arguments.append('ogr2ogr')
+               arguments.append('-f')               
+               arguments.append('ESRI Shapefile') 
+               arguments.append('-a_srs') 
+               arguments.append('EPSG:21781') 
+               arguments.append(outFile)    
+               arguments.append('/vsistdin/')
             else:
-                # ETRS89/UTM zone 32N
-                if self.getParameterValue(self.GRID) == 0:
-                    # CHENyx06
-                    arguments.append('EPSG:25832')
-                    gridname = 'chenyx06etrs.gsb'  
-            arguments.append('-t_srs')
-            arguments.append('+proj=somerc +lat_0=46.95240555555556 +lon_0=7.439583333333333 +k_0=1 +x_0=600000 +y_0=200000 +ellps=bessel +nadgrids=' + os.path.dirname(__file__) + '/grids/' + gridname + ' +wktext +units=m +no_defs')
+               gridname = 'CHENYX06a.gsb' 
+               arguments.append('+proj=somerc +lat_0=46.95240555555556 +lon_0=7.439583333333333 +k_0=1 +x_0=2600000 +y_0=1200000 +ellps=bessel +nadgrids=@null +wktext +units=m')
+               arguments.append('-t_srs')
+               arguments.append('+proj=somerc +lat_0=46.95240555555556 +lon_0=7.439583333333333 +k_0=1 +x_0=600000 +y_0=200000 +ellps=bessel +nadgrids=' + os.path.dirname(__file__) + '/grids/' + gridname + ' +wktext +units=m +no_defs')                  
+               arguments.append('-f')
+               arguments.append('\"Geojson\"')
+               arguments.append('/vsistdout/')
+               arguments.append(conn)
+               arguments.append('-lco') 
+               arguments.append('ENCODING=UTF-8')
+               arguments.append('|')
+               arguments.append('ogr2ogr')
+               arguments.append('-f')               
+               arguments.append('ESRI Shapefile') 
+               arguments.append('-a_srs') 
+               arguments.append('EPSG:21781') 
+               arguments.append(outFile)    
+               arguments.append('/vsistdin/')
 
-        arguments.append('-f')
-        arguments.append('ESRI Shapefile')
-
-        arguments.append(outFile)
-        arguments.append(conn)
-
+        arguments.append('-lco') 
+        arguments.append('ENCODING=UTF-8')
+               
         commands = ['ogr2ogr', GdalUtils.escapeAndJoin(arguments)]
         GdalUtils.runGdal(commands, progress)
