@@ -125,5 +125,10 @@ class RasterIT_RER_ETRS89DirInv(GdalAlgorithm):
         arguments.append(self.getParameterValue(self.INPUT))
         arguments.append(out)
 
+        if os.path.isfile(os.path.dirname(__file__) + '/grids/RER_AD400_MM_ETRS89_V1A.gsb') is False:
+           import urllib
+           urllib.urlretrieve ("https://github.com/NaturalGIS/ntv2_transformations_grids_and_sample_data/raw/master/it_rer/RER_AD400_MM_ETRS89_V1A.gsb", os.path.dirname(__file__) + "/grids/RER_AD400_MM_ETRS89_V1A.gsb")
+           urllib.urlretrieve ("https://github.com/NaturalGIS/ntv2_transformations_grids_and_sample_data/raw/master/it_rer/RER_ED50_ETRS89_GPS7_K2.GSB", os.path.dirname(__file__) + "/grids/RER_ED50_ETRS89_GPS7_K2.GSB")
+
         GdalUtils.runGdal(['gdalwarp', GdalUtils.escapeAndJoin(arguments)],
                           progress)

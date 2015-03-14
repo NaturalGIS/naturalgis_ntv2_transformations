@@ -139,5 +139,9 @@ class VectorUK_OSGB36ETRS89DirInv(OgrAlgorithm):
         arguments.append('-lco') 
         arguments.append('ENCODING=UTF-8')
 
+        if os.path.isfile(os.path.dirname(__file__) + '/grids/OSTN02_NTv2.gsb') is False:
+           import urllib
+           urllib.urlretrieve ("https://github.com/NaturalGIS/ntv2_transformations_grids_and_sample_data/raw/master/uk/OSTN02_NTv2.gsb", os.path.dirname(__file__) + "/grids/OSTN02_NTv2.gsb")
+
         commands = ['ogr2ogr', GdalUtils.escapeAndJoin(arguments)]
         GdalUtils.runGdal(commands, progress)

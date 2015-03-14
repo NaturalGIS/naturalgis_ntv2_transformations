@@ -19,6 +19,7 @@ changelog=0.4
     - Support for United Kingdom "OSTN02_NTv2.gsb" NTv2 grid for transformations between "OSGB 1936/British National Grid [EPSG:27700]" and "ETRS89 [EPSG:4258]"
     - Overhauled ogr2ogr process in order to get better results while doing inverse transformations
     - Removed some parameters from raster (gdalwarp) transformations to avoid problems with palletted rasters and with certain no data values
+    - Grids are not shipped anymore with the plugin because the QGIS plugins repository has a 10MB size limit for for each plugin and there were grids os a few MB each. Instead are now downloaded automatically when running for the first time one of the tools.
     0.3
     - Support for Italy (Emilia-Romagna) "RER_AD400_MM_ETRS89_V1A.gsb" and "RER_ED50_ETRS89_GPS7_K2.GSB" NTv2 grids for transformations between "Monte Mario - GBO [EPSG:3003]"/"UTM - ED50 [EPSG:23032]" and "ETRS89 [EPSG:4258]"
    0.2

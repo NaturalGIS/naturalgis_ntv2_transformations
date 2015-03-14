@@ -136,6 +136,10 @@ class VectorDE_GK3ETRS8932NDirInv(OgrAlgorithm):
         
         arguments.append('-lco') 
         arguments.append('ENCODING=UTF-8')
-           
+
+        if os.path.isfile(os.path.dirname(__file__) + '/grids/BETA2007.gsb') is False:
+           import urllib
+           urllib.urlretrieve ("https://github.com/NaturalGIS/ntv2_transformations_grids_and_sample_data/raw/master/de/BETA2007.gsb", os.path.dirname(__file__) + "/grids/BETA2007.gsb")
+
         commands = ['ogr2ogr', GdalUtils.escapeAndJoin(arguments)]
         GdalUtils.runGdal(commands, progress)

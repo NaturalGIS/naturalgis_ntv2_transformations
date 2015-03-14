@@ -1,0 +1,5 @@
+Ntv2 grids are not shipped anymore directly with the plugin, but instead are downloaded automatically when running for the first time one of the tools.
+
+The grids repository is:
+
+https://github.com/NaturalGIS/ntv2_transformations_grids_and_sample_data

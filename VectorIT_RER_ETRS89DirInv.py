@@ -163,5 +163,10 @@ class VectorIT_RER_ETRS89DirInv(OgrAlgorithm):
         arguments.append('-lco') 
         arguments.append('ENCODING=UTF-8')
         
+        if os.path.isfile(os.path.dirname(__file__) + '/grids/RER_AD400_MM_ETRS89_V1A.gsb') is False:
+           import urllib
+           urllib.urlretrieve ("https://github.com/NaturalGIS/ntv2_transformations_grids_and_sample_data/raw/master/it_rer/RER_AD400_MM_ETRS89_V1A.gsb", os.path.dirname(__file__) + "/grids/RER_AD400_MM_ETRS89_V1A.gsb")
+           urllib.urlretrieve ("https://github.com/NaturalGIS/ntv2_transformations_grids_and_sample_data/raw/master/it_rer/RER_ED50_ETRS89_GPS7_K2.GSB", os.path.dirname(__file__) + "/grids/RER_ED50_ETRS89_GPS7_K2.GSB")
+
         commands = ['ogr2ogr', GdalUtils.escapeAndJoin(arguments)]
         GdalUtils.runGdal(commands, progress)
