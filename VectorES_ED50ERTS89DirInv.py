@@ -90,7 +90,7 @@ class VectorES_ED50ERTS89DirInv(OgrAlgorithm):
 
     def processAlgorithm(self, progress):
         inLayer = self.getParameterValue(self.INPUT)
-        conn = self.ogrConnectionString(inLayer)
+        conn = self.ogrConnectionString(inLayer)[1:-1]
 
         output = self.getOutputFromName(self.OUTPUT)
         outFile = output.value
@@ -124,7 +124,8 @@ class VectorES_ED50ERTS89DirInv(OgrAlgorithm):
      
             arguments.append(outFile)
             arguments.append(conn)
-
+            arguments.append(self.ogrLayerName(inLayer))
+            
         else:
             # Inverse transformation
             arguments = ['-t_srs']
@@ -139,6 +140,7 @@ class VectorES_ED50ERTS89DirInv(OgrAlgorithm):
                     arguments.append('\"Geojson\"')
                     arguments.append('/vsistdout/')
                     arguments.append(conn)
+                    arguments.append(self.ogrLayerName(inLayer))
                     arguments.append('-lco') 
                     arguments.append('ENCODING=UTF-8')
                     arguments.append('|')
@@ -160,6 +162,7 @@ class VectorES_ED50ERTS89DirInv(OgrAlgorithm):
                     arguments.append('\"Geojson\"')
                     arguments.append('/vsistdout/')
                     arguments.append(conn)
+                    arguments.append(self.ogrLayerName(inLayer))
                     arguments.append('-lco') 
                     arguments.append('ENCODING=UTF-8')
                     arguments.append('|')
@@ -181,6 +184,7 @@ class VectorES_ED50ERTS89DirInv(OgrAlgorithm):
                     arguments.append('\"Geojson\"')
                     arguments.append('/vsistdout/')
                     arguments.append(conn)
+                    arguments.append(self.ogrLayerName(inLayer))
                     arguments.append('-lco') 
                     arguments.append('ENCODING=UTF-8')
                     arguments.append('|')

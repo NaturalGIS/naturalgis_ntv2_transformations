@@ -88,7 +88,7 @@ class VectorDE_GK3ETRS8932NDirInv(OgrAlgorithm):
 
     def processAlgorithm(self, progress):
         inLayer = self.getParameterValue(self.INPUT)
-        conn = self.ogrConnectionString(inLayer)
+        conn = self.ogrConnectionString(inLayer)[1:-1]
 
         output = self.getOutputFromName(self.OUTPUT)
         outFile = output.value
@@ -108,6 +108,7 @@ class VectorDE_GK3ETRS8932NDirInv(OgrAlgorithm):
 
             arguments.append(outFile)
             arguments.append(conn)
+            arguments.append(self.ogrLayerName(inLayer))
             
         else:
             # Inverse transformation
@@ -123,6 +124,7 @@ class VectorDE_GK3ETRS8932NDirInv(OgrAlgorithm):
                 arguments.append('\"Geojson\"')
                 arguments.append('/vsistdout/')
                 arguments.append(conn)
+                arguments.append(self.ogrLayerName(inLayer))
                 arguments.append('-lco') 
                 arguments.append('ENCODING=UTF-8')
                 arguments.append('|')

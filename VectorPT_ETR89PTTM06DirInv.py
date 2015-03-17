@@ -93,7 +93,7 @@ class VectorPT_ETR89PTTM06DirInv(OgrAlgorithm):
 
     def processAlgorithm(self, progress):
         inLayer = self.getParameterValue(self.INPUT)
-        conn = self.ogrConnectionString(inLayer)
+        conn = self.ogrConnectionString(inLayer)[1:-1]
 
         output = self.getOutputFromName(self.OUTPUT)
         outFile = output.value
@@ -148,6 +148,7 @@ class VectorPT_ETR89PTTM06DirInv(OgrAlgorithm):
 
             arguments.append(outFile)
             arguments.append(conn)
+            arguments.append(self.ogrLayerName(inLayer))
 
         else:
             # Inverse transformation
@@ -166,6 +167,7 @@ class VectorPT_ETR89PTTM06DirInv(OgrAlgorithm):
                 arguments.append('\"Geojson\"')
                 arguments.append('/vsistdout/')
                 arguments.append(conn)
+                arguments.append(self.ogrLayerName(inLayer))
                 arguments.append('-lco') 
                 arguments.append('ENCODING=UTF-8')
                 arguments.append('|')
@@ -188,6 +190,7 @@ class VectorPT_ETR89PTTM06DirInv(OgrAlgorithm):
                 arguments.append('\"Geojson\"')
                 arguments.append('/vsistdout/')
                 arguments.append(conn)
+                arguments.append(self.ogrLayerName(inLayer))
                 arguments.append('-lco') 
                 arguments.append('ENCODING=UTF-8')
                 arguments.append('|')
@@ -210,6 +213,7 @@ class VectorPT_ETR89PTTM06DirInv(OgrAlgorithm):
                 arguments.append('\"Geojson\"')
                 arguments.append('/vsistdout/')
                 arguments.append(conn)
+                arguments.append(self.ogrLayerName(inLayer))
                 arguments.append('-lco') 
                 arguments.append('ENCODING=UTF-8')
                 arguments.append('|')
@@ -234,6 +238,8 @@ class VectorPT_ETR89PTTM06DirInv(OgrAlgorithm):
 
                 arguments.append(outFile)
                 arguments.append(conn)
+                arguments.append(self.ogrLayerName(inLayer))
+
             else:
                 # ED50 UTM 29N - Jose Alberto Goncalves
                 arguments.append('+proj=utm +zone=29 +ellps=intl +nadgrids=' + os.path.dirname(__file__) + '/grids/ptED_e89.gsb +wktext +units=m +no_defs')
@@ -241,6 +247,7 @@ class VectorPT_ETR89PTTM06DirInv(OgrAlgorithm):
                 arguments.append('\"Geojson\"')
                 arguments.append('/vsistdout/')
                 arguments.append(conn)
+                arguments.append(self.ogrLayerName(inLayer))
                 arguments.append('-lco') 
                 arguments.append('ENCODING=UTF-8')
                 arguments.append('|')
