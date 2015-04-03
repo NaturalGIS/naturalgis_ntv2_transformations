@@ -21,6 +21,13 @@ https://github.com/NaturalGIS/ntv2_transformations/issues
 
 Supported transformations:
 
+![](/icons/hr.png)
+
+-  Croatia: HDKS5/6 [Custom CRSs] <==> HTRS96/Croatia TM [EPSG:3765] [HRNTv2.gsb]
+
+Source for [HRNTv2.gsb]: 
+http://geosinjal.blogspot.pt/2012/12/kreiranje-ntv2-grid-datoteke-za.html
+
 ![](/icons/de.png)
 
 -  Germany: Gauss-Krüger zone 3 [EPSG:31467] <==> ETRS89 [EPSG:4258] [BETA2007.gsb]

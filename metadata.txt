@@ -3,7 +3,7 @@ name=NTv2 Datum Transformations
 description=NTv2 Datum Transformations for the QGIS Processing toolbox. This plugin is directly derived from https://github.com/qgispt/processing_pttransform originally developed by Alexander Bruy, Pedro Venâncio and NaturalGIS (http://www.naturalgis.pt/), with the support of the Portuguese QGIS user group (http://www.qgis.pt/).
 about=Developed by Giovanni Manghi for NaturalGIS (http://www.naturalgis.pt/)
 category=Plugins
-version=0.5
+version=0.6
 qgisMinimumVersion=2.8
 icon=icons/naturalgis_32.png
 tags=processing,grids,ntv2,transformations,datum
@@ -14,7 +14,9 @@ tracker=https://github.com/NaturalGIS/ntv2_transfomations/issues
 repository=https://github.com/NaturalGIS/ntv2_transfomations
 experimental=True
 deprecated=False
-changelog=0.5
+changelog=0.6
+    - Support for Croatia "HRNTv2.gsb" NTv2 grid for transformations between "HDKS5/6 [Custom CRSs]" and "HTRS96/Croatia TM [EPSG:3765]"
+    0.5
     - Fixes input vectors layers when source are not shapefiles and when there are spaces in paths (under Windows)
     0.4
     - Support for Switzerland "CHENYX06a.gsb" and "chenyx06etrs.gsb" NTv2 grids for transformations between "CH1903 [EPSG:21781]" and "ETRS89 [EPSG:4258]"/"CH1903+ [EPSG:2056]"
