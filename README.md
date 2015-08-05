@@ -9,9 +9,9 @@ web: http://www.naturalgis.pt/
 
 email: giovanni.manghi@naturalgis.pt
 
-This plugin allows QGIS user to do easily direct/inverse Datum transformations (for vectors and rasters) using NTv2 grids. Available transformations will be the ones that are supported by NTv2 grids that will be possible to redistribute legally with the plugin itself.
+This plugin allows QGIS user to do easily direct/inverse Datum transformations (for vectors and rasters) using NTv2 grids. Available transformations are the ones supported by NTv2 grids that will be possible to redistribute legally with the plugin itself.
 
-The plugin needs QGIS 2.8 to work.
+The plugin needs QGIS >= 2.8 to work.
 
 This plugin is directly derived from https://github.com/qgispt/processing_pttransform originally developed by Alexander Bruy, Pedro Venâncio and NaturalGIS (http://www.naturalgis.pt/), with the support of the Portuguese QGIS user group (http://www.qgis.pt/).
 
@@ -19,7 +19,18 @@ If you have a NTv2 grid that can be legally redistributed and you would like to 
 
 https://github.com/NaturalGIS/ntv2_transformations/issues
 
+Contrinutors:
+
+- Carlos López Quintanilla (carlos.lopez@psig.es)
+
 Supported transformations:
+
+![](/icons/cat.png)
+
+-  Catalonia: ED50/UTM 31N [EPSG:23031] <==> ETRS89/UTM zone 31N [EPSG:25831] [100800401.gsb]
+
+Source for [100800401.gsb], Institut Cartogràfic i Geològic de Catalunya: 
+http://www.icc.cat/eng/Home-ICC/Geodesia/Recursos
 
 ![](/icons/hr.png)
 
