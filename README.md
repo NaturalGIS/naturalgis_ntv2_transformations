@@ -19,7 +19,7 @@ If you have a NTv2 grid that can be legally redistributed and you would like to 
 
 https://github.com/NaturalGIS/ntv2_transformations/issues
 
-Contrinutors:
+Contributors:
 
 - Carlos López Quintanilla (carlos.lopez@psig.es)
 
