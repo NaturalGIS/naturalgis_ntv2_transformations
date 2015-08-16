@@ -15,6 +15,12 @@
 *   (at your option) any later version.                                   *
 *                                                                         *
 ***************************************************************************
+    Code refactor - epsg strings as list
+    ------------------------------------
+    Date                 : August 2015
+    Copyright            : (C) 2015 by Fernando Ribeiro aka The Geocrafter
+    Email                : fernandinand at gmail dot com
+***************************************************************************
 """
 
 __author__ = 'Giovanni Manghi'
@@ -59,10 +65,10 @@ class RasterPT_ETR89PTTM06DirInv(GdalAlgorithm):
                    'Datum Lisboa Militar [EPSG:20790/ESRI:102164]',
                    'Datum 73 [EPSG:27493/ESRI:102161]',
                    'Datum 73 Militar [ESRI:102160]',
-                   'ED50 UTM 29N [EPSG:23029] (Only grid from José Alberto Gonçalves)']
+                   'ED50 UTM 29N [EPSG:23029] (Only grid from Josï¿½ Alberto Gonï¿½alves)']
     GRID = 'GRID'
-    GRID_OPTIONS = ['José Alberto Gonçalves',
-                    'Direção-Geral do Territorio']
+    GRID_OPTIONS = ['Josï¿½ Alberto Gonï¿½alves',
+                    'Direï¿½ï¿½o-Geral do Territorio']
 
     def getIcon(self):
         return  QIcon(os.path.dirname(__file__) + '/icons/pt.png')
@@ -88,46 +94,42 @@ class RasterPT_ETR89PTTM06DirInv(GdalAlgorithm):
                           self.GRID_OPTIONS))
         self.addOutput(OutputRaster(self.OUTPUT, 'Output'))
 
+    def transfList(self):
+        return [
+            [
+                # Datum Lisboa
+                ['+proj=tmerc +lat_0=39.66666666666666 +lon_0=1 +k=1 +x_0=0 +y_0=0 +ellps=intl +nadgrids=' + os.path.dirname(__file__) + '/grids/ptLX_e89.gsb +wktext +pm=lisbon +units=m +no_defs'],
+                ['+proj=tmerc +lat_0=39.66666666666666 +lon_0=1 +k=1 +x_0=0 +y_0=0 +ellps=intl +nadgrids=' + os.path.dirname(__file__) + '/grids/DLX_ETRS89_geo.gsb +wktext +pm=lisbon +units=m +no_defs']
+            ],
+            [
+                # Datum Lisboa Militar
+                ['+proj=tmerc +lat_0=39.66666666666666 +lon_0=1 +k=1 +x_0=200000 +y_0=300000 +ellps=intl +nadgrids=' + os.path.dirname(__file__) + '/grids/ptLX_e89.gsb +wktext +pm=lisbon +units=m +no_defs'],
+                ['+proj=tmerc +lat_0=39.66666666666666 +lon_0=1 +k=1 +x_0=200000 +y_0=300000 +ellps=intl +nadgrids=' + os.path.dirname(__file__) + '/grids/DLX_ETRS89_geo.gsb +wktext +pm=lisbon +units=m +no_defs']
+            ],
+            [
+                # Datum 73
+                ['+proj=tmerc +lat_0=39.66666666666666 +lon_0=-8.131906111111112 +k=1 +x_0=180.598 +y_0=-86.99 +ellps=intl +nadgrids=' + os.path.dirname(__file__) + '/grids/pt73_e89.gsb +wktext +units=m +no_defs'],
+                ['+proj=tmerc +lat_0=39.66666666666666 +lon_0=-8.131906111111112 +k=1 +x_0=180.598 +y_0=-86.99 +ellps=intl +nadgrids=' + os.path.dirname(__file__) + '/grids/D73_ETRS89_geo.gsb +wktext +units=m +no_defs']
+            ],
+            [
+                # Datum 73 Militar
+                ['+proj=tmerc +lat_0=39.66666666666666 +lon_0=-8.131906111111112 +k=1 +x_0=200180.598 +y_0=299913.01 +ellps=intl +nadgrids=' + os.path.dirname(__file__) + '/grids/pt73_e89.gsb +wktext +units=m +no_defs'],
+                ['+proj=tmerc +lat_0=39.66666666666666 +lon_0=-8.131906111111112 +k=1 +x_0=200180.598 +y_0=299913.01 +ellps=intl +nadgrids=' + os.path.dirname(__file__) + '/grids/D73_ETRS89_geo.gsb +wktext +units=m +no_defs']
+            ],
+            [
+                # ED50 UTM 29N - Jose Alberto Goncalves
+                ['+proj=utm +zone=29 +ellps=intl +nadgrids=' + os.path.dirname(__file__) + '/grids/ptED_e89.gsb +wktext +units=m +no_defs'],
+                # Duplicate here...GUI not safe!
+                ['+proj=utm +zone=29 +ellps=intl +nadgrids=' + os.path.dirname(__file__) + '/grids/ptED_e89.gsb +wktext +units=m +no_defs']
+            ]
+        ]
+
     def processAlgorithm(self, progress):
 
         if self.getParameterValue(self.TRANSF) == 0:
             # Direct transformation
             arguments = ['-s_srs']
-            if self.getParameterValue(self.CRS) == 0:
-                # Datum Lisboa
-                if self.getParameterValue(self.GRID) == 0:
-                    # Jose Alberto Goncalves
-                    arguments.append('+proj=tmerc +lat_0=39.66666666666666 +lon_0=1 +k=1 +x_0=0 +y_0=0 +ellps=intl +nadgrids=' + os.path.dirname(__file__) + '/grids/ptLX_e89.gsb +wktext +pm=lisbon +units=m +no_defs')
-                else:
-                    # Direccao Geral do Territorio
-                    arguments.append('+proj=tmerc +lat_0=39.66666666666666 +lon_0=1 +k=1 +x_0=0 +y_0=0 +ellps=intl +nadgrids=' + os.path.dirname(__file__) + '/grids/DLX_ETRS89_geo.gsb +wktext +pm=lisbon +units=m +no_defs')
-            elif self.getParameterValue(self.CRS) == 1:
-                # Datum Lisboa Militar
-                if self.getParameterValue(self.GRID) == 0:
-                    # Jose Alberto Goncalves
-                    arguments.append('+proj=tmerc +lat_0=39.66666666666666 +lon_0=1 +k=1 +x_0=200000 +y_0=300000 +ellps=intl +nadgrids=' + os.path.dirname(__file__) + '/grids/ptLX_e89.gsb +wktext +pm=lisbon +units=m +no_defs')
-                else:
-                    # Direccao Geral do Territorio
-                    arguments.append('+proj=tmerc +lat_0=39.66666666666666 +lon_0=1 +k=1 +x_0=200000 +y_0=300000 +ellps=intl +nadgrids=' + os.path.dirname(__file__) + '/grids/DLX_ETRS89_geo.gsb +wktext +pm=lisbon +units=m +no_defs')
-            elif self.getParameterValue(self.CRS) == 2:
-                # Datum 73
-                if self.getParameterValue(self.GRID) == 0:
-                    # Jose Alberto Goncalves
-                    arguments.append('+proj=tmerc +lat_0=39.66666666666666 +lon_0=-8.131906111111112 +k=1 +x_0=180.598 +y_0=-86.99 +ellps=intl +nadgrids=' + os.path.dirname(__file__) + '/grids/pt73_e89.gsb +wktext +units=m +no_defs')
-                else:
-                    # Direccao Geral do Territorio
-                    arguments.append('+proj=tmerc +lat_0=39.66666666666666 +lon_0=-8.131906111111112 +k=1 +x_0=180.598 +y_0=-86.99 +ellps=intl +nadgrids=' + os.path.dirname(__file__) + '/grids/D73_ETRS89_geo.gsb +wktext +units=m +no_defs')
-            elif self.getParameterValue(self.CRS) == 3:
-                # Datum 73 Militar
-                if self.getParameterValue(self.GRID) == 0:
-                    # Jose Alberto Goncalves
-                    arguments.append('+proj=tmerc +lat_0=39.66666666666666 +lon_0=-8.131906111111112 +k=1 +x_0=200180.598 +y_0=299913.01 +ellps=intl +nadgrids=' + os.path.dirname(__file__) + '/grids/pt73_e89.gsb +wktext +units=m +no_defs')
-                else:
-                    # Direccao Geral do Territorio
-                    arguments.append('+proj=tmerc +lat_0=39.66666666666666 +lon_0=-8.131906111111112 +k=1 +x_0=200180.598 +y_0=299913.01 +ellps=intl +nadgrids=' + os.path.dirname(__file__) + '/grids/D73_ETRS89_geo.gsb +wktext +units=m +no_defs')
-            else:
-                # ED50 UTM 29N - Jose Alberto Goncalves
-                arguments.append('+proj=utm +zone=29 +ellps=intl +nadgrids=' + os.path.dirname(__file__) + '/grids/ptED_e89.gsb +wktext +units=m +no_defs')
+            arguments.append(str(self.transfList()[self.getParameterValue(self.CRS)][self.getParameterValue(self.GRID)])[2:-2])
             arguments.append('-t_srs')
             arguments.append('EPSG:3763')
         else:
@@ -135,41 +137,7 @@ class RasterPT_ETR89PTTM06DirInv(GdalAlgorithm):
             arguments = ['-s_srs']
             arguments.append('EPSG:3763')
             arguments.append('-t_srs')
-            if self.getParameterValue(self.CRS) == 0:
-                # Datum Lisboa
-                if self.getParameterValue(self.GRID) == 0:
-                    # Jose Alberto Goncalves
-                    arguments.append('+proj=tmerc +lat_0=39.66666666666666 +lon_0=1 +k=1 +x_0=0 +y_0=0 +ellps=intl +nadgrids=' + os.path.dirname(__file__) + '/grids/ptLX_e89.gsb +wktext +pm=lisbon +units=m +no_defs')
-                else:
-                    # Direccao Geral do Territorio
-                    arguments.append('+proj=tmerc +lat_0=39.66666666666666 +lon_0=1 +k=1 +x_0=0 +y_0=0 +ellps=intl +nadgrids=' + os.path.dirname(__file__) + '/grids/DLX_ETRS89_geo.gsb +wktext +pm=lisbon +units=m +no_defs')
-            elif self.getParameterValue(self.CRS) == 1:
-                # Datum Lisboa Militar
-                if self.getParameterValue(self.GRID) == 0:
-                    # Jose Alberto Goncalves
-                    arguments.append('+proj=tmerc +lat_0=39.66666666666666 +lon_0=1 +k=1 +x_0=200000 +y_0=300000 +ellps=intl +nadgrids=' + os.path.dirname(__file__) + '/grids/ptLX_e89.gsb +wktext +pm=lisbon +units=m +no_defs')
-                else:
-                    # Direccao Geral do Territorio
-                    arguments.append('+proj=tmerc +lat_0=39.66666666666666 +lon_0=1 +k=1 +x_0=200000 +y_0=300000 +ellps=intl +nadgrids=' + os.path.dirname(__file__) + '/grids/DLX_ETRS89_geo.gsb +wktext +pm=lisbon +units=m +no_defs')
-            elif self.getParameterValue(self.CRS) == 2:
-                # Datum 73
-                if self.getParameterValue(self.GRID) == 0:
-                    # Jose Alberto Goncalves
-                    arguments.append('+proj=tmerc +lat_0=39.66666666666666 +lon_0=-8.131906111111112 +k=1 +x_0=180.598 +y_0=-86.99 +ellps=intl +nadgrids=' + os.path.dirname(__file__) + '/grids/pt73_e89.gsb +wktext +units=m +no_defs')
-                else:
-                    # Direccao Geral do Territorio
-                    arguments.append('+proj=tmerc +lat_0=39.66666666666666 +lon_0=-8.131906111111112 +k=1 +x_0=180.598 +y_0=-86.99 +ellps=intl +nadgrids=' + os.path.dirname(__file__) + '/grids/D73_ETRS89_geo.gsb +wktext +units=m +no_defs')
-            elif self.getParameterValue(self.CRS) == 3:
-                # Datum 73 Militar
-                if self.getParameterValue(self.GRID) == 0:
-                    # Jose Alberto Goncalves
-                    arguments.append('+proj=tmerc +lat_0=39.66666666666666 +lon_0=-8.131906111111112 +k=1 +x_0=200180.598 +y_0=299913.01 +ellps=intl +nadgrids=' + os.path.dirname(__file__) + '/grids/pt73_e89.gsb +wktext +units=m +no_defs')
-                else:
-                    # Direccao Geral do Territorio
-                    arguments.append('+proj=tmerc +lat_0=39.66666666666666 +lon_0=-8.131906111111112 +k=1 +x_0=200180.598 +y_0=299913.01 +ellps=intl +nadgrids=' + os.path.dirname(__file__) + '/grids/D73_ETRS89_geo.gsb +wktext +units=m +no_defs')
-            else:
-                # ED50 UTM 29N - Jose Alberto Goncalves
-                arguments.append('+proj=utm +zone=29 +ellps=intl +nadgrids=' + os.path.dirname(__file__) + '/grids/ptED_e89.gsb +wktext +units=m +no_defs')
+            arguments.append(str(self.transfList()[self.getParameterValue(self.CRS)][self.getParameterValue(self.GRID)])[2:-2])
 
         arguments.append('-multi')
         arguments.append('-of')
