@@ -3,7 +3,7 @@ name=NTv2 Datum Transformations
 description=NTv2 Datum Transformations for the QGIS Processing toolbox. This plugin is directly derived from https://github.com/qgispt/processing_pttransform originally developed by Alexander Bruy, Pedro Venâncio and NaturalGIS (http://www.naturalgis.pt/), with the support of the Portuguese QGIS user group (http://www.qgis.pt/).
 about=Developed by Giovanni Manghi for NaturalGIS (http://www.naturalgis.pt/)
 category=Plugins
-version=0.7
+version=0.8
 qgisMinimumVersion=2.8
 icon=icons/naturalgis_32.png
 tags=processing,grids,ntv2,transformations,datum
@@ -14,7 +14,10 @@ tracker=https://github.com/NaturalGIS/ntv2_transfomations/issues
 repository=https://github.com/NaturalGIS/ntv2_transfomations
 experimental=True
 deprecated=False
-changelog=0.7
+changelog=0.8
+    - Support for Dutch "rdtrans2008.gsb"  NTv2 grid for transformations between "Amersfoort/RD [EPSG:28992]" and "ETRS89 [EPSG:4258]"
+    - Refactor for Portuguese transformations classes (RasterPT_ETR89PTTM06DirInv and VectorPT_ETR89PTTM06DirInv)
+    0.7
     - Support for Catalonia "100800401.gsb" NTv2 grid for transformations between ED50/UTM 31N [EPSG:23031] and ETRS89/UTM zone 31N [EPSG:25831]
     0.6
     - Support for Croatia "HRNTv2.gsb" NTv2 grid for transformations between "HDKS5/6 [Custom CRSs]" and "HTRS96/Croatia TM [EPSG:3765]"
