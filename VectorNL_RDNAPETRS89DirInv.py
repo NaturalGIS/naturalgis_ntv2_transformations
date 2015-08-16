@@ -75,7 +75,7 @@ class VectorNL_RDNAPETRS89DirInv(OgrAlgorithm):
 
     def defineCharacteristics(self):
         self.name = '[NL] Direct and inverse Vector tranformation'
-        self.group = '[NL] Nederlands'
+        self.group = '[NL] Netherlands'
         self.addParameter(ParameterVector(self.INPUT, 'Input vector',
                           [ParameterVector.VECTOR_TYPE_ANY]))
         self.addParameter(ParameterSelection(self.TRANSF, 'Transformation',

@@ -72,7 +72,7 @@ class RasterNL_RDNAPETRS89DirInv(GdalAlgorithm):
 
     def defineCharacteristics(self):
         self.name = '[NL] Direct and inverse Raster Tranformation'
-        self.group = '[NL] Nederlands'
+        self.group = '[NL] Netherlands'
         self.addParameter(ParameterRaster(self.INPUT, 'Input raster', False))
         self.addParameter(ParameterSelection(self.TRANSF, 'Transformation',
                                              self.TRANSF_OPTIONS))
