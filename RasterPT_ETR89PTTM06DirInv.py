@@ -65,10 +65,10 @@ class RasterPT_ETR89PTTM06DirInv(GdalAlgorithm):
                    'Datum Lisboa Militar [EPSG:20790/ESRI:102164]',
                    'Datum 73 [EPSG:27493/ESRI:102161]',
                    'Datum 73 Militar [ESRI:102160]',
-                   'ED50 UTM 29N [EPSG:23029] (Only grid from Jos� Alberto Gon�alves)']
+                   u'ED50 UTM 29N [EPSG:23029] (Only grid from José Alberto Gonçalves)']
     GRID = 'GRID'
-    GRID_OPTIONS = ['Jos� Alberto Gon�alves',
-                    'Dire��o-Geral do Territorio']
+    GRID_OPTIONS = [u'José Alberto Gonçalves',
+                    u'Direção-Geral do Territorio']
 
     def getIcon(self):
         return  QIcon(os.path.dirname(__file__) + '/icons/pt.png')
