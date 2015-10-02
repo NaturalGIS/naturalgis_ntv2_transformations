@@ -4,7 +4,7 @@
 ***************************************************************************
     VectorAT_MGIETRS89DirInv.py
     ---------------------
-    Date                 : March 2015
+    Date                 : October 2015
     Copyright            : (C) 2015 by Giovanni Manghi
     Email                : giovanni dot manghi at naturalgis dot pt
 ***************************************************************************
