@@ -51,6 +51,8 @@ from ntv2_transformations.VectorCAT_ED50ETRS89DirInv import VectorCAT_ED50ETRS89
 from ntv2_transformations.RasterCAT_ED50ETRS89DirInv import RasterCAT_ED50ETRS89DirInv
 from ntv2_transformations.VectorNL_RDNAPETRS89DirInv import VectorNL_RDNAPETRS89DirInv
 from ntv2_transformations.RasterNL_RDNAPETRS89DirInv import RasterNL_RDNAPETRS89DirInv
+from ntv2_transformations.VectorAT_MGIETRS89DirInv import VectorAT_MGIETRS89DirInv
+from ntv2_transformations.RasterAT_MGIETRS89DirInv import RasterAT_MGIETRS89DirInv
 
 
 class DETransformProvider(AlgorithmProvider):
@@ -64,7 +66,8 @@ class DETransformProvider(AlgorithmProvider):
                         VectorIT_RER_ETRS89DirInv(), RasterIT_RER_ETRS89DirInv(), VectorCH_LV95ETRS89DirInv(),
                         RasterCH_LV95ETRS89DirInv(), VectorUK_OSGB36ETRS89DirInv(), RasterUK_OSGB36ETRS89DirInv(),
                         RasterKR_HDKSHTRS96DirInv(), VectorKR_HDKSHTRS96DirInv(), VectorCAT_ED50ETRS89DirInv(),
-                        RasterCAT_ED50ETRS89DirInv(), VectorNL_RDNAPETRS89DirInv(), RasterNL_RDNAPETRS89DirInv()]
+                        RasterCAT_ED50ETRS89DirInv(), VectorNL_RDNAPETRS89DirInv(), RasterNL_RDNAPETRS89DirInv(),
+                        VectorAT_MGIETRS89DirInv(), RasterAT_MGIETRS89DirInv()]
         for alg in self.alglist:
             alg.provider = self
 
