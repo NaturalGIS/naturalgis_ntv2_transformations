@@ -29,6 +29,12 @@ Supported transformations:
 ![](/icons/at.png)
 
 -  Austria: MGI [EPSG:4312] <==> ETRS89 [EPSG:4258] [AT_GIS_GRID.gsb]
+-  MGI/Austria GK west [EPSG:31254] <==> ETRS89 [EPSG:4258] [AT_GIS_GRID.gsb]
+-  MGI/Austria GK central [EPSG:31255] <==> ETRS89 [EPSG:4258] [AT_GIS_GRID.gsb]
+-  MGI/Austria GK east [EPSG:31256] <==> ETRS89 [EPSG:4258] [AT_GIS_GRID.gsb]
+-  MGI/Austria GK M28 [EPSG:31257] <==> ETRS89 [EPSG:4258] [AT_GIS_GRID.gsb]
+-  MGI/Austria GK M31 [EPSG:31258] <==> ETRS89 [EPSG:4258] [AT_GIS_GRID.gsb]
+-  MGI/Austria GK M34 [EPSG:31259] <==> ETRS89 [EPSG:4258] [AT_GIS_GRID.gsb]
 
 Source for [AT_GIS_GRID.gsb], Bundesministerium für Wissenschaft, Forschung und Wirtschaft nachgeordnete Bundesbehörde mit den Aufgabenbereichen Vermessung und Geoinformation und Mess- und Eichwesen: 
 http://www.bev.gv.at/portal/page?_pageid=713,2103845&_dad=portal&_schema=PORTAL

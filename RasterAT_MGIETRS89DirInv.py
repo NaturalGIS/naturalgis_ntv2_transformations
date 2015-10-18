@@ -55,7 +55,13 @@ class RasterAT_MGIETRS89DirInv(GdalAlgorithm):
     TRANSF_OPTIONS = ['Direct: Old Data -> ETRS89 [EPSG:4258]',
                       'Inverse: ETRS89 [EPSG:4258] -> Old Data']
     CRS = 'CRS'
-    CRS_OPTIONS = ['MGI [EPSG:4312]']
+    CRS_OPTIONS = ['MGI [EPSG:4312]',
+                   'MGI/Austria GK west [EPSG:31254]',
+                   'MGI/Austria GK central [EPSG:31255]',
+                   'MGI/Austria GK east [EPSG:31256]',
+                   'MGI/Austria GK M28 [EPSG:31257]',
+                   'MGI/Austria GK M31 [EPSG:31258]',
+                   'MGI/Austria GK M34 [EPSG:31259]']
 
     GRID = 'GRID'
     GRID_OPTIONS = ['AT_GIS_GRID']
@@ -83,17 +89,47 @@ class RasterAT_MGIETRS89DirInv(GdalAlgorithm):
         self.addParameter(ParameterSelection(self.GRID, 'NTv2 Grid',
                           self.GRID_OPTIONS))
         self.addOutput(OutputRaster(self.OUTPUT, 'Output'))
+        
+    def transfList(self):
+        return [
+            [
+                # MGI
+                ['+proj=longlat +ellps=bessel +nadgrids=' + os.path.dirname(__file__) + '/grids/AT_GIS_GRID.gsb +wktext +no_defs']
+            ],
+            [
+                # MGI/Austria GK west
+                ['+proj=tmerc +lat_0=0 +lon_0=10.33333333333333 +k=1 +x_0=0 +y_0=-5000000 +ellps=bessel +nadgrids=' + os.path.dirname(__file__) + '/grids/AT_GIS_GRID.gsb +wktext +units=m +no_defs']
+            ],
+            [
+                # MGI/Austria GK central
+                ['+proj=tmerc +lat_0=0 +lon_0=13.33333333333333 +k=1 +x_0=0 +y_0=-5000000 +ellps=bessel +nadgrids=' + os.path.dirname(__file__) + '/grids/AT_GIS_GRID.gsb +wktext +units=m +no_defs']
+            ],
+            [
+                # MGI/Austria GK east
+                ['+proj=tmerc +lat_0=0 +lon_0=16.33333333333333 +k=1 +x_0=0 +y_0=-5000000 +ellps=bessel +nadgrids=' + os.path.dirname(__file__) + '/grids/AT_GIS_GRID.gsb +wktext +units=m +no_defs']
+            ],
+            [
+                # MGI/Austria GK M28
+                ['+proj=tmerc +lat_0=0 +lon_0=10.33333333333333 +k=1 +x_0=150000 +y_0=-5000000 +ellps=bessel +nadgrids=' + os.path.dirname(__file__) + '/grids/AT_GIS_GRID.gsb +wktext +units=m +no_defs']
+            ],
+            [
+                # MGI/Austria GK M31
+                ['+proj=tmerc +lat_0=0 +lon_0=13.33333333333333 +k=1 +x_0=450000 +y_0=-5000000 +ellps=bessel +nadgrids=' + os.path.dirname(__file__) + '/grids/AT_GIS_GRID.gsb +wktext +units=m +no_defs']
+            ],
+            [
+                # MGI/Austria GK M34
+                ['+proj=tmerc +lat_0=0 +lon_0=16.33333333333333 +k=1 +x_0=750000 +y_0=-5000000 +ellps=bessel +nadgrids=' + os.path.dirname(__file__) + '/grids/AT_GIS_GRID.gsb +wktext +units=m +no_defs']
+            ]
+        ]         
 
     def processAlgorithm(self, progress):
+      
+        doTransf = self.transfList()      
 
         if self.getParameterValue(self.TRANSF) == 0:
             # Direct transformation
             arguments = ['-s_srs']
-            if self.getParameterValue(self.CRS) == 0:
-                # MGI
-                if self.getParameterValue(self.GRID) == 0:
-                    # AT_GIS_GRID
-                    arguments.append('+proj=longlat +ellps=bessel +nadgrids=' + os.path.dirname(__file__) + '/grids/AT_GIS_GRID.gsb +wktext +no_defs')
+            arguments.append(str(doTransf[self.getParameterValue(self.CRS)][self.getParameterValue(self.GRID)])[2:-2])
             arguments.append('-t_srs')
             arguments.append('EPSG:4258')
         else:
@@ -101,11 +137,7 @@ class RasterAT_MGIETRS89DirInv(GdalAlgorithm):
             arguments = ['-s_srs']
             arguments.append('EPSG:4258')
             arguments.append('-t_srs')
-            if self.getParameterValue(self.CRS) == 0:
-                # MGI
-                if self.getParameterValue(self.GRID) == 0:
-                    # AT_GIS_GRID
-                    arguments.append('+proj=longlat +ellps=bessel +nadgrids=' + os.path.dirname(__file__) + '/grids/AT_GIS_GRID.gsb +wktext +no_defs')
+            arguments.append(str(doTransf[self.getParameterValue(self.CRS)][self.getParameterValue(self.GRID)])[2:-2])
 
         arguments.append('-multi')
         arguments.append('-of')
