@@ -21,8 +21,10 @@ https://github.com/NaturalGIS/ntv2_transformations/issues
 
 Contributors:
 
+- Alexander Bruy
 - Carlos López Quintanilla (carlos.lopez@psig.es)
 - Fernando Ribeiro aka The Geocrafter (fernandinand@gmail.com)
+- Pedro Venâncio (pedrongvenancio@gmail.com)
 
 Supported transformations:
 

@@ -3,7 +3,7 @@ name=NTv2 Datum Transformations
 description=NTv2 Datum Transformations for the QGIS Processing toolbox. This plugin is directly derived from https://github.com/qgispt/processing_pttransform originally developed by Alexander Bruy, Pedro Venâncio and NaturalGIS (http://www.naturalgis.pt/), with the support of the Portuguese QGIS user group (http://www.qgis.pt/).
 about=Developed by Giovanni Manghi for NaturalGIS (http://www.naturalgis.pt/)
 category=Plugins
-version=0.10
+version=0.11
 qgisMinimumVersion=2.8
 icon=icons/naturalgis_32.png
 tags=processing,grids,ntv2,transformations,datum
@@ -14,7 +14,9 @@ tracker=https://github.com/NaturalGIS/ntv2_transfomations/issues
 repository=https://github.com/NaturalGIS/ntv2_transfomations
 experimental=False
 deprecated=False
-changelog=0.10
+changelog=0.11
+    - Fix a bug in inverse transformations for Portugal
+    0.10
     - Support for Austria "AT_GIS_GRID.gsb" NTv2 grid for transformations between "MGI/Austria GK west [EPSG:31254], MGI/Austria GK central,[EPSG:31255], MGI/Austria GK east [EPSG:31256], MGI/Austria GK M28 [EPSG:31257], MGI/Austria GK M31 [EPSG:31258], MGI/Austria GK M34 [EPSG:31259]" and "ETRS89 [EPSG:4258]"
     0.9
     - Support for Austria "AT_GIS_GRID.gsb" NTv2 grid for transformations between "MGI [EPSG:4312]" and "ETRS89 [EPSG:4258]"
