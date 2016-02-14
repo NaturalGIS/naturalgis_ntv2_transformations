@@ -45,11 +45,12 @@ except:
 
 from processing.tools.system import *
 
-from processing.algs.gdal.OgrAlgorithm import OgrAlgorithm
+from processing.core.GeoAlgorithm import GeoAlgorithm
 from processing.algs.gdal.GdalUtils import GdalUtils
+from processing.tools.vector import ogrConnectionString, ogrLayerName
 
 
-class VectorCH_LV95ETRS89DirInv(OgrAlgorithm):
+class VectorCH_LV95ETRS89DirInv(GeoAlgorithm):
 
     INPUT = 'INPUT'
     OUTPUT = 'OUTPUT'
@@ -90,7 +91,7 @@ class VectorCH_LV95ETRS89DirInv(OgrAlgorithm):
 
     def processAlgorithm(self, progress):
         inLayer = self.getParameterValue(self.INPUT)
-        conn = self.ogrConnectionString(inLayer)[1:-1]
+        conn = ogrConnectionString(inLayer)[1:-1]
 
         output = self.getOutputFromName(self.OUTPUT)
         outFile = output.value
@@ -108,7 +109,7 @@ class VectorCH_LV95ETRS89DirInv(OgrAlgorithm):
                arguments.append('ESRI Shapefile')
                arguments.append(outFile)
                arguments.append(conn)
-               arguments.append(self.ogrLayerName(inLayer))
+               arguments.append(ogrLayerName(inLayer))
             else:
                arguments.append('+proj=somerc +lat_0=46.95240555555556 +lon_0=7.439583333333333 +k_0=1 +x_0=2600000 +y_0=1200000 +ellps=bessel +nadgrids=@null +wktext +units=m')
                gridname = 'CHENYX06a.gsb'                   
@@ -118,7 +119,7 @@ class VectorCH_LV95ETRS89DirInv(OgrAlgorithm):
                arguments.append('\"Geojson\"')
                arguments.append('/vsistdout/')
                arguments.append(conn)
-               arguments.append(self.ogrLayerName(inLayer))
+               arguments.append(ogrLayerName(inLayer))
                arguments.append('-lco') 
                arguments.append('ENCODING=UTF-8')                
                arguments.append('|')
@@ -142,7 +143,7 @@ class VectorCH_LV95ETRS89DirInv(OgrAlgorithm):
                arguments.append('\"Geojson\"')
                arguments.append('/vsistdout/')
                arguments.append(conn)
-               arguments.append(self.ogrLayerName(inLayer))
+               arguments.append(ogrLayerName(inLayer))
                arguments.append('-lco') 
                arguments.append('ENCODING=UTF-8')
                arguments.append('|')
@@ -162,7 +163,7 @@ class VectorCH_LV95ETRS89DirInv(OgrAlgorithm):
                arguments.append('\"Geojson\"')
                arguments.append('/vsistdout/')
                arguments.append(conn)
-               arguments.append(self.ogrLayerName(inLayer))
+               arguments.append(ogrLayerName(inLayer))
                arguments.append('-lco') 
                arguments.append('ENCODING=UTF-8')
                arguments.append('|')
