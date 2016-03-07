@@ -43,11 +43,11 @@ except:
     from processing.core.parameters import ParameterSelection
     from processing.core.outputs import OutputRaster
 
-from processing.algs.gdal.GdalAlgorithm import GdalAlgorithm
+from processing.core.GeoAlgorithm import GeoAlgorithm
 from processing.algs.gdal.GdalUtils import GdalUtils
 
 
-class RasterDE_GK3ETRS8932NDirInv(GdalAlgorithm):
+class RasterDE_GK3ETRS8932NDirInv(GeoAlgorithm):
 
     INPUT = 'INPUT'
     OUTPUT = 'OUTPUT'

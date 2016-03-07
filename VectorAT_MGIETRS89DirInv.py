@@ -45,11 +45,12 @@ except:
 
 from processing.tools.system import *
 
-from processing.algs.gdal.OgrAlgorithm import OgrAlgorithm
+from processing.core.GeoAlgorithm import GeoAlgorithm
 from processing.algs.gdal.GdalUtils import GdalUtils
+from processing.tools.vector import ogrConnectionString, ogrLayerName
 
 
-class VectorAT_MGIETRS89DirInv(OgrAlgorithm):
+class VectorAT_MGIETRS89DirInv(GeoAlgorithm):
 
     INPUT = 'INPUT'
     OUTPUT = 'OUTPUT'
@@ -132,7 +133,7 @@ class VectorAT_MGIETRS89DirInv(OgrAlgorithm):
         doTransf = self.transfList()      
       
         inLayer = self.getParameterValue(self.INPUT)
-        conn = self.ogrConnectionString(inLayer)[1:-1]
+        conn = ogrConnectionString(inLayer)[1:-1]
 
         output = self.getOutputFromName(self.OUTPUT)
         outFile = output.value
@@ -149,7 +150,7 @@ class VectorAT_MGIETRS89DirInv(OgrAlgorithm):
 
             arguments.append(outFile)
             arguments.append(conn)
-            arguments.append(self.ogrLayerName(inLayer))
+            arguments.append(ogrLayerName(inLayer))
 
         else:
             # Inverse transformation
@@ -161,7 +162,7 @@ class VectorAT_MGIETRS89DirInv(OgrAlgorithm):
             arguments.append('\"Geojson\"')
             arguments.append('/vsistdout/')
             arguments.append(conn)
-            arguments.append(self.ogrLayerName(inLayer))
+            arguments.append(ogrLayerName(inLayer))
             arguments.append('-lco') 
             arguments.append('ENCODING=UTF-8')
             arguments.append('|')

@@ -45,11 +45,12 @@ except:
 
 from processing.tools.system import *
 
-from processing.algs.gdal.OgrAlgorithm import OgrAlgorithm
+from processing.core.GeoAlgorithm import GeoAlgorithm
 from processing.algs.gdal.GdalUtils import GdalUtils
+from processing.tools.vector import ogrConnectionString, ogrLayerName
 
 
-class VectorKR_HDKSHTRS96DirInv(OgrAlgorithm):
+class VectorKR_HDKSHTRS96DirInv(GeoAlgorithm):
 
     INPUT = 'INPUT'
     OUTPUT = 'OUTPUT'
@@ -89,7 +90,7 @@ class VectorKR_HDKSHTRS96DirInv(OgrAlgorithm):
 
     def processAlgorithm(self, progress):
         inLayer = self.getParameterValue(self.INPUT)
-        conn = self.ogrConnectionString(inLayer)[1:-1]
+        conn = ogrConnectionString(inLayer)[1:-1]
 
         output = self.getOutputFromName(self.OUTPUT)
         outFile = output.value
@@ -115,7 +116,7 @@ class VectorKR_HDKSHTRS96DirInv(OgrAlgorithm):
 
             arguments.append(outFile)
             arguments.append(conn)
-            arguments.append(self.ogrLayerName(inLayer))
+            arguments.append(ogrLayerName(inLayer))
 
         else:
             # Inverse transformation
@@ -137,7 +138,7 @@ class VectorKR_HDKSHTRS96DirInv(OgrAlgorithm):
 
             arguments.append(outFile)    
             arguments.append(conn)
-            arguments.append(self.ogrLayerName(inLayer))
+            arguments.append(ogrLayerName(inLayer))
 
         arguments.append('-lco') 
         arguments.append('ENCODING=UTF-8')
