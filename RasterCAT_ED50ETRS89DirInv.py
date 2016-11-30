@@ -16,6 +16,8 @@
 *                                                                         *
 ***************************************************************************
 """
+from future import standard_library
+standard_library.install_aliases()
 
 __author__ = 'Carlos López (PSIG)'
 __date__ = 'July 2015'
@@ -28,9 +30,7 @@ __revision__ = '$Format:%H$'
 import inspect
 import os
 
-from PyQt4.QtGui import *
-
-from qgis.core import *
+from qgis.PyQt.QtGui import QIcon
 
 from processing.gui.Help2Html import getHtmlFromRstFile
 
@@ -114,8 +114,11 @@ class RasterCAT_ED50ETRS89DirInv(GeoAlgorithm):
         arguments.append(out)
 
         if os.path.isfile(os.path.dirname(__file__) + '/grids/100800401.gsb') is False:
-           import urllib
-           urllib.urlretrieve ("https://github.com/NaturalGIS/ntv2_transformations_grids_and_sample_data/raw/master/cat/100800401.gsb", os.path.dirname(__file__) + "/grids/100800401.gsb")
+            try:
+                from urllib.request import urlretrieve
+            except ImportError:
+                from urllib.request import urlretrieve
+            urlretrieve ("https://github.com/NaturalGIS/ntv2_transformations_grids_and_sample_data/raw/master/cat/100800401.gsb", os.path.dirname(__file__) + "/grids/100800401.gsb")
 
         GdalUtils.runGdal(['gdalwarp', GdalUtils.escapeAndJoin(arguments)],
                           progress)

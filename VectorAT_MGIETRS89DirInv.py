@@ -16,6 +16,9 @@
 *                                                                         *
 ***************************************************************************
 """
+from future import standard_library
+standard_library.install_aliases()
+from builtins import str
 
 __author__ = 'Giovanni Manghi'
 __date__ = 'October 2015'
@@ -28,9 +31,7 @@ __revision__ = '$Format:%H$'
 import inspect
 import os
 
-from PyQt4.QtGui import *
-
-from qgis.core import *
+from qgis.PyQt.QtGui import QIcon
 
 from processing.gui.Help2Html import getHtmlFromRstFile
 
@@ -42,8 +43,6 @@ except:
     from processing.core.parameters import ParameterVector
     from processing.core.parameters import ParameterSelection
     from processing.core.outputs import OutputVector
-
-from processing.tools.system import *
 
 from processing.core.GeoAlgorithm import GeoAlgorithm
 from processing.algs.gdal.GdalUtils import GdalUtils
@@ -93,7 +92,7 @@ class VectorAT_MGIETRS89DirInv(GeoAlgorithm):
         self.addParameter(ParameterSelection(self.GRID, 'Ntv2 Grid',
                           self.GRID_OPTIONS))
         self.addOutput(OutputVector(self.OUTPUT, 'Output'))
-        
+
 
     def transfList(self):
         return [
@@ -125,13 +124,13 @@ class VectorAT_MGIETRS89DirInv(GeoAlgorithm):
                 # MGI/Austria GK M34
                 ['+proj=tmerc +lat_0=0 +lon_0=16.33333333333333 +k=1 +x_0=750000 +y_0=-5000000 +ellps=bessel +nadgrids=' + os.path.dirname(__file__) + '/grids/AT_GIS_GRID.gsb +wktext +units=m +no_defs']
             ]
-        ]        
-        
+        ]
+
 
     def processAlgorithm(self, progress):
-      
-        doTransf = self.transfList()      
-      
+
+        doTransf = self.transfList()
+
         inLayer = self.getParameterValue(self.INPUT)
         conn = ogrConnectionString(inLayer)[1:-1]
 
@@ -163,23 +162,26 @@ class VectorAT_MGIETRS89DirInv(GeoAlgorithm):
             arguments.append('/vsistdout/')
             arguments.append(conn)
             arguments.append(ogrLayerName(inLayer))
-            arguments.append('-lco') 
+            arguments.append('-lco')
             arguments.append('ENCODING=UTF-8')
             arguments.append('|')
             arguments.append('ogr2ogr')
-            arguments.append('-f')               
-            arguments.append('ESRI Shapefile') 
-            arguments.append('-a_srs') 
-            arguments.append('EPSG:4312') 
-            arguments.append(outFile)    
+            arguments.append('-f')
+            arguments.append('ESRI Shapefile')
+            arguments.append('-a_srs')
+            arguments.append('EPSG:4312')
+            arguments.append(outFile)
             arguments.append('/vsistdin/')
 
-        arguments.append('-lco') 
+        arguments.append('-lco')
         arguments.append('ENCODING=UTF-8')
 
         if os.path.isfile(os.path.dirname(__file__) + '/grids/AT_GIS_GRID.gsb') is False:
-           import urllib
-           urllib.urlretrieve ("https://github.com/NaturalGIS/ntv2_transformations_grids_and_sample_data/raw/master/at/AT_GIS_GRID.gsb", os.path.dirname(__file__) + "/grids/AT_GIS_GRID.gsb")
+            try:
+                from urllib.request import urlretrieve
+            except ImportError:
+                from urllib.request import urlretrieve
+            urlretrieve ("https://github.com/NaturalGIS/ntv2_transformations_grids_and_sample_data/raw/master/at/AT_GIS_GRID.gsb", os.path.dirname(__file__) + "/grids/AT_GIS_GRID.gsb")
 
         commands = ['ogr2ogr', GdalUtils.escapeAndJoin(arguments)]
         GdalUtils.runGdal(commands, progress)

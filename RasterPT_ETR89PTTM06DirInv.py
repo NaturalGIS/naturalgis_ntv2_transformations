@@ -34,9 +34,7 @@ __revision__ = '$Format:%H$'
 import inspect
 import os
 
-from PyQt4.QtGui import *
-
-from qgis.core import *
+from PyQt4.QtGui import QIcon
 
 from processing.gui.Help2Html import getHtmlFromRstFile
 
@@ -147,13 +145,16 @@ class RasterPT_ETR89PTTM06DirInv(GeoAlgorithm):
         arguments.append(out)
 
         if os.path.isfile(os.path.dirname(__file__) + '/grids/pt73_e89.gsb') is False:
-           import urllib
-           urllib.urlretrieve ("https://github.com/NaturalGIS/ntv2_transformations_grids_and_sample_data/raw/master/pt/pt73_e89.gsb", os.path.dirname(__file__) + "/grids/pt73_e89.gsb")
-           urllib.urlretrieve ("https://github.com/NaturalGIS/ntv2_transformations_grids_and_sample_data/raw/master/pt/ptED_e89.gsb", os.path.dirname(__file__) + "/grids/ptED_e89.gsb")
-           urllib.urlretrieve ("https://github.com/NaturalGIS/ntv2_transformations_grids_and_sample_data/raw/master/pt/ptLB_e89.gsb", os.path.dirname(__file__) + "/grids/ptLB_e89.gsb")
-           urllib.urlretrieve ("https://github.com/NaturalGIS/ntv2_transformations_grids_and_sample_data/raw/master/pt/ptLX_e89.gsb", os.path.dirname(__file__) + "/grids/ptLX_e89.gsb")
-           urllib.urlretrieve ("https://github.com/NaturalGIS/ntv2_transformations_grids_and_sample_data/raw/master/pt/D73_ETRS89_geo.gsb", os.path.dirname(__file__) + "/grids/D73_ETRS89_geo.gsb")
-           urllib.urlretrieve ("https://github.com/NaturalGIS/ntv2_transformations_grids_and_sample_data/raw/master/pt/DLX_ETRS89_geo.gsb", os.path.dirname(__file__) + "/grids/DLX_ETRS89_geo.gsb")
+            try:
+                from urllib import urlretrieve
+            except ImportError:
+                from urllib.request import urlretrieve
+            urlretrieve ("https://github.com/NaturalGIS/ntv2_transformations_grids_and_sample_data/raw/master/pt/pt73_e89.gsb", os.path.dirname(__file__) + "/grids/pt73_e89.gsb")
+            urlretrieve ("https://github.com/NaturalGIS/ntv2_transformations_grids_and_sample_data/raw/master/pt/ptED_e89.gsb", os.path.dirname(__file__) + "/grids/ptED_e89.gsb")
+            urlretrieve ("https://github.com/NaturalGIS/ntv2_transformations_grids_and_sample_data/raw/master/pt/ptLB_e89.gsb", os.path.dirname(__file__) + "/grids/ptLB_e89.gsb")
+            urlretrieve ("https://github.com/NaturalGIS/ntv2_transformations_grids_and_sample_data/raw/master/pt/ptLX_e89.gsb", os.path.dirname(__file__) + "/grids/ptLX_e89.gsb")
+            urlretrieve ("https://github.com/NaturalGIS/ntv2_transformations_grids_and_sample_data/raw/master/pt/D73_ETRS89_geo.gsb", os.path.dirname(__file__) + "/grids/D73_ETRS89_geo.gsb")
+            urlretrieve ("https://github.com/NaturalGIS/ntv2_transformations_grids_and_sample_data/raw/master/pt/DLX_ETRS89_geo.gsb", os.path.dirname(__file__) + "/grids/DLX_ETRS89_geo.gsb")
 
         GdalUtils.runGdal(['gdalwarp', GdalUtils.escapeAndJoin(arguments)],
                           progress)

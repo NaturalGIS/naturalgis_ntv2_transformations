@@ -28,9 +28,7 @@ __revision__ = '$Format:%H$'
 import inspect
 import os
 
-from PyQt4.QtGui import *
-
-from qgis.core import *
+from PyQt4.QtGui import QIcon
 
 from processing.gui.Help2Html import getHtmlFromRstFile
 
@@ -42,8 +40,6 @@ except:
     from processing.core.parameters import ParameterVector
     from processing.core.parameters import ParameterSelection
     from processing.core.outputs import OutputVector
-
-from processing.tools.system import *
 
 from processing.core.GeoAlgorithm import GeoAlgorithm
 from processing.algs.gdal.GdalUtils import GdalUtils
@@ -59,7 +55,7 @@ class VectorCH_LV95ETRS89DirInv(GeoAlgorithm):
                       'Inverse: New Data -> CH1903 [EPSG:21781]']
     CRS = 'CRS'
     CRS_OPTIONS = ['ETRS89 [EPSG:4258]',
-		   'CH1903+ [EPSG:2056]']
+           'CH1903+ [EPSG:2056]']
 
     GRID = 'GRID'
     GRID_OPTIONS = ['CHENyx06']
@@ -102,7 +98,7 @@ class VectorCH_LV95ETRS89DirInv(GeoAlgorithm):
             if self.getParameterValue(self.CRS) == 0:
                #untested
                arguments.append('EPSG:4258')
-               gridname = 'chenyx06etrs.gsb' 
+               gridname = 'chenyx06etrs.gsb'
                arguments.append('-s_srs')
                arguments.append('+proj=somerc +lat_0=46.95240555555556 +lon_0=7.439583333333333 +k_0=1 +x_0=600000 +y_0=200000 +ellps=bessel +nadgrids=' + os.path.dirname(__file__) + '/grids/' + gridname + ' +wktext +units=m +no_defs')
                arguments.append('-f')
@@ -112,7 +108,7 @@ class VectorCH_LV95ETRS89DirInv(GeoAlgorithm):
                arguments.append(ogrLayerName(inLayer))
             else:
                arguments.append('+proj=somerc +lat_0=46.95240555555556 +lon_0=7.439583333333333 +k_0=1 +x_0=2600000 +y_0=1200000 +ellps=bessel +nadgrids=@null +wktext +units=m')
-               gridname = 'CHENYX06a.gsb'                   
+               gridname = 'CHENYX06a.gsb'
                arguments.append('-s_srs')
                arguments.append('+proj=somerc +lat_0=46.95240555555556 +lon_0=7.439583333333333 +k_0=1 +x_0=600000 +y_0=200000 +ellps=bessel +nadgrids=' + os.path.dirname(__file__) + '/grids/' + gridname + ' +wktext +units=m +no_defs')
                arguments.append('-f')
@@ -120,23 +116,23 @@ class VectorCH_LV95ETRS89DirInv(GeoAlgorithm):
                arguments.append('/vsistdout/')
                arguments.append(conn)
                arguments.append(ogrLayerName(inLayer))
-               arguments.append('-lco') 
-               arguments.append('ENCODING=UTF-8')                
+               arguments.append('-lco')
+               arguments.append('ENCODING=UTF-8')
                arguments.append('|')
                arguments.append('ogr2ogr')
-               arguments.append('-f')               
-               arguments.append('ESRI Shapefile') 
-               arguments.append('-a_srs') 
-               arguments.append('EPSG:2056') 
-               arguments.append(outFile)    
-               arguments.append('/vsistdin/') 
+               arguments.append('-f')
+               arguments.append('ESRI Shapefile')
+               arguments.append('-a_srs')
+               arguments.append('EPSG:2056')
+               arguments.append(outFile)
+               arguments.append('/vsistdin/')
         else:
             # Inverse transformation
             arguments = ['-s_srs']
             if self.getParameterValue(self.CRS) == 0:
                #untested
                arguments.append('EPSG:4258')
-               gridname = 'chenyx06etrs.gsb' 
+               gridname = 'chenyx06etrs.gsb'
                arguments.append('-t_srs')
                arguments.append('+proj=somerc +lat_0=46.95240555555556 +lon_0=7.439583333333333 +k_0=1 +x_0=600000 +y_0=200000 +ellps=bessel +nadgrids=' + os.path.dirname(__file__) + '/grids/' + gridname + ' +wktext +units=m +no_defs')
                arguments.append('-f')
@@ -144,44 +140,47 @@ class VectorCH_LV95ETRS89DirInv(GeoAlgorithm):
                arguments.append('/vsistdout/')
                arguments.append(conn)
                arguments.append(ogrLayerName(inLayer))
-               arguments.append('-lco') 
+               arguments.append('-lco')
                arguments.append('ENCODING=UTF-8')
                arguments.append('|')
                arguments.append('ogr2ogr')
-               arguments.append('-f')               
-               arguments.append('ESRI Shapefile') 
-               arguments.append('-a_srs') 
-               arguments.append('EPSG:21781') 
-               arguments.append(outFile)    
+               arguments.append('-f')
+               arguments.append('ESRI Shapefile')
+               arguments.append('-a_srs')
+               arguments.append('EPSG:21781')
+               arguments.append(outFile)
                arguments.append('/vsistdin/')
             else:
-               gridname = 'CHENYX06a.gsb' 
+               gridname = 'CHENYX06a.gsb'
                arguments.append('+proj=somerc +lat_0=46.95240555555556 +lon_0=7.439583333333333 +k_0=1 +x_0=2600000 +y_0=1200000 +ellps=bessel +nadgrids=@null +wktext +units=m')
                arguments.append('-t_srs')
-               arguments.append('+proj=somerc +lat_0=46.95240555555556 +lon_0=7.439583333333333 +k_0=1 +x_0=600000 +y_0=200000 +ellps=bessel +nadgrids=' + os.path.dirname(__file__) + '/grids/' + gridname + ' +wktext +units=m +no_defs')                  
+               arguments.append('+proj=somerc +lat_0=46.95240555555556 +lon_0=7.439583333333333 +k_0=1 +x_0=600000 +y_0=200000 +ellps=bessel +nadgrids=' + os.path.dirname(__file__) + '/grids/' + gridname + ' +wktext +units=m +no_defs')
                arguments.append('-f')
                arguments.append('\"Geojson\"')
                arguments.append('/vsistdout/')
                arguments.append(conn)
                arguments.append(ogrLayerName(inLayer))
-               arguments.append('-lco') 
+               arguments.append('-lco')
                arguments.append('ENCODING=UTF-8')
                arguments.append('|')
                arguments.append('ogr2ogr')
-               arguments.append('-f')               
-               arguments.append('ESRI Shapefile') 
-               arguments.append('-a_srs') 
-               arguments.append('EPSG:21781') 
-               arguments.append(outFile)    
+               arguments.append('-f')
+               arguments.append('ESRI Shapefile')
+               arguments.append('-a_srs')
+               arguments.append('EPSG:21781')
+               arguments.append(outFile)
                arguments.append('/vsistdin/')
 
-        arguments.append('-lco') 
+        arguments.append('-lco')
         arguments.append('ENCODING=UTF-8')
-               
+
         if os.path.isfile(os.path.dirname(__file__) + '/grids/CHENYX06a.gsb') is False:
-           import urllib
-           urllib.urlretrieve ("https://github.com/NaturalGIS/ntv2_transformations_grids_and_sample_data/raw/master/ch/CHENYX06a.gsb", os.path.dirname(__file__) + "/grids/CHENYX06a.gsb")
-           urllib.urlretrieve ("https://github.com/NaturalGIS/ntv2_transformations_grids_and_sample_data/raw/master/ch/chenyx06etrs.gsb", os.path.dirname(__file__) + "/grids/chenyx06etrs.gsb")
+            try:
+                from urllib import urlretrieve
+            except ImportError:
+                from urllib.request import urlretrieve
+            urlretrieve ("https://github.com/NaturalGIS/ntv2_transformations_grids_and_sample_data/raw/master/ch/CHENYX06a.gsb", os.path.dirname(__file__) + "/grids/CHENYX06a.gsb")
+            urlretrieve ("https://github.com/NaturalGIS/ntv2_transformations_grids_and_sample_data/raw/master/ch/chenyx06etrs.gsb", os.path.dirname(__file__) + "/grids/chenyx06etrs.gsb")
 
         commands = ['ogr2ogr', GdalUtils.escapeAndJoin(arguments)]
         GdalUtils.runGdal(commands, progress)

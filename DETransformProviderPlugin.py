@@ -16,6 +16,7 @@
 *                                                                         *
 ***************************************************************************
 """
+from builtins import object
 
 __author__ = 'Giovanni Manghi'
 __date__ = 'March 2015'
@@ -29,8 +30,6 @@ import os
 import sys
 import inspect
 
-from qgis.core import *
-
 from processing.core.Processing import Processing
 from ntv2_transformations.DETransformProvider import DETransformProvider
 
@@ -40,7 +39,7 @@ if cmd_folder not in sys.path:
     sys.path.insert(0, cmd_folder)
 
 
-class DETransformProviderPlugin:
+class DETransformProviderPlugin(object):
 
     def __init__(self):
         self.provider = DETransformProvider()

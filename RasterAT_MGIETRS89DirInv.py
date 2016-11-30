@@ -16,6 +16,9 @@
 *                                                                         *
 ***************************************************************************
 """
+from future import standard_library
+standard_library.install_aliases()
+from builtins import str
 
 __author__ = 'Giovanni Manghi'
 __date__ = 'October 2015'
@@ -28,9 +31,7 @@ __revision__ = '$Format:%H$'
 import inspect
 import os
 
-from PyQt4.QtGui import *
-
-from qgis.core import *
+from qgis.PyQt.QtGui import QIcon
 
 from processing.gui.Help2Html import getHtmlFromRstFile
 
@@ -89,7 +90,7 @@ class RasterAT_MGIETRS89DirInv(GeoAlgorithm):
         self.addParameter(ParameterSelection(self.GRID, 'NTv2 Grid',
                           self.GRID_OPTIONS))
         self.addOutput(OutputRaster(self.OUTPUT, 'Output'))
-        
+
     def transfList(self):
         return [
             [
@@ -120,11 +121,11 @@ class RasterAT_MGIETRS89DirInv(GeoAlgorithm):
                 # MGI/Austria GK M34
                 ['+proj=tmerc +lat_0=0 +lon_0=16.33333333333333 +k=1 +x_0=750000 +y_0=-5000000 +ellps=bessel +nadgrids=' + os.path.dirname(__file__) + '/grids/AT_GIS_GRID.gsb +wktext +units=m +no_defs']
             ]
-        ]         
+        ]
 
     def processAlgorithm(self, progress):
-      
-        doTransf = self.transfList()      
+
+        doTransf = self.transfList()
 
         if self.getParameterValue(self.TRANSF) == 0:
             # Direct transformation
@@ -147,8 +148,11 @@ class RasterAT_MGIETRS89DirInv(GeoAlgorithm):
         arguments.append(out)
 
         if os.path.isfile(os.path.dirname(__file__) + '/grids/AT_GIS_GRID.gsb') is False:
-           import urllib
-           urllib.urlretrieve ("https://github.com/NaturalGIS/ntv2_transformations_grids_and_sample_data/raw/master/at/AT_GIS_GRID.gsb", os.path.dirname(__file__) + "/grids/AT_GIS_GRID.gsb")
+            try:
+                from urllib.request import urlretrieve
+            except ImportError:
+                from urllib.request import urlretrieve
+            urlretrieve("https://github.com/NaturalGIS/ntv2_transformations_grids_and_sample_data/raw/master/at/AT_GIS_GRID.gsb", os.path.dirname(__file__) + "/grids/AT_GIS_GRID.gsb")
 
         GdalUtils.runGdal(['gdalwarp', GdalUtils.escapeAndJoin(arguments)],
                           progress)
