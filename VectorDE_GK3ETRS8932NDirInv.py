@@ -28,9 +28,7 @@ __revision__ = '$Format:%H$'
 import inspect
 import os
 
-from PyQt4.QtGui import *
-
-from qgis.core import *
+from PyQt4.QtGui import QIcon
 
 from processing.gui.Help2Html import getHtmlFromRstFile
 
@@ -42,8 +40,6 @@ except:
     from processing.core.parameters import ParameterVector
     from processing.core.parameters import ParameterSelection
     from processing.core.outputs import OutputVector
-
-from processing.tools.system import *
 
 from processing.core.GeoAlgorithm import GeoAlgorithm
 from processing.algs.gdal.GdalUtils import GdalUtils
@@ -103,14 +99,14 @@ class VectorDE_GK3ETRS8932NDirInv(GeoAlgorithm):
                     # BETA2007
                     arguments.append('+proj=tmerc +lat_0=0 +lon_0=9 +k=1 +x_0=3500000 +y_0=0 +ellps=bessel +nadgrids=' + os.path.dirname(__file__) + '/grids/BETA2007.gsb +wktext +units=m +no_defs')
                     arguments.append('-t_srs')
-                    arguments.append('EPSG:4258')                 
+                    arguments.append('EPSG:4258')
             arguments.append('-f')
             arguments.append('ESRI Shapefile')
 
             arguments.append(outFile)
             arguments.append(conn)
             arguments.append(ogrLayerName(inLayer))
-            
+
         else:
             # Inverse transformation
             arguments = ['-s_srs']
@@ -126,23 +122,26 @@ class VectorDE_GK3ETRS8932NDirInv(GeoAlgorithm):
                 arguments.append('/vsistdout/')
                 arguments.append(conn)
                 arguments.append(ogrLayerName(inLayer))
-                arguments.append('-lco') 
+                arguments.append('-lco')
                 arguments.append('ENCODING=UTF-8')
                 arguments.append('|')
                 arguments.append('ogr2ogr')
-                arguments.append('-f')               
-                arguments.append('ESRI Shapefile') 
-                arguments.append('-a_srs') 
-                arguments.append('EPSG:31467') 
-                arguments.append(outFile)    
+                arguments.append('-f')
+                arguments.append('ESRI Shapefile')
+                arguments.append('-a_srs')
+                arguments.append('EPSG:31467')
+                arguments.append(outFile)
                 arguments.append('/vsistdin/')
-        
-        arguments.append('-lco') 
+
+        arguments.append('-lco')
         arguments.append('ENCODING=UTF-8')
 
         if os.path.isfile(os.path.dirname(__file__) + '/grids/BETA2007.gsb') is False:
-           import urllib
-           urllib.urlretrieve ("https://github.com/NaturalGIS/ntv2_transformations_grids_and_sample_data/raw/master/de/BETA2007.gsb", os.path.dirname(__file__) + "/grids/BETA2007.gsb")
+            try:
+                from urllib import urlretrieve
+            except ImportError:
+                from urllib.request import urlretrieve
+            urlretrieve ("https://github.com/NaturalGIS/ntv2_transformations_grids_and_sample_data/raw/master/de/BETA2007.gsb", os.path.dirname(__file__) + "/grids/BETA2007.gsb")
 
         commands = ['ogr2ogr', GdalUtils.escapeAndJoin(arguments)]
         GdalUtils.runGdal(commands, progress)

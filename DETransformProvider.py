@@ -27,7 +27,7 @@ __revision__ = '$Format:%H$'
 
 import os
 
-from PyQt4.QtGui import *
+from qgis.PyQt.QtGui import QIcon
 
 from processing.core.AlgorithmProvider import AlgorithmProvider
 from processing.core.ProcessingConfig import Setting, ProcessingConfig
@@ -81,7 +81,7 @@ class DETransformProvider(AlgorithmProvider):
         return 'ntv2_transformations'
 
     def getDescription(self):
-        return u'NTV2 Datum Transformations'
+        return 'NTV2 Datum Transformations'
 
     def getIcon(self):
         return QIcon(os.path.dirname(__file__) + '/icons/naturalgis_32.png')

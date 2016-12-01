@@ -16,6 +16,8 @@
 *                                                                         *
 ***************************************************************************
 """
+from future import standard_library
+standard_library.install_aliases()
 
 __author__ = 'Carlos López (PSIG)'
 __date__ = 'July 2015'
@@ -28,9 +30,7 @@ __revision__ = '$Format:%H$'
 import inspect
 import os
 
-from PyQt4.QtGui import *
-
-from qgis.core import *
+from qgis.PyQt.QtGui import QIcon
 
 from processing.gui.Help2Html import getHtmlFromRstFile
 
@@ -42,8 +42,6 @@ except:
     from processing.core.parameters import ParameterVector
     from processing.core.parameters import ParameterSelection
     from processing.core.outputs import OutputVector
-
-from processing.tools.system import *
 
 from processing.core.GeoAlgorithm import GeoAlgorithm
 from processing.algs.gdal.GdalUtils import GdalUtils
@@ -128,23 +126,26 @@ class VectorCAT_ED50ETRS89DirInv(GeoAlgorithm):
             arguments.append('/vsistdout/')
             arguments.append(conn)
             arguments.append(ogrLayerName(inLayer))
-            arguments.append('-lco') 
+            arguments.append('-lco')
             arguments.append('ENCODING=UTF-8')
             arguments.append('|')
             arguments.append('ogr2ogr')
-            arguments.append('-f')               
-            arguments.append('ESRI Shapefile') 
-            arguments.append('-a_srs') 
-            arguments.append('EPSG:23031') 
-            arguments.append(outFile)    
+            arguments.append('-f')
+            arguments.append('ESRI Shapefile')
+            arguments.append('-a_srs')
+            arguments.append('EPSG:23031')
+            arguments.append(outFile)
             arguments.append('/vsistdin/')
 
-        arguments.append('-lco') 
+        arguments.append('-lco')
         arguments.append('ENCODING=UTF-8')
 
         if os.path.isfile(os.path.dirname(__file__) + '/grids/100800401.gsb') is False:
-           import urllib
-           urllib.urlretrieve ("https://github.com/NaturalGIS/ntv2_transformations_grids_and_sample_data/raw/master/cat/100800401.gsb", os.path.dirname(__file__) + "/grids/100800401.gsb")
+            try:
+                from urllib.request import urlretrieve
+            except ImportError:
+                from urllib.request import urlretrieve
+            urlretrieve ("https://github.com/NaturalGIS/ntv2_transformations_grids_and_sample_data/raw/master/cat/100800401.gsb", os.path.dirname(__file__) + "/grids/100800401.gsb")
 
         commands = ['ogr2ogr', GdalUtils.escapeAndJoin(arguments)]
         GdalUtils.runGdal(commands, progress)

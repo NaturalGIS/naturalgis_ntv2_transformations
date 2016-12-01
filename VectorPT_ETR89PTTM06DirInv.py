@@ -34,9 +34,7 @@ __revision__ = '$Format:%H$'
 import inspect
 import os
 
-from PyQt4.QtGui import *
-
-from qgis.core import *
+from PyQt4.QtGui import QIcon
 
 from processing.gui.Help2Html import getHtmlFromRstFile
 
@@ -48,8 +46,6 @@ except:
     from processing.core.parameters import ParameterVector
     from processing.core.parameters import ParameterSelection
     from processing.core.outputs import OutputVector
-
-from processing.tools.system import *
 
 from processing.core.GeoAlgorithm import GeoAlgorithm
 from processing.algs.gdal.GdalUtils import GdalUtils
@@ -151,7 +147,7 @@ class VectorPT_ETR89PTTM06DirInv(GeoAlgorithm):
             arguments.append('EPSG:3763')
             arguments.append('-f')
             arguments.append('ESRI Shapefile')
-            arguments.append('-lco') 
+            arguments.append('-lco')
             arguments.append('ENCODING=UTF-8')
             arguments.append(outFile)
             arguments.append(conn)
@@ -178,17 +174,20 @@ class VectorPT_ETR89PTTM06DirInv(GeoAlgorithm):
             arguments.append(outFile)
             arguments.append('/vsistdin/')
 
-            arguments.append('-lco') 
+            arguments.append('-lco')
             arguments.append('ENCODING=UTF-8')
 
         if os.path.isfile(os.path.dirname(__file__) + '/grids/pt73_e89.gsb') is False:
-           import urllib
-           urllib.urlretrieve ("https://github.com/NaturalGIS/ntv2_transformations_grids_and_sample_data/raw/master/pt/pt73_e89.gsb", os.path.dirname(__file__) + "/grids/pt73_e89.gsb")
-           urllib.urlretrieve ("https://github.com/NaturalGIS/ntv2_transformations_grids_and_sample_data/raw/master/pt/ptED_e89.gsb", os.path.dirname(__file__) + "/grids/ptED_e89.gsb")
-           urllib.urlretrieve ("https://github.com/NaturalGIS/ntv2_transformations_grids_and_sample_data/raw/master/pt/ptLB_e89.gsb", os.path.dirname(__file__) + "/grids/ptLB_e89.gsb")
-           urllib.urlretrieve ("https://github.com/NaturalGIS/ntv2_transformations_grids_and_sample_data/raw/master/pt/ptLX_e89.gsb", os.path.dirname(__file__) + "/grids/ptLX_e89.gsb")
-           urllib.urlretrieve ("https://github.com/NaturalGIS/ntv2_transformations_grids_and_sample_data/raw/master/pt/D73_ETRS89_geo.gsb", os.path.dirname(__file__) + "/grids/D73_ETRS89_geo.gsb")
-           urllib.urlretrieve ("https://github.com/NaturalGIS/ntv2_transformations_grids_and_sample_data/raw/master/pt/DLX_ETRS89_geo.gsb", os.path.dirname(__file__) + "/grids/DLX_ETRS89_geo.gsb")
+            try:
+                from urllib import urlretrieve
+            except ImportError:
+                from urllib.request import urlretrieve
+            urlretrieve ("https://github.com/NaturalGIS/ntv2_transformations_grids_and_sample_data/raw/master/pt/pt73_e89.gsb", os.path.dirname(__file__) + "/grids/pt73_e89.gsb")
+            urlretrieve ("https://github.com/NaturalGIS/ntv2_transformations_grids_and_sample_data/raw/master/pt/ptED_e89.gsb", os.path.dirname(__file__) + "/grids/ptED_e89.gsb")
+            urlretrieve ("https://github.com/NaturalGIS/ntv2_transformations_grids_and_sample_data/raw/master/pt/ptLB_e89.gsb", os.path.dirname(__file__) + "/grids/ptLB_e89.gsb")
+            urlretrieve ("https://github.com/NaturalGIS/ntv2_transformations_grids_and_sample_data/raw/master/pt/ptLX_e89.gsb", os.path.dirname(__file__) + "/grids/ptLX_e89.gsb")
+            urlretrieve ("https://github.com/NaturalGIS/ntv2_transformations_grids_and_sample_data/raw/master/pt/D73_ETRS89_geo.gsb", os.path.dirname(__file__) + "/grids/D73_ETRS89_geo.gsb")
+            urlretrieve ("https://github.com/NaturalGIS/ntv2_transformations_grids_and_sample_data/raw/master/pt/DLX_ETRS89_geo.gsb", os.path.dirname(__file__) + "/grids/DLX_ETRS89_geo.gsb")
 
         commands = ['ogr2ogr', GdalUtils.escapeAndJoin(arguments)]
         GdalUtils.runGdal(commands, progress)

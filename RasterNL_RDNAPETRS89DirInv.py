@@ -28,9 +28,7 @@ __revision__ = '$Format:%H$'
 import inspect
 import os
 
-from PyQt4.QtGui import *
-
-from qgis.core import *
+from PyQt4.QtGui import QIcon
 
 from processing.gui.Help2Html import getHtmlFromRstFile
 
@@ -122,12 +120,15 @@ class RasterNL_RDNAPETRS89DirInv(GeoAlgorithm):
         arguments.append(out)
 
         if os.path.isfile(os.path.dirname(__file__) + '/grids/rdtrans2008.gsb') is False:
-            import urllib
+            try:
+                from urllib import urlretrieve
+            except ImportError:
+                from urllib.request import urlretrieve
 
-            urllib.urlretrieve(
+            urlretrieve(
                 "https://github.com/NaturalGIS/ntv2_transformations_grids_and_sample_data/raw/master/nl/rdtrans2008.gsb",
                 os.path.dirname(__file__) + "/grids/rdtrans2008.gsb")
-            urllib.urlretrieve(
+            urlretrieve(
                 "https://github.com/NaturalGIS/ntv2_transformations_grids_and_sample_data/raw/master/nl/naptrans2008.gtx",
                 os.path.dirname(__file__) + "/grids/naptrans2008.gtx")
 

@@ -28,9 +28,7 @@ __revision__ = '$Format:%H$'
 import inspect
 import os
 
-from PyQt4.QtGui import *
-
-from qgis.core import *
+from PyQt4.QtGui import QIcon
 
 from processing.gui.Help2Html import getHtmlFromRstFile
 
@@ -42,8 +40,6 @@ except:
     from processing.core.parameters import ParameterVector
     from processing.core.parameters import ParameterSelection
     from processing.core.outputs import OutputVector
-
-from processing.tools.system import *
 
 from processing.core.GeoAlgorithm import GeoAlgorithm
 from processing.algs.gdal.GdalUtils import GdalUtils
@@ -133,19 +129,22 @@ class VectorKR_HDKSHTRS96DirInv(GeoAlgorithm):
                 if self.getParameterValue(self.GRID) == 0:
                     # HR_NTv2
                     arguments.append('+proj=tmerc +pm=greenwich +lat_0=0 +lon_0=18 +k=0.9999 +x_0=6500000 +y_0=0 +ellps=bessel +nadgrids=' + os.path.dirname(__file__) + '/grids/HRNTv2.gsb +wktext +units=m')
-            arguments.append('-f')          
-            arguments.append('ESRI Shapefile') 
+            arguments.append('-f')
+            arguments.append('ESRI Shapefile')
 
-            arguments.append(outFile)    
+            arguments.append(outFile)
             arguments.append(conn)
             arguments.append(ogrLayerName(inLayer))
 
-        arguments.append('-lco') 
+        arguments.append('-lco')
         arguments.append('ENCODING=UTF-8')
 
         if os.path.isfile(os.path.dirname(__file__) + '/grids/HRNTv2.gsb') is False:
-           import urllib
-           urllib.urlretrieve ("https://github.com/NaturalGIS/ntv2_transformations_grids_and_sample_data/raw/master/hr/HRNTv2.gsb", os.path.dirname(__file__) + "/grids/HRNTv2.gsb")
+            try:
+                from urllib import urlretrieve
+            except ImportError:
+                from urllib.request import urlretrieve
+            urlretrieve ("https://github.com/NaturalGIS/ntv2_transformations_grids_and_sample_data/raw/master/hr/HRNTv2.gsb", os.path.dirname(__file__) + "/grids/HRNTv2.gsb")
 
         commands = ['ogr2ogr', GdalUtils.escapeAndJoin(arguments)]
         GdalUtils.runGdal(commands, progress)

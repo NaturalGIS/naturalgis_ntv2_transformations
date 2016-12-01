@@ -28,9 +28,7 @@ __revision__ = '$Format:%H$'
 import inspect
 import os
 
-from PyQt4.QtGui import *
-
-from qgis.core import *
+from PyQt4.QtGui import QIcon
 
 from processing.gui.Help2Html import getHtmlFromRstFile
 
@@ -135,7 +133,7 @@ class RasterES_ED50ERTS89DirInv(GeoAlgorithm):
                     arguments.append('+proj=utm +zone=31 +ellps=intl +nadgrids=' + os.path.dirname(__file__) + '/grids/PENR2009.gsb +wktext +units=m +no_defs')
                     arguments.append('-s_srs')
                     arguments.append('EPSG:4258')
-                    
+
         arguments.append('-multi')
         arguments.append('-of')
         out = self.getOutputValue(self.OUTPUT)
@@ -144,8 +142,11 @@ class RasterES_ED50ERTS89DirInv(GeoAlgorithm):
         arguments.append(out)
 
         if os.path.isfile(os.path.dirname(__file__) + '/grids/PENR2009.gsb') is False:
-           import urllib
-           urllib.urlretrieve ("https://github.com/NaturalGIS/ntv2_transformations_grids_and_sample_data/raw/master/es/PENR2009.gsb", os.path.dirname(__file__) + "/grids/PENR2009.gsb")
+            try:
+                from urllib import urlretrieve
+            except ImportError:
+                from urllib.request import urlretrieve
+            urlretrieve ("https://github.com/NaturalGIS/ntv2_transformations_grids_and_sample_data/raw/master/es/PENR2009.gsb", os.path.dirname(__file__) + "/grids/PENR2009.gsb")
 
         GdalUtils.runGdal(['gdalwarp', GdalUtils.escapeAndJoin(arguments)],
                           progress)

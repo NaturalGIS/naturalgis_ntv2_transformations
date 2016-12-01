@@ -28,9 +28,7 @@ __revision__ = '$Format:%H$'
 import inspect
 import os
 
-from PyQt4.QtGui import *
-
-from qgis.core import *
+from PyQt4.QtGui import QIcon
 
 from processing.gui.Help2Html import getHtmlFromRstFile
 
@@ -125,8 +123,11 @@ class RasterKR_HDKSHTRS96DirInv(GeoAlgorithm):
         arguments.append(out)
 
         if os.path.isfile(os.path.dirname(__file__) + '/grids/HRNTv2.gsb') is False:
-           import urllib
-           urllib.urlretrieve ("https://github.com/NaturalGIS/ntv2_transformations_grids_and_sample_data/raw/master/hr/HRNTv2.gsb", os.path.dirname(__file__) + "/grids/HRNTv2.gsb")
+            try:
+                from urllib import urlretrieve
+            except ImportError:
+                from urllib.request import urlretrieve
+            urlretrieve ("https://github.com/NaturalGIS/ntv2_transformations_grids_and_sample_data/raw/master/hr/HRNTv2.gsb", os.path.dirname(__file__) + "/grids/HRNTv2.gsb")
 
         GdalUtils.runGdal(['gdalwarp', GdalUtils.escapeAndJoin(arguments)],
                           progress)

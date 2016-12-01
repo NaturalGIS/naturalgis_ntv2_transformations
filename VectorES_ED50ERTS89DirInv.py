@@ -28,9 +28,7 @@ __revision__ = '$Format:%H$'
 import inspect
 import os
 
-from PyQt4.QtGui import *
-
-from qgis.core import *
+from PyQt4.QtGui import QIcon
 
 from processing.gui.Help2Html import getHtmlFromRstFile
 
@@ -42,8 +40,6 @@ except:
     from processing.core.parameters import ParameterVector
     from processing.core.parameters import ParameterSelection
     from processing.core.outputs import OutputVector
-
-from processing.tools.system import *
 
 from processing.core.GeoAlgorithm import GeoAlgorithm
 from processing.algs.gdal.GdalUtils import GdalUtils
@@ -122,11 +118,11 @@ class VectorES_ED50ERTS89DirInv(GeoAlgorithm):
                     arguments.append('EPSG:4258')
             arguments.append('-f')
             arguments.append('ESRI Shapefile')
-     
+
             arguments.append(outFile)
             arguments.append(conn)
             arguments.append(ogrLayerName(inLayer))
-            
+
         else:
             # Inverse transformation
             arguments = ['-t_srs']
@@ -142,15 +138,15 @@ class VectorES_ED50ERTS89DirInv(GeoAlgorithm):
                     arguments.append('/vsistdout/')
                     arguments.append(conn)
                     arguments.append(ogrLayerName(inLayer))
-                    arguments.append('-lco') 
+                    arguments.append('-lco')
                     arguments.append('ENCODING=UTF-8')
                     arguments.append('|')
                     arguments.append('ogr2ogr')
-                    arguments.append('-f')               
-                    arguments.append('ESRI Shapefile') 
-                    arguments.append('-a_srs') 
-                    arguments.append('EPSG:23029') 
-                    arguments.append(outFile)    
+                    arguments.append('-f')
+                    arguments.append('ESRI Shapefile')
+                    arguments.append('-a_srs')
+                    arguments.append('EPSG:23029')
+                    arguments.append(outFile)
                     arguments.append('/vsistdin/')
             elif self.getParameterValue(self.CRS) == 1:
                 # ED50/UTM 30N [EPSG:23030]
@@ -164,15 +160,15 @@ class VectorES_ED50ERTS89DirInv(GeoAlgorithm):
                     arguments.append('/vsistdout/')
                     arguments.append(conn)
                     arguments.append(ogrLayerName(inLayer))
-                    arguments.append('-lco') 
+                    arguments.append('-lco')
                     arguments.append('ENCODING=UTF-8')
                     arguments.append('|')
                     arguments.append('ogr2ogr')
-                    arguments.append('-f')               
-                    arguments.append('ESRI Shapefile') 
-                    arguments.append('-a_srs') 
-                    arguments.append('EPSG:23030') 
-                    arguments.append(outFile)    
+                    arguments.append('-f')
+                    arguments.append('ESRI Shapefile')
+                    arguments.append('-a_srs')
+                    arguments.append('EPSG:23030')
+                    arguments.append(outFile)
                     arguments.append('/vsistdin/')
             elif self.getParameterValue(self.CRS) == 2:
                 # ED50/UTM 31N [EPSG:23031]
@@ -186,23 +182,26 @@ class VectorES_ED50ERTS89DirInv(GeoAlgorithm):
                     arguments.append('/vsistdout/')
                     arguments.append(conn)
                     arguments.append(ogrLayerName(inLayer))
-                    arguments.append('-lco') 
+                    arguments.append('-lco')
                     arguments.append('ENCODING=UTF-8')
                     arguments.append('|')
                     arguments.append('ogr2ogr')
-                    arguments.append('-f')               
-                    arguments.append('ESRI Shapefile') 
-                    arguments.append('-a_srs') 
-                    arguments.append('EPSG:23031') 
-                    arguments.append(outFile)    
+                    arguments.append('-f')
+                    arguments.append('ESRI Shapefile')
+                    arguments.append('-a_srs')
+                    arguments.append('EPSG:23031')
+                    arguments.append(outFile)
                     arguments.append('/vsistdin/')
 
-        arguments.append('-lco') 
+        arguments.append('-lco')
         arguments.append('ENCODING=UTF-8')
-                    
+
         if os.path.isfile(os.path.dirname(__file__) + '/grids/PENR2009.gsb') is False:
-           import urllib
-           urllib.urlretrieve ("https://github.com/NaturalGIS/ntv2_transformations_grids_and_sample_data/raw/master/es/PENR2009.gsb", os.path.dirname(__file__) + "/grids/PENR2009.gsb")
+            try:
+                from urllib import urlretrieve
+            except ImportError:
+                from urllib.request import urlretrieve
+            urlretrieve ("https://github.com/NaturalGIS/ntv2_transformations_grids_and_sample_data/raw/master/es/PENR2009.gsb", os.path.dirname(__file__) + "/grids/PENR2009.gsb")
 
         commands = ['ogr2ogr', GdalUtils.escapeAndJoin(arguments)]
         GdalUtils.runGdal(commands, progress)
