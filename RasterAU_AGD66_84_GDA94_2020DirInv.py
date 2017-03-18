@@ -2,9 +2,9 @@
 
 """
 ***************************************************************************
-    RasterPT_ETR89PTTM06DirInv.py
+    RasterAU_AGD66_84_GDA94_2020DirInv.py
     ---------------------
-    Date                 : January 2017
+    Date                 : March 2017
     Copyright            : (C) 2017 by Alex Leith and Giovanni Manghi
     Email                : alex at auspatious dot  com
 ***************************************************************************
@@ -18,7 +18,7 @@
 """
 
 __author__ = 'Alex Leith'
-__date__ = 'January 2017'
+__date__ = 'March 2017'
 __copyright__ = '(C) 2017, Alex Leith and Giovanni Manghi'
 
 # This will get replaced with a git SHA1 when you do a git archive
