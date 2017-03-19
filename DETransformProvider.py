@@ -53,6 +53,8 @@ from ntv2_transformations.VectorNL_RDNAPETRS89DirInv import VectorNL_RDNAPETRS89
 from ntv2_transformations.RasterNL_RDNAPETRS89DirInv import RasterNL_RDNAPETRS89DirInv
 from ntv2_transformations.VectorAT_MGIETRS89DirInv import VectorAT_MGIETRS89DirInv
 from ntv2_transformations.RasterAT_MGIETRS89DirInv import RasterAT_MGIETRS89DirInv
+from ntv2_transformations.VectorAU_AGD66_84_GDA94_2020DirInv import VectorAU_AGD66_84_GDA94_2020DirInv
+from ntv2_transformations.RasterAU_AGD66_84_GDA94_2020DirInv import RasterAU_AGD66_84_GDA94_2020DirInv
 
 
 class DETransformProvider(AlgorithmProvider):
@@ -61,13 +63,30 @@ class DETransformProvider(AlgorithmProvider):
 
         self.activate = False
 
-        self.alglist = [VectorPT_ETR89PTTM06DirInv(), RasterDE_GK3ETRS8932NDirInv(), RasterPT_ETR89PTTM06DirInv(),
-                        VectorDE_GK3ETRS8932NDirInv(), VectorES_ED50ERTS89DirInv(), RasterES_ED50ERTS89DirInv(),
-                        VectorIT_RER_ETRS89DirInv(), RasterIT_RER_ETRS89DirInv(), VectorCH_LV95ETRS89DirInv(),
-                        RasterCH_LV95ETRS89DirInv(), VectorUK_OSGB36ETRS89DirInv(), RasterUK_OSGB36ETRS89DirInv(),
-                        RasterKR_HDKSHTRS96DirInv(), VectorKR_HDKSHTRS96DirInv(), VectorCAT_ED50ETRS89DirInv(),
-                        RasterCAT_ED50ETRS89DirInv(), VectorNL_RDNAPETRS89DirInv(), RasterNL_RDNAPETRS89DirInv(),
-                        VectorAT_MGIETRS89DirInv(), RasterAT_MGIETRS89DirInv()]
+        self.alglist = [
+            VectorPT_ETR89PTTM06DirInv(),
+            RasterDE_GK3ETRS8932NDirInv(),
+            RasterPT_ETR89PTTM06DirInv(),
+            VectorDE_GK3ETRS8932NDirInv(),
+            VectorES_ED50ERTS89DirInv(),
+            RasterES_ED50ERTS89DirInv(),
+            VectorIT_RER_ETRS89DirInv(),
+            RasterIT_RER_ETRS89DirInv(),
+            VectorCH_LV95ETRS89DirInv(),
+            RasterCH_LV95ETRS89DirInv(),
+            VectorUK_OSGB36ETRS89DirInv(),
+            RasterUK_OSGB36ETRS89DirInv(),
+            RasterKR_HDKSHTRS96DirInv(),
+            VectorKR_HDKSHTRS96DirInv(),
+            VectorCAT_ED50ETRS89DirInv(),
+            RasterCAT_ED50ETRS89DirInv(),
+            VectorNL_RDNAPETRS89DirInv(),
+            RasterNL_RDNAPETRS89DirInv(),
+            VectorAT_MGIETRS89DirInv(),
+            RasterAT_MGIETRS89DirInv(),
+            VectorAU_AGD66_84_GDA94_2020DirInv(),
+            RasterAU_AGD66_84_GDA94_2020DirInv(),
+        ]
         for alg in self.alglist:
             alg.provider = self
 
