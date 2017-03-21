@@ -11,7 +11,7 @@ email: giovanni.manghi@naturalgis.pt
 
 This plugin allows QGIS user to do easily direct/inverse Datum transformations (for vectors and rasters) using NTv2 grids. Available transformations are the ones supported by NTv2 grids that will be possible to redistribute legally with the plugin itself.
 
-The plugin needs QGIS >= 2.8 to work.
+The plugin needs QGIS >= 2.14 to work.
 
 This plugin is directly derived from https://github.com/qgispt/processing_pttransform originally developed by Alexander Bruy, Pedro Venâncio and NaturalGIS (http://www.naturalgis.pt/), with the support of the Portuguese QGIS user group (http://www.qgis.pt/).
 
@@ -25,8 +25,18 @@ Contributors:
 - Carlos López Quintanilla (carlos.lopez@psig.es)
 - Fernando Ribeiro aka The Geocrafter (fernandinand@gmail.com)
 - Pedro Venâncio (pedrongvenancio@gmail.com)
+- Alex Leith (alexgleith@gmail.com)
 
 Supported transformations:
+
+![](/icons/au.png)
+
+- Australia: AGD66 <==> GDA94 [EPSG:283XX] [AGD66_to_GDA94_2001_09_13.gsb]
+- Australia: AGD84 <==> GDA94 [EPSG:283XX] [AGD84_to_GDA94_2001_07_02.gsb]
+
+Source for Australian files:
+
+https://github.com/icsm-au/transformation_grids
 
 ![](/icons/at.png)
 
@@ -116,13 +126,3 @@ http://www.swisstopo.admin.ch/internet/swisstopo/en/home/products/software/produ
 Source for [OSTN02_NTv2.gsb]:
 
 http://www.ordnancesurvey.co.uk/business-and-government/help-and-support/navigation-technology/os-net/ostn02-ntv2-format.html
-
-
-![](/icons/au.png)
-
-- Australia: AGD66 <==> GDA94 [EPSG:283XX] [AGD66_to_GDA94_2001_09_13.gsb]
-- Australia: AGD84 <==> GDA94 [EPSG:283XX] [AGD84_to_GDA94_2001_07_02.gsb]
-
-Source for Australian files:
-
-https://github.com/icsm-au/transformation_grids
