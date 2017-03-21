@@ -116,3 +116,13 @@ http://www.swisstopo.admin.ch/internet/swisstopo/en/home/products/software/produ
 Source for [OSTN02_NTv2.gsb]:
 
 http://www.ordnancesurvey.co.uk/business-and-government/help-and-support/navigation-technology/os-net/ostn02-ntv2-format.html
+
+
+![](/icons/au.png)
+
+- Australia: AGD66 <==> GDA94 [EPSG:283XX] [AGD66_to_GDA94_2001_09_13.gsb]
+- Australia: AGD84 <==> GDA94 [EPSG:283XX] [AGD84_to_GDA94_2001_07_02.gsb]
+
+Source for Australian files:
+
+https://github.com/icsm-au/transformation_grids
