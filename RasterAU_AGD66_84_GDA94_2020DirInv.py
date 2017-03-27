@@ -44,6 +44,8 @@ except:
 from processing.core.GeoAlgorithm import GeoAlgorithm
 from processing.algs.gdal.GdalUtils import GdalUtils
 
+from transform_utilities import update_local_file
+
 
 class RasterAU_AGD66_84_GDA94_2020DirInv(GeoAlgorithm):
     INPUT = 'INPUT'
@@ -53,8 +55,8 @@ class RasterAU_AGD66_84_GDA94_2020DirInv(GeoAlgorithm):
     NEW_CRS = 'NEW_CRS'
     ZONE = 'ZONE'
 
-    AGD66GRID = os.path.dirname(__file__) + '/grids/AGD66_to_GDA94_2001_09_13.gsb'
-    AGD84GRID = os.path.dirname(__file__) + '/grids/AGD84_to_GDA94_2001_07_02.gsb'
+    AGD66GRID = os.path.dirname(__file__) + '/grids/A66_National_13_09_01.gsb'
+    AGD84GRID = os.path.dirname(__file__) + '/grids/National_84_02_07_01.gsb'
 
     TRANSF_OPTIONS = ['Direct: Old CRS -> New CRS',
                       'Inverse: New CRS -> Old CRS']
@@ -170,14 +172,10 @@ class RasterAU_AGD66_84_GDA94_2020DirInv(GeoAlgorithm):
             arguments.append(old_crs_epsg)
             arguments.append(out)
 
-        if not os.path.isfile(self.AGD66GRID):
-            try:
-                from urllib import urlretrieve
-            except ImportError:
-                from urllib.request import urlretrieve
+        if not os.path.isfile(self.AGD66GRID) or not os.path.isfile(self.AGD84GRID):
             print("DOWNLOADING GSB FILES")
-            urlretrieve("https://github.com/icsm-au/transformation_grids/raw/master/AGD66_to_GDA94_2001_09_13.gsb", self.AGD66GRID)
-            urlretrieve("https://github.com/icsm-au/transformation_grids/raw/master/AGD84_to_GDA94_2001_07_02.gsb", self.AGD84GRID)
+            update_local_file("https://github.com/icsm-au/transformation_grids/raw/master/A66_National_13_09_01.gsb", self.AGD66GRID)
+            update_local_file("https://github.com/icsm-au/transformation_grids/raw/master/National_84_02_07_01.gsb", self.AGD84GRID)
 
         commands = ['gdalwarp', GdalUtils.escapeAndJoin(arguments)]
         GdalUtils.runGdal(commands, progress)
