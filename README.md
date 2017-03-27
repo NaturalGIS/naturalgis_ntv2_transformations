@@ -31,8 +31,8 @@ Supported transformations:
 
 ![](/icons/au.png)
 
-- Australia: AGD66 <==> GDA94 [EPSG:283XX] [AGD66_to_GDA94_2001_09_13.gsb]
-- Australia: AGD84 <==> GDA94 [EPSG:283XX] [AGD84_to_GDA94_2001_07_02.gsb]
+- Australia: AGD66 <==> GDA94 [EPSG:283XX] [A66_National_13_09_01.gsb]
+- Australia: AGD84 <==> GDA94 [EPSG:283XX] [National_84_02_07_01.gsb]
 
 Source for Australian files:
 
