@@ -188,8 +188,8 @@ class VectorAU_AGD66_84_GDA94_2020DirInv(GeoAlgorithm):
 
         if not os.path.isfile(self.AGD66GRID) or not os.path.isfile(self.AGD84GRID):
             print("DOWNLOADING GSB FILES")
-            update_local_file("https://github.com/icsm-au/transformation_grids/raw/master/A66_National_13_09_01.gsb", self.AGD66GRID)
-            update_local_file("https://github.com/icsm-au/transformation_grids/raw/master/National_84_02_07_01.gsb", self.AGD84GRID)
+            update_local_file("https://s3-ap-southeast-2.amazonaws.com/transformationgrids/A66_National_13_09_01.gsb", self.AGD66GRID)
+            update_local_file("https://s3-ap-southeast-2.amazonaws.com/transformationgrids/National_84_02_07_01.gsb", self.AGD84GRID)
 
         commands = ['ogr2ogr', GdalUtils.escapeAndJoin(arguments)]
         GdalUtils.runGdal(commands, progress)
