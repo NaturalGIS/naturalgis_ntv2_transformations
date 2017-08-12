@@ -55,7 +55,8 @@ from ntv2_transformations.VectorAT_MGIETRS89DirInv import VectorAT_MGIETRS89DirI
 from ntv2_transformations.RasterAT_MGIETRS89DirInv import RasterAT_MGIETRS89DirInv
 from ntv2_transformations.VectorAU_AGD66_84_GDA94DirInv import VectorAU_AGD66_84_GDA94DirInv
 from ntv2_transformations.VectorAU_GDA94_2020DirInv import VectorAU_GDA94_2020DirInv
-from ntv2_transformations.RasterAU_AGD66_84_GDA94_2020DirInv import RasterAU_AGD66_84_GDA94_2020DirInv
+from ntv2_transformations.RasterAU_AGD66_84_GDA94DirInv import RasterAU_AGD66_84_GDA94DirInv
+from ntv2_transformations.RasterAU_GDA94_2020DirInv import RasterAU_GDA94_2020DirInv
 
 
 class DETransformProvider(AlgorithmProvider):
@@ -87,7 +88,8 @@ class DETransformProvider(AlgorithmProvider):
             RasterAT_MGIETRS89DirInv(),
             VectorAU_AGD66_84_GDA94DirInv(),
             VectorAU_GDA94_2020DirInv(),
-            RasterAU_AGD66_84_GDA94_2020DirInv(),
+            RasterAU_AGD66_84_GDA94DirInv(),
+            RasterAU_GDA94_2020DirInv(),
         ]
         for alg in self.alglist:
             alg.provider = self

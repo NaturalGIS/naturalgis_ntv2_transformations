@@ -119,7 +119,7 @@ class VectorAU_AGD66_84_GDA94DirInv(GeoAlgorithm):
             return False, None
 
     def defineCharacteristics(self):
-        self.name = '[AU] AGD66/84 to GDA94 Direct and inverse Vector transformation'
+        self.name = '[AU] AGD66/84 to GDA94 Vector Direct and inverse'
         self.group = '[AU] Australia'
         self.addParameter(ParameterVector(self.INPUT, 'Input vector', [ParameterVector.VECTOR_TYPE_ANY]))
         self.addParameter(ParameterSelection(self.TRANSF, 'Transformation', self.TRANSF_OPTIONS))
