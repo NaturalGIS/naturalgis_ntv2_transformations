@@ -2,7 +2,7 @@
 
 """
 ***************************************************************************
-    RasterAU_AGD66_84_GDA94_2020DirInv.py
+    VectorAU_AGD66_84_GDA94_2020DirInv.py
     ---------------------
     Date                 : March 2017
     Copyright            : (C) 2017 by Alex Leith and Giovanni Manghi
@@ -33,21 +33,21 @@ from PyQt4.QtGui import QIcon
 from processing.gui.Help2Html import getHtmlFromRstFile
 
 try:
-    from processing.parameters.ParameterRaster import ParameterRaster
+    from processing.parameters.ParameterVector import ParameterVector
     from processing.parameters.ParameterSelection import ParameterSelection
-    from processing.outputs.OutputRaster import OutputRaster
+    from processing.outputs.OutputVector import OutputVector
 except:
-    from processing.core.parameters import ParameterRaster
+    from processing.core.parameters import ParameterVector
     from processing.core.parameters import ParameterSelection
-    from processing.core.outputs import OutputRaster
+    from processing.core.outputs import OutputVector
 
 from processing.core.GeoAlgorithm import GeoAlgorithm
 from processing.algs.gdal.GdalUtils import GdalUtils
+from processing.tools.vector import ogrConnectionString, ogrLayerName
 
 from transform_utilities import update_local_file
 
-
-class RasterAU_AGD66_84_GDA94_2020DirInv(GeoAlgorithm):
+class VectorAU_AGD66_84_GDA94DirInv(GeoAlgorithm):
     INPUT = 'INPUT'
     OUTPUT = 'OUTPUT'
     TRANSF = 'TRANSF'
@@ -119,16 +119,21 @@ class RasterAU_AGD66_84_GDA94_2020DirInv(GeoAlgorithm):
             return False, None
 
     def defineCharacteristics(self):
-        self.name = '[AU] Direct and inverse Raster transformation'
+        self.name = '[AU] AGD66/84 to GDA94 Direct and inverse Vector transformation'
         self.group = '[AU] Australia'
-        self.addParameter(ParameterRaster(self.INPUT, 'Input raster', False))
+        self.addParameter(ParameterVector(self.INPUT, 'Input vector', [ParameterVector.VECTOR_TYPE_ANY]))
         self.addParameter(ParameterSelection(self.TRANSF, 'Transformation', self.TRANSF_OPTIONS))
         self.addParameter(ParameterSelection(self.OLD_CRS, 'Old CRS', self.OLD_CRS_OPTIONS))
         self.addParameter(ParameterSelection(self.NEW_CRS, 'New CRS', self.NEW_CRS_OPTIONS))
         self.addParameter(ParameterSelection(self.ZONE, 'UTM Zone', self.ZONE_OPTIONS))
-        self.addOutput(OutputRaster(self.OUTPUT, 'Output'))
+        self.addOutput(OutputVector(self.OUTPUT, 'Output'))
 
     def processAlgorithm(self, progress):
+        inLayer = self.getParameterValue(self.INPUT)
+        conn = ogrConnectionString(inLayer)[1:-1]
+
+        output = self.getOutputFromName(self.OUTPUT)
+        outFile = output.value
 
         zone = self.ZONE_OPTIONS[self.getParameterValue(self.ZONE)]
 
@@ -150,32 +155,39 @@ class RasterAU_AGD66_84_GDA94_2020DirInv(GeoAlgorithm):
             arguments.append(old_crs_string)
             arguments.append('-t_srs')
             arguments.append(new_crs_epsg)
+            arguments.append('-f')
+            arguments.append('ESRI Shapefile')
+            arguments.append('-lco')
+            arguments.append('ENCODING=UTF-8')
+            arguments.append(outFile)
+            arguments.append(conn)
+            arguments.append(ogrLayerName(inLayer))
         else:
             # Inverse transformation
             arguments = ['-s_srs']
             arguments.append(new_crs_epsg)
             arguments.append('-t_srs')
             arguments.append(old_crs_string)
-
-        arguments.append('-multi')
-        arguments.append('-of')
-        out = self.getOutputValue(self.OUTPUT)
-        arguments.append(GdalUtils.getFormatShortNameFromFilename(out))
-        arguments.append(self.getParameterValue(self.INPUT))
-        arguments.append(out)
-
-        # Set the EPSG string when we aren't using one to define the target
-        if self.getParameterValue(self.TRANSF) == 1:
-            arguments.append('&&')
-            arguments.append('gdal_edit.py')
+            arguments.append('-f')
+            arguments.append('\"Geojson\"')
+            arguments.append('/vsistdout/')
+            arguments.append(conn)
+            arguments.append(ogrLayerName(inLayer))
+            arguments.append('|')
+            arguments.append('ogr2ogr')
+            arguments.append('-f')
+            arguments.append('ESRI Shapefile')
             arguments.append('-a_srs')
             arguments.append(old_crs_epsg)
-            arguments.append(out)
+            arguments.append(outFile)
+            arguments.append('/vsistdin/')
+            arguments.append('-lco')
+            arguments.append('ENCODING=UTF-8')
 
         if not os.path.isfile(self.AGD66GRID) or not os.path.isfile(self.AGD84GRID):
             print("DOWNLOADING GSB FILES")
             update_local_file("https://s3-ap-southeast-2.amazonaws.com/transformationgrids/A66_National_13_09_01.gsb", self.AGD66GRID)
             update_local_file("https://s3-ap-southeast-2.amazonaws.com/transformationgrids/National_84_02_07_01.gsb", self.AGD84GRID)
 
-        commands = ['gdalwarp', GdalUtils.escapeAndJoin(arguments)]
+        commands = ['ogr2ogr', GdalUtils.escapeAndJoin(arguments)]
         GdalUtils.runGdal(commands, progress)
