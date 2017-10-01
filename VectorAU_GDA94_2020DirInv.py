@@ -68,7 +68,7 @@ class VectorAU_GDA94_2020DirInv(GeoAlgorithm):
         'GDA94 Latitude and Longitude [EPSG:4283]',
     ]
     NEW_CRS_OPTIONS = [
-        'GDA2020 MGA [EPSG:327XX]',
+        'GDA2020 MGA [EPSG:78XX]',
         'GDA2020 Latitude and Longitude [EPSG:7844]'
     ]
     ZONE_OPTIONS = [
@@ -83,12 +83,6 @@ class VectorAU_GDA94_2020DirInv(GeoAlgorithm):
         '56',
     ]
 
-    # Replace EPSGs are used to revert to WGS if the GDA2020 codes are unavailable
-    REPLACE_EPSGS = {
-        '78': '327',
-        '7844': '4326'
-    }
-
     OLD_CRS_STRINGS = {
         'GDA94 MGA [EPSG:283XX]': [
             '+proj=utm +zone=<ZONE> +south +ellps=GRS80 +units=m +no_defs +nadgrids=' + GDA2020CONF_DIST + ' +wktext',
@@ -100,7 +94,7 @@ class VectorAU_GDA94_2020DirInv(GeoAlgorithm):
         ],
     }
     NEW_CRS_STRINGS = {
-        'GDA2020 MGA [EPSG:327XX]': 'EPSG:78<ZONE>',  # 327 is the WGS alternative...
+        'GDA2020 MGA [EPSG:78XX]': 'EPSG:78<ZONE>',
         'GDA2020 Latitude and Longitude [EPSG:7844]': 'EPSG:7844'
     }
 
@@ -147,21 +141,6 @@ class VectorAU_GDA94_2020DirInv(GeoAlgorithm):
         new_crs_epsg = self.NEW_CRS_STRINGS[new_crs].replace('<ZONE>', zone)
 
         old_crs_string = self.OLD_CRS_STRINGS[old_crs][0].replace('<ZONE>', zone)
-
-        check_srs = QgsCoordinateReferenceSystem()
-        new_epsg_int = int(new_crs_epsg.split(":")[1])
-
-        if not check_srs.createFromId(new_epsg_int):
-            # This means the new SRS is not available, and we should use a WGS based one
-            if zone == 'n/a':
-                zone = ''
-            new_crs_epsg = new_crs_epsg.replace(str(new_epsg_int), self.REPLACE_EPSGS[str(new_epsg_int).replace(zone, '')] + zone)
-            QgsMessageLog.logMessage(
-                ("Couldn't find EPSG:{} in the list of available CRSs, update to a newer version of QGIS to enable it.\n"
-                 "For now, the CRS is being set to a WGS alternative: {}".format(new_epsg_int, new_crs_epsg)),
-                'Processing',
-                QgsMessageLog.INFO
-            )
 
         if self.getParameterValue(self.TRANSF) == 0:
             # Direct transformation
