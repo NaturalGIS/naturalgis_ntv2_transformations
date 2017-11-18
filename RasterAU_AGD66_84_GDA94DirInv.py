@@ -28,9 +28,13 @@ __revision__ = '$Format:%H$'
 import inspect
 import os
 
-from PyQt4.QtGui import QIcon
-
+from au_crs_definitions import (AGD66GRID, AGD84GRID, NEW_CRS_STRINGS,
+                                OLD_CRS_STRINGS)
+from processing.algs.gdal.GdalUtils import GdalUtils
+from processing.core.GeoAlgorithm import GeoAlgorithm
 from processing.gui.Help2Html import getHtmlFromRstFile
+from PyQt4.QtGui import QIcon
+from transform_utilities import update_local_file
 
 try:
     from processing.parameters.ParameterRaster import ParameterRaster
@@ -41,10 +45,7 @@ except:
     from processing.core.parameters import ParameterSelection
     from processing.core.outputs import OutputRaster
 
-from processing.core.GeoAlgorithm import GeoAlgorithm
-from processing.algs.gdal.GdalUtils import GdalUtils
 
-from transform_utilities import update_local_file
 
 
 class RasterAU_AGD66_84_GDA94DirInv(GeoAlgorithm):
@@ -54,9 +55,6 @@ class RasterAU_AGD66_84_GDA94DirInv(GeoAlgorithm):
     OLD_CRS = 'OLD_CRS'
     NEW_CRS = 'NEW_CRS'
     ZONE = 'ZONE'
-
-    AGD66GRID = os.path.dirname(__file__) + '/grids/A66_National_13_09_01.gsb'
-    AGD84GRID = os.path.dirname(__file__) + '/grids/National_84_02_07_01.gsb'
 
     TRANSF_OPTIONS = ['Direct: Old CRS -> New CRS',
                       'Inverse: New CRS -> Old CRS']
@@ -82,29 +80,6 @@ class RasterAU_AGD66_84_GDA94DirInv(GeoAlgorithm):
         '55',
         '56',
     ]
-
-    OLD_CRS_STRINGS = {
-        'AGD66 AMG [EPSG:202XX]': [
-            '+proj=utm +zone=<ZONE> +south +ellps=aust_SA +units=m +no_defs +nadgrids=' + AGD66GRID + ' +wktext',
-            'EPSG:202<ZONE>'
-        ],
-        'AGD84 AMG [EPSG:203XX]': [
-            '+proj=utm +zone=<ZONE> +south +ellps=aust_SA +units=m +no_defs +nadgrids=' + AGD84GRID + ' +wktext',
-            'EPSG:203<ZONE>'
-        ],
-        'AGD66 Latitude and Longitude [EPSG:4202]': [
-            '+proj=longlat +ellps=aust_SA +no_defs +nadgrids=' + AGD66GRID + ' +wktext',
-            'EPSG:4202'
-        ],
-        'AGD84 Latitude and Longitude [EPSG:4203]': [
-            '+proj=longlat +ellps=aust_SA +no_defs +nadgrids=' + AGD84GRID + ' +wktext'
-            'EPSG:4203'
-        ]
-    }
-    NEW_CRS_STRINGS = {
-        'GDA94 MGA [EPSG:283XX]': 'EPSG:283<ZONE>',
-        'GDA94 Latitude and Longitude [EPSG:4283]': 'EPSG:4238'
-    }
 
     def getIcon(self):
         return QIcon(os.path.dirname(__file__) + '/icons/au.png')
@@ -139,10 +114,10 @@ class RasterAU_AGD66_84_GDA94DirInv(GeoAlgorithm):
         old_crs = self.OLD_CRS_OPTIONS[self.getParameterValue(self.OLD_CRS)]
         new_crs = self.NEW_CRS_OPTIONS[self.getParameterValue(self.NEW_CRS)]
 
-        old_crs_epsg = self.OLD_CRS_STRINGS[old_crs][1].replace('<ZONE>', zone)
-        new_crs_epsg = self.NEW_CRS_STRINGS[new_crs].replace('<ZONE>', zone)
+        old_crs_epsg = OLD_CRS_STRINGS[old_crs][1].format(zone=zone)
+        new_crs_epsg = NEW_CRS_STRINGS[new_crs].format(zone=zone)
 
-        old_crs_string = self.OLD_CRS_STRINGS[old_crs][0].replace('<ZONE>', zone)
+        old_crs_string = OLD_CRS_STRINGS[old_crs][0].format(zone=zone)
 
         if self.getParameterValue(self.TRANSF) == 0:
             # Direct transformation
@@ -174,8 +149,8 @@ class RasterAU_AGD66_84_GDA94DirInv(GeoAlgorithm):
 
         if not os.path.isfile(self.AGD66GRID) or not os.path.isfile(self.AGD84GRID):
             print("DOWNLOADING GSB FILES")
-            update_local_file("https://s3-ap-southeast-2.amazonaws.com/transformationgrids/A66_National_13_09_01.gsb", self.AGD66GRID)
-            update_local_file("https://s3-ap-southeast-2.amazonaws.com/transformationgrids/National_84_02_07_01.gsb", self.AGD84GRID)
+            update_local_file("https://s3-ap-southeast-2.amazonaws.com/transformationgrids/A66_National_13_09_01.gsb", AGD66GRID)
+            update_local_file("https://s3-ap-southeast-2.amazonaws.com/transformationgrids/National_84_02_07_01.gsb", AGD84GRID)
 
         commands = ['gdalwarp', GdalUtils.escapeAndJoin(arguments)]
         GdalUtils.runGdal(commands, progress)

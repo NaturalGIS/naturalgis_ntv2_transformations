@@ -28,9 +28,13 @@ __revision__ = '$Format:%H$'
 import inspect
 import os
 
-from PyQt4.QtGui import QIcon
-
+from au_crs_definitions import (GDA2020CONF_DIST, NEW_CRS_STRINGS_2020,
+                                OLD_CRS_STRINGS)
+from processing.algs.gdal.GdalUtils import GdalUtils
+from processing.core.GeoAlgorithm import GeoAlgorithm
 from processing.gui.Help2Html import getHtmlFromRstFile
+from PyQt4.QtGui import QIcon
+from transform_utilities import update_local_file
 
 try:
     from processing.parameters.ParameterRaster import ParameterRaster
@@ -40,13 +44,6 @@ except:
     from processing.core.parameters import ParameterRaster
     from processing.core.parameters import ParameterSelection
     from processing.core.outputs import OutputRaster
-
-from processing.core.GeoAlgorithm import GeoAlgorithm
-from processing.algs.gdal.GdalUtils import GdalUtils
-
-from transform_utilities import update_local_file
-
-from qgis.core import (QgsCoordinateReferenceSystem, QgsMessageLog)
 
 
 class RasterAU_GDA94_2020DirInv(GeoAlgorithm):
@@ -82,21 +79,6 @@ class RasterAU_GDA94_2020DirInv(GeoAlgorithm):
         '56',
     ]
 
-    OLD_CRS_STRINGS = {
-        'GDA94 MGA [EPSG:283XX]': [
-            '+proj=utm +zone=<ZONE> +south +ellps=GRS80 +units=m +no_defs +nadgrids=' + GDA2020CONF_DIST + ' +wktext',
-            'EPSG:283<ZONE>'
-        ],
-        'GDA94 Latitude and Longitude [EPSG:4283]': [
-            '+proj=longlat +ellps=GRS80 +no_defs +nadgrids=' + GDA2020CONF_DIST + ' +wktext',
-            'EPSG:4283'
-        ],
-    }
-    NEW_CRS_STRINGS = {
-        'GDA2020 MGA [EPSG:78XX]': 'EPSG:78<ZONE>',  # 327 is the WGS alternative...
-        'GDA2020 Latitude and Longitude [EPSG:7844]': 'EPSG:7844'
-    }
-
     def getIcon(self):
         return QIcon(os.path.dirname(__file__) + '/icons/au.png')
 
@@ -130,21 +112,22 @@ class RasterAU_GDA94_2020DirInv(GeoAlgorithm):
         old_crs = self.OLD_CRS_OPTIONS[self.getParameterValue(self.OLD_CRS)]
         new_crs = self.NEW_CRS_OPTIONS[self.getParameterValue(self.NEW_CRS)]
 
-        old_crs_epsg = self.OLD_CRS_STRINGS[old_crs][1].replace('<ZONE>', zone)
-        new_crs_epsg = self.NEW_CRS_STRINGS[new_crs].replace('<ZONE>', zone)
+        old_crs_epsg = OLD_CRS_STRINGS[old_crs][1].format(zone=zone)
+        new_crs_epsg = NEW_CRS_STRINGS_2020[new_crs][1].format(zone=zone)
 
-        old_crs_string = self.OLD_CRS_STRINGS[old_crs][0].replace('<ZONE>', zone)
+        old_crs_string = OLD_CRS_STRINGS[old_crs][0].format(zone=zone)
+        new_crs_string = NEW_CRS_STRINGS_2020[new_crs][0].format(zone=zone)
 
         if self.getParameterValue(self.TRANSF) == 0:
             # Direct transformation
             arguments = ['-s_srs']
             arguments.append(old_crs_string)
             arguments.append('-t_srs')
-            arguments.append(new_crs_epsg)
+            arguments.append(new_crs_string)
         else:
             # Inverse transformation
             arguments = ['-s_srs']
-            arguments.append(new_crs_epsg)
+            arguments.append(new_crs_string)
             arguments.append('-t_srs')
             arguments.append(old_crs_string)
 
@@ -155,17 +138,21 @@ class RasterAU_GDA94_2020DirInv(GeoAlgorithm):
         arguments.append(self.getParameterValue(self.INPUT))
         arguments.append(out)
 
-        # Set the EPSG string when we aren't using one to define the target
-        if self.getParameterValue(self.TRANSF) == 1:
-            arguments.append('&&')
-            arguments.append('gdal_edit.py')
-            arguments.append('-a_srs')
+        # Set the EPSG code
+        arguments.append('&&')
+        arguments.append('gdal_edit.py')
+        arguments.append('-a_srs')
+        if self.getParameterValue(self.TRANSF) == 0:
+            # Direct
+            arguments.append(new_crs_epsg)
+        else:
+            # Indirect
             arguments.append(old_crs_epsg)
-            arguments.append(out)
+        arguments.append(out)
 
-        if not os.path.isfile(self.GDA2020CONF_DIST):
+        if not os.path.isfile(GDA2020CONF_DIST):
             print("DOWNLOADING GSB FILES")
-            update_local_file("https://s3-ap-southeast-2.amazonaws.com/transformationgrids/GDA94_GDA2020_conformal_and_distortion.gsb", self.GDA2020CONF_DIST)
+            update_local_file("https://s3-ap-southeast-2.amazonaws.com/transformationgrids/GDA94_GDA2020_conformal_and_distortion.gsb", GDA2020CONF_DIST)
 
         commands = ['gdalwarp', GdalUtils.escapeAndJoin(arguments)]
         GdalUtils.runGdal(commands, progress)

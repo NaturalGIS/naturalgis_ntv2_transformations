@@ -28,9 +28,14 @@ __revision__ = '$Format:%H$'
 import inspect
 import os
 
-from PyQt4.QtGui import QIcon
-
+from au_crs_definitions import (GDA2020CONF_DIST, NEW_CRS_STRINGS_2020,
+                                OLD_CRS_STRINGS)
+from processing.algs.gdal.GdalUtils import GdalUtils
+from processing.core.GeoAlgorithm import GeoAlgorithm
 from processing.gui.Help2Html import getHtmlFromRstFile
+from processing.tools.vector import ogrConnectionString, ogrLayerName
+from PyQt4.QtGui import QIcon
+from transform_utilities import update_local_file
 
 try:
     from processing.parameters.ParameterVector import ParameterVector
@@ -41,14 +46,6 @@ except:
     from processing.core.parameters import ParameterSelection
     from processing.core.outputs import OutputVector
 
-from processing.core.GeoAlgorithm import GeoAlgorithm
-from processing.algs.gdal.GdalUtils import GdalUtils
-from processing.tools.vector import ogrConnectionString, ogrLayerName
-
-from transform_utilities import update_local_file
-
-from qgis.core import (QgsCoordinateReferenceSystem, QgsMessageLog)
-
 
 class VectorAU_GDA94_2020DirInv(GeoAlgorithm):
     INPUT = 'INPUT'
@@ -57,8 +54,6 @@ class VectorAU_GDA94_2020DirInv(GeoAlgorithm):
     OLD_CRS = 'OLD_CRS'
     NEW_CRS = 'NEW_CRS'
     ZONE = 'ZONE'
-
-    GDA2020CONF_DIST = os.path.dirname(__file__) + '/grids/GDA94_GDA2020_conformal_and_distortion.gsb'
 
     TRANSF_OPTIONS = ['Direct: Old CRS -> New CRS',
                       'Inverse: New CRS -> Old CRS']
@@ -82,21 +77,6 @@ class VectorAU_GDA94_2020DirInv(GeoAlgorithm):
         '55',
         '56',
     ]
-
-    OLD_CRS_STRINGS = {
-        'GDA94 MGA [EPSG:283XX]': [
-            '+proj=utm +zone=<ZONE> +south +ellps=GRS80 +units=m +no_defs +nadgrids=' + GDA2020CONF_DIST + ' +wktext',
-            'EPSG:283<ZONE>'
-        ],
-        'GDA94 Latitude and Longitude [EPSG:4283]': [
-            '+proj=longlat +ellps=GRS80 +no_defs +nadgrids=' + GDA2020CONF_DIST + ' +wktext',
-            'EPSG:4283'
-        ],
-    }
-    NEW_CRS_STRINGS = {
-        'GDA2020 MGA [EPSG:78XX]': 'EPSG:78<ZONE>',
-        'GDA2020 Latitude and Longitude [EPSG:7844]': 'EPSG:7844'
-    }
 
     def getIcon(self):
         return QIcon(os.path.dirname(__file__) + '/icons/au.png')
@@ -132,29 +112,37 @@ class VectorAU_GDA94_2020DirInv(GeoAlgorithm):
         old_crs = self.OLD_CRS_OPTIONS[self.getParameterValue(self.OLD_CRS)]
         new_crs = self.NEW_CRS_OPTIONS[self.getParameterValue(self.NEW_CRS)]
 
-        if zone == 'n/a' and '<ZONE>' in self.OLD_CRS_STRINGS[old_crs][1]:
+        if zone == 'n/a':
             # Check we're doing lat/lon, or bail
-            QgsMessageLog.logMessage("Please select a grid Zone", 'Processing', QgsMessageLog.WARNING)
-            return
+            pass
 
-        old_crs_epsg = self.OLD_CRS_STRINGS[old_crs][1].replace('<ZONE>', zone)
-        new_crs_epsg = self.NEW_CRS_STRINGS[new_crs].replace('<ZONE>', zone)
+        old_crs_epsg = OLD_CRS_STRINGS[old_crs][1].format(zone=zone)
+        new_crs_epsg = NEW_CRS_STRINGS_2020[new_crs][1].format(zone=zone)
 
-        old_crs_string = self.OLD_CRS_STRINGS[old_crs][0].replace('<ZONE>', zone)
+        old_crs_string = OLD_CRS_STRINGS[old_crs][0].format(zone=zone)
+        new_crs_string = NEW_CRS_STRINGS_2020[new_crs][0].format(zone=zone)
 
         if self.getParameterValue(self.TRANSF) == 0:
             # Direct transformation
             arguments = ['-s_srs']
             arguments.append(old_crs_string)
             arguments.append('-t_srs')
-            arguments.append(new_crs_epsg)
+            arguments.append(new_crs_string)
             arguments.append('-f')
-            arguments.append('ESRI Shapefile')
-            arguments.append('-lco')
-            arguments.append('ENCODING=UTF-8')
-            arguments.append(outFile)
+            arguments.append('\"Geojson\"')
+            arguments.append('/vsistdout/')
             arguments.append(conn)
             arguments.append(ogrLayerName(inLayer))
+            arguments.append('|')
+            arguments.append('ogr2ogr')
+            arguments.append('-f')
+            arguments.append('ESRI Shapefile')
+            arguments.append('-a_srs')
+            arguments.append(new_crs_epsg)
+            arguments.append(outFile)
+            arguments.append('/vsistdin/')
+            arguments.append('-lco')
+            arguments.append('ENCODING=UTF-8')
         else:
             # Inverse transformation
             arguments = ['-s_srs']
@@ -177,9 +165,9 @@ class VectorAU_GDA94_2020DirInv(GeoAlgorithm):
             arguments.append('-lco')
             arguments.append('ENCODING=UTF-8')
 
-        if not os.path.isfile(self.GDA2020CONF_DIST):
+        if not os.path.isfile(GDA2020CONF_DIST):
             print("DOWNLOADING GSB FILES")
-            update_local_file("https://s3-ap-southeast-2.amazonaws.com/transformationgrids/GDA94_GDA2020_conformal_and_distortion.gsb", self.GDA2020CONF_DIST)
+            update_local_file("https://s3-ap-southeast-2.amazonaws.com/transformationgrids/GDA94_GDA2020_conformal_and_distortion.gsb", GDA2020CONF_DIST)
 
         commands = ['ogr2ogr', GdalUtils.escapeAndJoin(arguments)]
         GdalUtils.runGdal(commands, progress)
