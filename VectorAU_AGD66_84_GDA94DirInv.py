@@ -58,16 +58,8 @@ class VectorAU_AGD66_84_GDA94DirInv(GeoAlgorithm):
     TRANSF_OPTIONS = ['Direct: Old CRS -> New CRS',
                       'Inverse: New CRS -> Old CRS']
 
-    OLD_CRS_OPTIONS = [
-        'AGD66 AMG [EPSG:202XX]',
-        'AGD84 AMG [EPSG:203XX]',
-        'AGD66 Latitude and Longitude [EPSG:4202]',
-        'AGD84 Latitude and Longitude [EPSG:4203]',
-    ]
-    NEW_CRS_OPTIONS = [
-        'GDA94 MGA [EPSG:283XX]',
-        'GDA94 Latitude and Longitude [EPSG:4283]'
-    ]
+    OLD_CRS_OPTIONS = OLD_CRS_STRINGS.keys()
+    NEW_CRS_OPTIONS = NEW_CRS_STRINGS.keys()
     ZONE_OPTIONS = [
         'n/a',
         '49',

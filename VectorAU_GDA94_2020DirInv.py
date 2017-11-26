@@ -28,8 +28,8 @@ __revision__ = '$Format:%H$'
 import inspect
 import os
 
-from au_crs_definitions import (GDA2020CONF_DIST, NEW_CRS_STRINGS_2020,
-                                OLD_CRS_STRINGS)
+from au_crs_definitions import (GDA2020CONF, GDA2020CONF_DIST, NEW_CRS_STRINGS_2020,
+                                OLD_CRS_STRINGS_2020)
 from processing.algs.gdal.GdalUtils import GdalUtils
 from processing.core.GeoAlgorithm import GeoAlgorithm
 from processing.gui.Help2Html import getHtmlFromRstFile
@@ -58,14 +58,8 @@ class VectorAU_GDA94_2020DirInv(GeoAlgorithm):
     TRANSF_OPTIONS = ['Direct: Old CRS -> New CRS',
                       'Inverse: New CRS -> Old CRS']
 
-    OLD_CRS_OPTIONS = [
-        'GDA94 MGA [EPSG:283XX]',
-        'GDA94 Latitude and Longitude [EPSG:4283]',
-    ]
-    NEW_CRS_OPTIONS = [
-        'GDA2020 MGA [EPSG:78XX]',
-        'GDA2020 Latitude and Longitude [EPSG:7844]'
-    ]
+    OLD_CRS_OPTIONS = OLD_CRS_STRINGS_2020.keys()
+    NEW_CRS_OPTIONS = NEW_CRS_STRINGS_2020.keys()
     ZONE_OPTIONS = [
         'n/a',
         '49',
@@ -116,10 +110,10 @@ class VectorAU_GDA94_2020DirInv(GeoAlgorithm):
             # Check we're doing lat/lon, or bail
             pass
 
-        old_crs_epsg = OLD_CRS_STRINGS[old_crs][1].format(zone=zone)
+        old_crs_epsg = OLD_CRS_STRINGS_2020[old_crs][1].format(zone=zone)
         new_crs_epsg = NEW_CRS_STRINGS_2020[new_crs][1].format(zone=zone)
 
-        old_crs_string = OLD_CRS_STRINGS[old_crs][0].format(zone=zone)
+        old_crs_string = OLD_CRS_STRINGS_2020[old_crs][0].format(zone=zone)
         new_crs_string = NEW_CRS_STRINGS_2020[new_crs][0].format(zone=zone)
 
         if self.getParameterValue(self.TRANSF) == 0:
@@ -146,7 +140,7 @@ class VectorAU_GDA94_2020DirInv(GeoAlgorithm):
         else:
             # Inverse transformation
             arguments = ['-s_srs']
-            arguments.append(new_crs_epsg)
+            arguments.append(new_crs_string)
             arguments.append('-t_srs')
             arguments.append(old_crs_string)
             arguments.append('-f')
@@ -167,6 +161,7 @@ class VectorAU_GDA94_2020DirInv(GeoAlgorithm):
 
         if not os.path.isfile(GDA2020CONF_DIST):
             print("DOWNLOADING GSB FILES")
+            update_local_file("https://s3-ap-southeast-2.amazonaws.com/transformation-grids/GDA94_GDA2020_conformal.gsb", GDA2020CONF)
             update_local_file("https://s3-ap-southeast-2.amazonaws.com/transformation-grids/GDA94_GDA2020_conformal_and_distortion.gsb", GDA2020CONF_DIST)
 
         commands = ['ogr2ogr', GdalUtils.escapeAndJoin(arguments)]

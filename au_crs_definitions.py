@@ -3,6 +3,7 @@ import os
 
 AGD66GRID = os.path.dirname(__file__) + '/grids/A66_National_13_09_01.gsb'
 AGD84GRID = os.path.dirname(__file__) + '/grids/National_84_02_07_01.gsb'
+GDA2020CONF = os.path.dirname(__file__) + '/grids/GDA94_GDA2020_conformal.gsb'
 GDA2020CONF_DIST = os.path.dirname(__file__) + '/grids/GDA94_GDA2020_conformal_and_distortion.gsb'
 
 OLD_CRS_STRINGS = {
@@ -23,11 +24,11 @@ OLD_CRS_STRINGS = {
         'EPSG:4203'
     ],
     'GDA94 MGA [EPSG:283XX]': [
-        '+proj=utm +zone={zone} +south +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +nadgrids=' + GDA2020CONF_DIST + ' +wktext',
+        '+proj=utm +zone={zone} +south +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +wktext',
         'EPSG:283{zone}'
     ],
     'GDA94 Latitude and Longitude [EPSG:4283]': [
-        '+proj=longlat +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +no_defs +nadgrids=' + GDA2020CONF_DIST + ' +wktext',
+        '+proj=longlat +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +no_defs +wktext',
         'EPSG:4283'
     ],
 }
@@ -39,6 +40,25 @@ NEW_CRS_STRINGS = {
 
 # These are handled differently, because the transform needs to be done using the proj string
 # otherwise, it seems to ignore the grid.
+OLD_CRS_STRINGS_2020 = {
+    'GDA94 MGA [EPSG:283XX] (Conformal only)': [
+        '+proj=utm +zone={zone} +south +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +nadgrids=' + GDA2020CONF + ' +wktext',
+        'EPSG:283{zone}'
+    ],
+    'GDA94 Latitude and Longitude [EPSG:4283] (Conformal only)': [
+        '+proj=longlat +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +no_defs +nadgrids=' + GDA2020CONF + ' +wktext',
+        'EPSG:4283'
+    ],
+    'GDA94 MGA [EPSG:283XX] (Conformal and Distortion)': [
+        '+proj=utm +zone={zone} +south +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +nadgrids=' + GDA2020CONF_DIST + ' +wktext',
+        'EPSG:283{zone}'
+    ],
+    'GDA94 Latitude and Longitude [EPSG:4283] (Conformal and Distortion)': [
+        '+proj=longlat +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +no_defs +nadgrids=' + GDA2020CONF_DIST + ' +wktext',
+        'EPSG:4283'
+    ],
+}
+
 NEW_CRS_STRINGS_2020 = {
     'GDA2020 MGA [EPSG:78XX]': [
         '+proj=utm +zone={zone} +south +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +wktext',
