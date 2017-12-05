@@ -1,10 +1,12 @@
 # This file holds definitions of the CRSs used in Australia.
 import os
 
-AGD66GRID = os.path.dirname(__file__) + '/grids/A66_National_13_09_01.gsb'
-AGD84GRID = os.path.dirname(__file__) + '/grids/National_84_02_07_01.gsb'
-GDA2020CONF = os.path.dirname(__file__) + '/grids/GDA94_GDA2020_conformal.gsb'
-GDA2020CONF_DIST = os.path.dirname(__file__) + '/grids/GDA94_GDA2020_conformal_and_distortion.gsb'
+source_dir = os.path.dirname(__file__)
+
+AGD66GRID = source_dir + '/grids/A66_National_13_09_01.gsb'
+AGD84GRID = source_dir + '/grids/National_84_02_07_01.gsb'
+GDA2020CONF = source_dir + '/grids/GDA94_GDA2020_conformal.gsb'
+GDA2020CONF_DIST = source_dir + '/grids/GDA94_GDA2020_conformal_and_distortion.gsb'
 
 OLD_CRS_STRINGS = {
     'AGD66 AMG [EPSG:202XX]': [
@@ -65,7 +67,7 @@ NEW_CRS_STRINGS_2020 = {
         'EPSG:78{zone}'
     ],
     'GDA2020 Latitude and Longitude [EPSG:7844]': [
-        '+proj=longlat +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +no_defs +wktext'
+        '+proj=longlat +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +no_defs +wktext',
         'EPSG:7844'
     ]
 }

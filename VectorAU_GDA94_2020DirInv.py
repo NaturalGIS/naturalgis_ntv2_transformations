@@ -35,7 +35,7 @@ from processing.core.GeoAlgorithm import GeoAlgorithm
 from processing.gui.Help2Html import getHtmlFromRstFile
 from processing.tools.vector import ogrConnectionString, ogrLayerName
 from PyQt4.QtGui import QIcon
-from transform_utilities import update_local_file
+from transform_utilities import update_local_file, log
 
 try:
     from processing.parameters.ParameterVector import ParameterVector
@@ -159,8 +159,8 @@ class VectorAU_GDA94_2020DirInv(GeoAlgorithm):
             arguments.append('-lco')
             arguments.append('ENCODING=UTF-8')
 
-        if not os.path.isfile(GDA2020CONF_DIST):
-            print("DOWNLOADING GSB FILES")
+        if not os.path.isfile(GDA2020CONF_DIST) or not os.path.isfile(GDA2020CONF):
+            log("DOWNLOADING GSB FILES")
             update_local_file("https://s3-ap-southeast-2.amazonaws.com/transformation-grids/GDA94_GDA2020_conformal.gsb", GDA2020CONF)
             update_local_file("https://s3-ap-southeast-2.amazonaws.com/transformation-grids/GDA94_GDA2020_conformal_and_distortion.gsb", GDA2020CONF_DIST)
 

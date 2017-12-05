@@ -34,7 +34,7 @@ from processing.algs.gdal.GdalUtils import GdalUtils
 from processing.core.GeoAlgorithm import GeoAlgorithm
 from processing.gui.Help2Html import getHtmlFromRstFile
 from PyQt4.QtGui import QIcon
-from transform_utilities import update_local_file
+from transform_utilities import update_local_file, log
 
 try:
     from processing.parameters.ParameterRaster import ParameterRaster
@@ -138,12 +138,12 @@ class RasterAU_GDA94_2020DirInv(GeoAlgorithm):
             # Direct
             arguments.append(new_crs_epsg)
         else:
-            # Indirect
+            # Inverse
             arguments.append(old_crs_epsg)
         arguments.append(out)
 
-        if not os.path.isfile(GDA2020CONF_DIST):
-            print("DOWNLOADING GSB FILES")
+        if not os.path.isfile(GDA2020CONF_DIST) or not os.path.isfile(GDA2020CONF):
+            log("Downloading files")
             update_local_file("https://s3-ap-southeast-2.amazonaws.com/transformation-grids/GDA94_GDA2020_conformal.gsb", GDA2020CONF)
             update_local_file("https://s3-ap-southeast-2.amazonaws.com/transformation-grids/GDA94_GDA2020_conformal_and_distortion.gsb", GDA2020CONF_DIST)
 
