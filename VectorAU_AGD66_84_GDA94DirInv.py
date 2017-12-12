@@ -2,7 +2,7 @@
 
 """
 ***************************************************************************
-    RasterAU_AGD66_84_GDA94_2020DirInv.py
+    VectorAU_AGD66_84_GDA94_2020DirInv.py
     ---------------------
     Date                 : March 2017
     Copyright            : (C) 2017 by Alex Leith and Giovanni Manghi
@@ -28,26 +28,26 @@ __revision__ = '$Format:%H$'
 import inspect
 import os
 
-from PyQt4.QtGui import QIcon
-
-from processing.gui.Help2Html import getHtmlFromRstFile
-
-try:
-    from processing.parameters.ParameterRaster import ParameterRaster
-    from processing.parameters.ParameterSelection import ParameterSelection
-    from processing.outputs.OutputRaster import OutputRaster
-except:
-    from processing.core.parameters import ParameterRaster
-    from processing.core.parameters import ParameterSelection
-    from processing.core.outputs import OutputRaster
-
-from processing.core.GeoAlgorithm import GeoAlgorithm
+from au_crs_definitions import (AGD66GRID, AGD84GRID, NEW_CRS_STRINGS,
+                                OLD_CRS_STRINGS)
 from processing.algs.gdal.GdalUtils import GdalUtils
-
+from processing.core.GeoAlgorithm import GeoAlgorithm
+from processing.gui.Help2Html import getHtmlFromRstFile
+from processing.tools.vector import ogrConnectionString, ogrLayerName
+from PyQt4.QtGui import QIcon
 from transform_utilities import update_local_file
 
+try:
+    from processing.parameters.ParameterVector import ParameterVector
+    from processing.parameters.ParameterSelection import ParameterSelection
+    from processing.outputs.OutputVector import OutputVector
+except:
+    from processing.core.parameters import ParameterVector
+    from processing.core.parameters import ParameterSelection
+    from processing.core.outputs import OutputVector
 
-class RasterAU_AGD66_84_GDA94_2020DirInv(GeoAlgorithm):
+
+class VectorAU_AGD66_84_GDA94DirInv(GeoAlgorithm):
     INPUT = 'INPUT'
     OUTPUT = 'OUTPUT'
     TRANSF = 'TRANSF'
@@ -55,22 +55,11 @@ class RasterAU_AGD66_84_GDA94_2020DirInv(GeoAlgorithm):
     NEW_CRS = 'NEW_CRS'
     ZONE = 'ZONE'
 
-    AGD66GRID = os.path.dirname(__file__) + '/grids/A66_National_13_09_01.gsb'
-    AGD84GRID = os.path.dirname(__file__) + '/grids/National_84_02_07_01.gsb'
-
     TRANSF_OPTIONS = ['Direct: Old CRS -> New CRS',
                       'Inverse: New CRS -> Old CRS']
 
-    OLD_CRS_OPTIONS = [
-        'AGD66 AMG [EPSG:202XX]',
-        'AGD84 AMG [EPSG:203XX]',
-        'AGD66 LonLat [EPSG:4202]',
-        'AGD84 LonLat [EPSG:4203]',
-    ]
-    NEW_CRS_OPTIONS = [
-        'GDA94 MGA [EPSG:283XX]',
-        'GDA94 LonLat [EPSG:4283]'
-    ]
+    OLD_CRS_OPTIONS = OLD_CRS_STRINGS.keys()
+    NEW_CRS_OPTIONS = NEW_CRS_STRINGS.keys()
     ZONE_OPTIONS = [
         'n/a',
         '49',
@@ -82,29 +71,6 @@ class RasterAU_AGD66_84_GDA94_2020DirInv(GeoAlgorithm):
         '55',
         '56',
     ]
-
-    OLD_CRS_STRINGS = {
-        'AGD66 AMG [EPSG:202XX]': [
-            '+proj=utm +zone=<ZONE> +south +ellps=aust_SA +units=m +no_defs +nadgrids=' + AGD66GRID + ' +wktext',
-            'EPSG:202<ZONE>'
-        ],
-        'AGD84 AMG [EPSG:203XX]': [
-            '+proj=utm +zone=<ZONE> +south +ellps=aust_SA +units=m +no_defs +nadgrids=' + AGD84GRID + ' +wktext',
-            'EPSG:203<ZONE>'
-        ],
-        'AGD66 LonLat [EPSG:4202]': [
-            '+proj=longlat +ellps=aust_SA +no_defs +nadgrids=' + AGD66GRID + ' +wktext',
-            'EPSG:4202'
-        ],
-        'AGD84 LonLat [EPSG:4203]': [
-            '+proj=longlat +ellps=aust_SA +no_defs +nadgrids=' + AGD84GRID + ' +wktext'
-            'EPSG:4203'
-        ]
-    }
-    NEW_CRS_STRINGS = {
-        'GDA94 MGA [EPSG:283XX]': 'EPSG:283<ZONE>',
-        'GDA94 LonLat [EPSG:4283]': 'EPSG:4238'
-    }
 
     def getIcon(self):
         return QIcon(os.path.dirname(__file__) + '/icons/au.png')
@@ -119,16 +85,21 @@ class RasterAU_AGD66_84_GDA94_2020DirInv(GeoAlgorithm):
             return False, None
 
     def defineCharacteristics(self):
-        self.name = '[AU] Direct and inverse Raster transformation'
+        self.name = '[AU] AGD66/84 to GDA94 Vector Direct and inverse'
         self.group = '[AU] Australia'
-        self.addParameter(ParameterRaster(self.INPUT, 'Input raster', False))
+        self.addParameter(ParameterVector(self.INPUT, 'Input vector', [ParameterVector.VECTOR_TYPE_ANY]))
         self.addParameter(ParameterSelection(self.TRANSF, 'Transformation', self.TRANSF_OPTIONS))
         self.addParameter(ParameterSelection(self.OLD_CRS, 'Old CRS', self.OLD_CRS_OPTIONS))
         self.addParameter(ParameterSelection(self.NEW_CRS, 'New CRS', self.NEW_CRS_OPTIONS))
         self.addParameter(ParameterSelection(self.ZONE, 'UTM Zone', self.ZONE_OPTIONS))
-        self.addOutput(OutputRaster(self.OUTPUT, 'Output'))
+        self.addOutput(OutputVector(self.OUTPUT, 'Output'))
 
     def processAlgorithm(self, progress):
+        inLayer = self.getParameterValue(self.INPUT)
+        conn = ogrConnectionString(inLayer)[1:-1]
+
+        output = self.getOutputFromName(self.OUTPUT)
+        outFile = output.value
 
         zone = self.ZONE_OPTIONS[self.getParameterValue(self.ZONE)]
 
@@ -139,10 +110,10 @@ class RasterAU_AGD66_84_GDA94_2020DirInv(GeoAlgorithm):
         old_crs = self.OLD_CRS_OPTIONS[self.getParameterValue(self.OLD_CRS)]
         new_crs = self.NEW_CRS_OPTIONS[self.getParameterValue(self.NEW_CRS)]
 
-        old_crs_epsg = self.OLD_CRS_STRINGS[old_crs][1].replace('<ZONE>', zone)
-        new_crs_epsg = self.NEW_CRS_STRINGS[new_crs].replace('<ZONE>', zone)
+        old_crs_epsg = OLD_CRS_STRINGS[old_crs][1].format(zone=zone)
+        new_crs_epsg = NEW_CRS_STRINGS[new_crs].format(zone=zone)
 
-        old_crs_string = self.OLD_CRS_STRINGS[old_crs][0].replace('<ZONE>', zone)
+        old_crs_string = OLD_CRS_STRINGS[old_crs][0].format(zone=zone)
 
         if self.getParameterValue(self.TRANSF) == 0:
             # Direct transformation
@@ -150,32 +121,39 @@ class RasterAU_AGD66_84_GDA94_2020DirInv(GeoAlgorithm):
             arguments.append(old_crs_string)
             arguments.append('-t_srs')
             arguments.append(new_crs_epsg)
+            arguments.append('-f')
+            arguments.append('ESRI Shapefile')
+            arguments.append('-lco')
+            arguments.append('ENCODING=UTF-8')
+            arguments.append(outFile)
+            arguments.append(conn)
+            arguments.append(ogrLayerName(inLayer))
         else:
             # Inverse transformation
             arguments = ['-s_srs']
             arguments.append(new_crs_epsg)
             arguments.append('-t_srs')
             arguments.append(old_crs_string)
-
-        arguments.append('-multi')
-        arguments.append('-of')
-        out = self.getOutputValue(self.OUTPUT)
-        arguments.append(GdalUtils.getFormatShortNameFromFilename(out))
-        arguments.append(self.getParameterValue(self.INPUT))
-        arguments.append(out)
-
-        # Set the EPSG string when we aren't using one to define the target
-        if self.getParameterValue(self.TRANSF) == 1:
-            arguments.append('&&')
-            arguments.append('gdal_edit.py')
+            arguments.append('-f')
+            arguments.append('\"Geojson\"')
+            arguments.append('/vsistdout/')
+            arguments.append(conn)
+            arguments.append(ogrLayerName(inLayer))
+            arguments.append('|')
+            arguments.append('ogr2ogr')
+            arguments.append('-f')
+            arguments.append('ESRI Shapefile')
             arguments.append('-a_srs')
             arguments.append(old_crs_epsg)
-            arguments.append(out)
+            arguments.append(outFile)
+            arguments.append('/vsistdin/')
+            arguments.append('-lco')
+            arguments.append('ENCODING=UTF-8')
 
-        if not os.path.isfile(self.AGD66GRID) or not os.path.isfile(self.AGD84GRID):
+        if not os.path.isfile(AGD66GRID) or not os.path.isfile(AGD84GRID):
             print("DOWNLOADING GSB FILES")
-            update_local_file("https://s3-ap-southeast-2.amazonaws.com/transformationgrids/A66_National_13_09_01.gsb", self.AGD66GRID)
-            update_local_file("https://s3-ap-southeast-2.amazonaws.com/transformationgrids/National_84_02_07_01.gsb", self.AGD84GRID)
+            update_local_file("https://s3-ap-southeast-2.amazonaws.com/transformation-grids/A66_National_13_09_01.gsb", AGD66GRID)
+            update_local_file("https://s3-ap-southeast-2.amazonaws.com/transformation-grids/National_84_02_07_01.gsb", AGD84GRID)
 
-        commands = ['gdalwarp', GdalUtils.escapeAndJoin(arguments)]
+        commands = ['ogr2ogr', GdalUtils.escapeAndJoin(arguments)]
         GdalUtils.runGdal(commands, progress)

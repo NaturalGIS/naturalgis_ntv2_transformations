@@ -44,12 +44,11 @@ pep8:
 
 clean:
 	rm -f $(ALL_FILES)
-	find -name "*.pyc" -exec rm -f {} \;
+	find ./ -name "*.pyc" -exec rm -f {} \;
 	rm -f *.zip
 
 package: clean all
-	cd .. && rm -f *.zip && zip -r ntv2_transformations.zip ntv2_transformations -x \*.pyc \*.ts \*.ui \*.qrc \*.pro \*~ \*.git\* \*Makefile*
-	mv ../ntv2_transformations.zip .
+	rm -f ntv2_transformations.zip && zip -r ntv2_transformations.zip ./ -x \*.gsb \*.pyc \*.ts \*.ui \*.qrc \*.pro \*~ \*.git\* \*Makefile*
 
 upload: package
 	plugin_uploader.py ntv2_transformations.zip

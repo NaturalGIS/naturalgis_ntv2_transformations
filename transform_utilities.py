@@ -9,12 +9,28 @@ except ImportError:
     from urllib.request import urlretrieve
 import os
 
+from qgis.core import QgsMessageLog
+
 
 def update_local_file(remote_url, local_file):
-    out_file, result = urlretrieve(remote_url, local_file)
+    log("Downloading file to: {}".format(local_file))
+    try:
+        out_file, result = urlretrieve(remote_url, local_file)
+    except IOError:
+        return False
+
     try:
         content_length = result['Content-Length']
-        print("Successfully download file of size {} to {}".format(content_length, local_file))
+        if content_length < 1000:
+            os.remove(local_file)
     except KeyError:
-        print("Failed to download file with error: {}".format(result['Status']))
         os.remove(local_file)
+        return False
+    return True
+
+
+def log(message, error=False):
+    log_level = QgsMessageLog.INFO
+    if error:
+        log_level = QgsMessageLog.CRITICAL
+    QgsMessageLog.logMessage(message, 'Processing', level=log_level)
