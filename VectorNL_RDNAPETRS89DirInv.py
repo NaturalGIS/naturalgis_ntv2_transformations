@@ -146,8 +146,8 @@ class VectorNL_RDNAPETRS89DirInv(GeoAlgorithm):
 
         if os.path.isfile(os.path.dirname(__file__) + '/grids/rdtrans2008.gsb') is False:
             import urllib
-            urllib.urlretrieve ("https://github.com/NaturalGIS/ntv2_transformations_grids_and_sample_data/raw/master/nl/rdtrans2008.gsb", os.path.dirname(__file__) + "/grids/rdtrans2008.gsb")
-            urllib.urlretrieve ("https://github.com/NaturalGIS/ntv2_transformations_grids_and_sample_data/raw/master/nl/naptrans2008.gtx", os.path.dirname(__file__) + "/grids/naptrans2008.gtx")
+            urllib.urlretrieve ("http://www.naturalgis.pt/downloads/ntv2grids/nl/rdtrans2008.gsb", os.path.dirname(__file__) + "/grids/rdtrans2008.gsb")
+            urllib.urlretrieve ("http://www.naturalgis.pt/downloads/ntv2grids/nl/naptrans2008.gtx", os.path.dirname(__file__) + "/grids/naptrans2008.gtx")
 
         commands = ['ogr2ogr', GdalUtils.escapeAndJoin(arguments)]
         GdalUtils.runGdal(commands, progress)

@@ -125,10 +125,10 @@ class RasterNL_RDNAPETRS89DirInv(GeoAlgorithm):
             import urllib
 
             urllib.urlretrieve(
-                "https://github.com/NaturalGIS/ntv2_transformations_grids_and_sample_data/raw/master/nl/rdtrans2008.gsb",
+                "http://www.naturalgis.pt/downloads/ntv2grids/nl/rdtrans2008.gsb",
                 os.path.dirname(__file__) + "/grids/rdtrans2008.gsb")
             urllib.urlretrieve(
-                "https://github.com/NaturalGIS/ntv2_transformations_grids_and_sample_data/raw/master/nl/naptrans2008.gtx",
+                "http://www.naturalgis.pt/downloads/ntv2grids/nl/naptrans2008.gtx",
                 os.path.dirname(__file__) + "/grids/naptrans2008.gtx")
 
         GdalUtils.runGdal(['gdalwarp', GdalUtils.escapeAndJoin(arguments)],

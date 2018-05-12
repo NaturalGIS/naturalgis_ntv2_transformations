@@ -115,7 +115,7 @@ class RasterCAT_ED50ETRS89DirInv(GeoAlgorithm):
 
         if os.path.isfile(os.path.dirname(__file__) + '/grids/100800401.gsb') is False:
            import urllib
-           urllib.urlretrieve ("https://github.com/NaturalGIS/ntv2_transformations_grids_and_sample_data/raw/master/cat/100800401.gsb", os.path.dirname(__file__) + "/grids/100800401.gsb")
+           urllib.urlretrieve ("http://www.naturalgis.pt/downloads/ntv2grids/cat/100800401.gsb", os.path.dirname(__file__) + "/grids/100800401.gsb")
 
         GdalUtils.runGdal(['gdalwarp', GdalUtils.escapeAndJoin(arguments)],
                           progress)

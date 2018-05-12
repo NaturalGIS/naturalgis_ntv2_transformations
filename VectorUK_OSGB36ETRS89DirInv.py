@@ -144,7 +144,7 @@ class VectorUK_OSGB36ETRS89DirInv(GeoAlgorithm):
 
         if os.path.isfile(os.path.dirname(__file__) + '/grids/OSTN02_NTv2.gsb') is False:
            import urllib
-           urllib.urlretrieve ("https://github.com/NaturalGIS/ntv2_transformations_grids_and_sample_data/raw/master/uk/OSTN02_NTv2.gsb", os.path.dirname(__file__) + "/grids/OSTN02_NTv2.gsb")
+           urllib.urlretrieve ("http://www.naturalgis.pt/downloads/ntv2grids/uk/OSTN02_NTv2.gsb", os.path.dirname(__file__) + "/grids/OSTN02_NTv2.gsb")
 
         commands = ['ogr2ogr', GdalUtils.escapeAndJoin(arguments)]
         GdalUtils.runGdal(commands, progress)

@@ -202,7 +202,7 @@ class VectorES_ED50ERTS89DirInv(GeoAlgorithm):
                     
         if os.path.isfile(os.path.dirname(__file__) + '/grids/PENR2009.gsb') is False:
            import urllib
-           urllib.urlretrieve ("https://github.com/NaturalGIS/ntv2_transformations_grids_and_sample_data/raw/master/es/PENR2009.gsb", os.path.dirname(__file__) + "/grids/PENR2009.gsb")
+           urllib.urlretrieve ("http://www.naturalgis.pt/downloads/ntv2grids/es/PENR2009.gsb", os.path.dirname(__file__) + "/grids/PENR2009.gsb")
 
         commands = ['ogr2ogr', GdalUtils.escapeAndJoin(arguments)]
         GdalUtils.runGdal(commands, progress)

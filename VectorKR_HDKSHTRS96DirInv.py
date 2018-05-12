@@ -145,7 +145,7 @@ class VectorKR_HDKSHTRS96DirInv(GeoAlgorithm):
 
         if os.path.isfile(os.path.dirname(__file__) + '/grids/HRNTv2.gsb') is False:
            import urllib
-           urllib.urlretrieve ("https://github.com/NaturalGIS/ntv2_transformations_grids_and_sample_data/raw/master/hr/HRNTv2.gsb", os.path.dirname(__file__) + "/grids/HRNTv2.gsb")
+           urllib.urlretrieve ("http://www.naturalgis.pt/downloads/ntv2grids/hr/HRNTv2.gsb", os.path.dirname(__file__) + "/grids/HRNTv2.gsb")
 
         commands = ['ogr2ogr', GdalUtils.escapeAndJoin(arguments)]
         GdalUtils.runGdal(commands, progress)

@@ -180,8 +180,8 @@ class VectorCH_LV95ETRS89DirInv(GeoAlgorithm):
                
         if os.path.isfile(os.path.dirname(__file__) + '/grids/CHENYX06a.gsb') is False:
            import urllib
-           urllib.urlretrieve ("https://github.com/NaturalGIS/ntv2_transformations_grids_and_sample_data/raw/master/ch/CHENYX06a.gsb", os.path.dirname(__file__) + "/grids/CHENYX06a.gsb")
-           urllib.urlretrieve ("https://github.com/NaturalGIS/ntv2_transformations_grids_and_sample_data/raw/master/ch/chenyx06etrs.gsb", os.path.dirname(__file__) + "/grids/chenyx06etrs.gsb")
+           urllib.urlretrieve ("http://www.naturalgis.pt/downloads/ntv2grids/ch/CHENYX06a.gsb", os.path.dirname(__file__) + "/grids/CHENYX06a.gsb")
+           urllib.urlretrieve ("http://www.naturalgis.pt/downloads/ntv2grids/ch/chenyx06etrs.gsb", os.path.dirname(__file__) + "/grids/chenyx06etrs.gsb")
 
         commands = ['ogr2ogr', GdalUtils.escapeAndJoin(arguments)]
         GdalUtils.runGdal(commands, progress)

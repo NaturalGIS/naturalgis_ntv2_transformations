@@ -161,8 +161,8 @@ class VectorAU_GDA94_2020DirInv(GeoAlgorithm):
 
         if not os.path.isfile(GDA2020CONF_DIST) or not os.path.isfile(GDA2020CONF):
             log("DOWNLOADING GSB FILES")
-            update_local_file("https://s3-ap-southeast-2.amazonaws.com/transformation-grids/GDA94_GDA2020_conformal.gsb", GDA2020CONF)
-            update_local_file("https://s3-ap-southeast-2.amazonaws.com/transformation-grids/GDA94_GDA2020_conformal_and_distortion.gsb", GDA2020CONF_DIST)
+            update_local_file("http://www.naturalgis.pt/downloads/ntv2grids/au/GDA94_GDA2020_conformal.gsb", GDA2020CONF)
+            update_local_file("http://www.naturalgis.pt/downloads/ntv2grids/au/GDA94_GDA2020_conformal_and_distortion.gsb", GDA2020CONF_DIST)
 
         commands = ['ogr2ogr', GdalUtils.escapeAndJoin(arguments)]
         GdalUtils.runGdal(commands, progress)

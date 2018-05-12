@@ -148,7 +148,7 @@ class RasterAT_MGIETRS89DirInv(GeoAlgorithm):
 
         if os.path.isfile(os.path.dirname(__file__) + '/grids/AT_GIS_GRID.gsb') is False:
            import urllib
-           urllib.urlretrieve ("https://github.com/NaturalGIS/ntv2_transformations_grids_and_sample_data/raw/master/at/AT_GIS_GRID.gsb", os.path.dirname(__file__) + "/grids/AT_GIS_GRID.gsb")
+           urllib.urlretrieve ("http://www.naturalgis.pt/downloads/ntv2grids/at/AT_GIS_GRID.gsb", os.path.dirname(__file__) + "/grids/AT_GIS_GRID.gsb")
 
         GdalUtils.runGdal(['gdalwarp', GdalUtils.escapeAndJoin(arguments)],
                           progress)
