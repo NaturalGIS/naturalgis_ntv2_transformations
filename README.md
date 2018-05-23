@@ -46,7 +46,7 @@ http://www.bev.gv.at/portal/page?_pageid=713,2103845&_dad=portal&_schema=PORTAL
 -  Catalonia: ED50/UTM 31N [EPSG:23031] <==> ETRS89/UTM zone 31N [EPSG:25831] [100800401.gsb]
 
 Source for [100800401.gsb], Institut Cartogràfic i Geològic de Catalunya: 
-http://www.icc.cat/eng/Home-ICC/Geodesia/Recursos
+http://www.icgc.cat/Administracio-i-empresa/Eines/Transformacio-de-coordenades-i-formats
 
 ![](/icons/hr.png)
 
