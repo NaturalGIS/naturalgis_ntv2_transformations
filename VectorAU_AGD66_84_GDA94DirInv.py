@@ -2,11 +2,11 @@
 
 """
 ***************************************************************************
-    VectorKR_HDKSHTRS96DirInv.py
+    VectorAU_AGD66_84_GDA94DirInv.py
     ---------------------
-    Date                 : March 2015
-    Copyright            : (C) 2015 by Giovanni Manghi
-    Email                : giovanni dot manghi at naturalgis dot pt
+    Date                 : March 2017
+    Copyright            : (C) 2017 by Alex Leith and Giovanni Manghi
+    Email                : alex at auspatious dot  com
 ***************************************************************************
 *                                                                         *
 *   This program is free software; you can redistribute it and/or modify  *
@@ -17,9 +17,9 @@
 ***************************************************************************
 """
 
-__author__ = 'Giovanni Manghi'
-__date__ = 'March 2015'
-__copyright__ = '(C) 2015, Giovanni Manghi'
+__author__ = 'Alex Leith'
+__date__ = 'March 2017'
+__copyright__ = '(C) 2017, Alex Leith and Giovanni Manghi'
 
 # This will get replaced with a git SHA1 when you do a git archive
 
@@ -39,54 +39,70 @@ from qgis.core import (QgsProcessingException,
 from processing.algs.gdal.GdalAlgorithm import GdalAlgorithm
 from processing.algs.gdal.GdalUtils import GdalUtils
 
-from ntv2_transformations.transformations import hr_transformation
+from ntv2_transformations.transformations import au_transformation_agd
 
 pluginPath = os.path.dirname(__file__)
 
 
-class VectorKR_HDKSHTRS96DirInv(GdalAlgorithm):
+class VectorAU_AGD66_84_GDA94DirInv(GdalAlgorithm):
 
     INPUT = 'INPUT'
     TRANSF = 'TRANSF'
-    CRS = 'CRS'
-    GRID = 'GRID'
+    SRC_CRS = 'SRC_CRS'
+    DST_CRS = 'DST_CRS'
+    ZONE = 'ZONE'
     OUTPUT = 'OUTPUT'
 
     def __init__(self):
         super().__init__()
 
     def name(self):
-        return 'hrvectortransform'
+        return 'auvectortransformagd'
 
     def displayName(self):
-        return '[HR] Direct and inverse Vector Tranformation'
+        return '[AU] AGD66/84 to GDA94 Direct and inverse Vector Tranformation'
 
     def group(self):
-        return '[HR] Croatia'
+        return '[AU] Australia'
 
     def groupId(self):
-        return 'croatia'
+        return 'australia'
 
     def tags(self):
-        return 'vector,grid,ntv2,direct,inverse,croatia'.split(',')
+        return 'vector,grid,ntv2,direct,inverse,australia'.split(',')
 
     def shortHelpString(self):
-        return 'Direct and inverse vector tranformations using Croatia NTv2 grids.'
+        return 'Direct and inverse vector tranformations using Australia NTv2 grids.'
 
     def icon(self):
-        return QIcon(os.path.join(pluginPath, 'icons', 'hr.png'))
+        return QIcon(os.path.join(pluginPath, 'icons', 'au.png'))
 
     def initAlgorithm(self, config=None):
-        self.directions = ['Direct: Old Data -> HTRS96/Croatia TM [EPSG:3765]',
-                           'Inverse: HTRS96/Croatia TM [EPSG:3765] -> Old Data'
+        self.directions = ['Direct: Old CRS -> New CRS',
+                           'Inverse: New CRS -> Old CRS'
                           ]
 
-        self.datums = (('HDKS5 [Custom]', 5),
-                       ('HDKS6 [Custom]', 6),
-                      )
+        self.src_datums = (('AGD66 AMG [EPSG:202XX]', 202),
+                           ('AGD66 Latitude and Longitude [EPSG:4202]', 4202),
+                           ('AGD84 AMG [EPSG:203XX]', 203),
+                           ('AGD84 Latitude and Longitude [EPSG:4203]', 4203),
+                           ('GDA94 MGA [EPSG:283XX]', 283),
+                           ('GDA94 Latitude and Longitude [EPSG:4283]', 4283),
+                          )
 
-        self.grids = (('HRNTv2', 'HRNTv2'),
-                     )
+        self.dst_datums = (('GDA94 MGA [EPSG:283XX]', 283),
+                           ('GDA94 Latitude and Longitude [EPSG:4283]', 4283),
+                          )
+
+        self.zones = ['n/a',
+                      '49',
+                      '50',
+                      '51',
+                      '52',
+                      '53',
+                      '54',
+                      '55',
+                      '56']
 
         self.addParameter(QgsProcessingParameterFeatureSource(self.INPUT,
                                                               'Input vector'))
@@ -94,13 +110,17 @@ class VectorKR_HDKSHTRS96DirInv(GdalAlgorithm):
                                                      'Transformation',
                                                      options=self.directions,
                                                      defaultValue=0))
-        self.addParameter(QgsProcessingParameterEnum(self.CRS,
-                                                     'Old Datum',
-                                                     options=[i[0] for i in self.datums],
+        self.addParameter(QgsProcessingParameterEnum(self.SRC_CRS,
+                                                     'Old CRS',
+                                                     options=[i[0] for i in self.src_datums],
                                                      defaultValue=0))
-        self.addParameter(QgsProcessingParameterEnum(self.GRID,
-                                                     'NTv2 Grid',
-                                                     options=[i[0] for i in self.grids],
+        self.addParameter(QgsProcessingParameterEnum(self.DST_CRS,
+                                                     'New CRS',
+                                                     options=[i[0] for i in self.dst_datums],
+                                                     defaultValue=0))
+        self.addParameter(QgsProcessingParameterEnum(self.ZONE,
+                                                     'UTM Zone',
+                                                     options=self.zones,
                                                      defaultValue=0))
         self.addParameter(QgsProcessingParameterVectorDestination(self.OUTPUT,
                                                                   'Output'))
@@ -115,10 +135,13 @@ class VectorKR_HDKSHTRS96DirInv(GdalAlgorithm):
             raise QgsProcessingException('Output file "{}" already exists.'.format(output))
 
         direction = self.parameterAsEnum(parameters, self.TRANSF, context)
-        epsg = self.datums[self.parameterAsEnum(parameters, self.CRS, context)][1]
-        grid = self.grids[self.parameterAsEnum(parameters, self.GRID, context)][1]
+        src_crs = self.src_datums[self.parameterAsEnum(parameters, self.SRC_CRS, context)][1]
+        dst_crs = self.dst_datums[self.parameterAsEnum(parameters, self.DST_CRS, context)][1]
 
-        found, text = hr_transformation(epsg, grid)
+        v = self.parameterAsEnum(parameters, self.ZONE, context)
+        zone = '' if v == 0  else self.zones[v]
+
+        found, text = au_transformation_agd(src_crs, zone)
         if not found:
            raise QgsProcessingException(text)
 
@@ -126,22 +149,20 @@ class VectorKR_HDKSHTRS96DirInv(GdalAlgorithm):
 
         if direction == 0:
             # Direct transformation
-            arguments.append('-s_srs')
+            arguments = ['-s_srs']
             arguments.append(text)
             arguments.append('-t_srs')
-            arguments.append('EPSG:3765')
-
+            arguments.append('EPSG:{}{}'.format(dst_crs, zone))
             arguments.append('-f {}'.format(outputFormat))
             arguments.append('-lco')
             arguments.append('ENCODING=UTF-8')
-
             arguments.append(output)
             arguments.append(ogrLayer)
             arguments.append(layerName)
         else:
             # Inverse transformation
-            arguments.append('-s_srs')
-            arguments.append('EPSG:3765')
+            arguments = ['-s_srs']
+            arguments.append('EPSG:{}{}'.format(dst_crs, zone))
             arguments.append('-t_srs')
             arguments.append(text)
             arguments.append('-f')
@@ -149,18 +170,18 @@ class VectorKR_HDKSHTRS96DirInv(GdalAlgorithm):
             arguments.append('/vsistdout/')
             arguments.append(ogrLayer)
             arguments.append(layerName)
-            arguments.append('-lco')
-            arguments.append('ENCODING=UTF-8')
             arguments.append('|')
             arguments.append('ogr2ogr')
             arguments.append('-f {}'.format(outputFormat))
             arguments.append('-a_srs')
-            arguments.append('EPSG:3765')
+            arguments.append('EPSG:{}{}'.format(src_crs, zone))
             arguments.append(output)
             arguments.append('/vsistdin/')
+            arguments.append('-lco')
+            arguments.append('ENCODING=UTF-8')
 
-        gridFile = os.path.join(pluginPath, 'grids', 'HRNTv2.gsb')
-        if not os.path.isfile(gridFile):
-            urlretrieve('http://www.naturalgis.pt/downloads/ntv2grids/hr/HRNTv2.gsb', gridFile)
+        if not os.path.isfile(os.path.join(pluginPath, 'grids', 'A66_National_13_09_01.gsb')):
+            urlretrieve('http://www.naturalgis.pt/downloads/ntv2grids/au/A66_National_13_09_01.gsb', os.path.join(pluginPath, 'grids', 'A66_National_13_09_01.gsb'))
+            urlretrieve('http://www.naturalgis.pt/downloads/ntv2grids/au/National_84_02_07_01.gsb', os.path.join(pluginPath, 'grids', 'National_84_02_07_01.gsb'))
 
         return ['ogr2ogr', GdalUtils.escapeAndJoin(arguments)]

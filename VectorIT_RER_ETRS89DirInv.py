@@ -25,151 +25,143 @@ __copyright__ = '(C) 2015, Giovanni Manghi'
 
 __revision__ = '$Format:%H$'
 
-import inspect
 import os
+from urllib.request import urlretrieve
 
-from PyQt4.QtGui import QIcon
+from qgis.PyQt.QtGui import QIcon
 
-from processing.gui.Help2Html import getHtmlFromRstFile
+from qgis.core import (QgsProcessingException,
+                       QgsProcessingParameterFeatureSource,
+                       QgsProcessingParameterEnum,
+                       QgsProcessingParameterVectorDestination
+                      )
 
-try:
-    from processing.parameters.ParameterVector import ParameterVector
-    from processing.parameters.ParameterSelection import ParameterSelection
-    from processing.outputs.OutputVector import OutputVector
-except:
-    from processing.core.parameters import ParameterVector
-    from processing.core.parameters import ParameterSelection
-    from processing.core.outputs import OutputVector
-
-from processing.core.GeoAlgorithm import GeoAlgorithm
+from processing.algs.gdal.GdalAlgorithm import GdalAlgorithm
 from processing.algs.gdal.GdalUtils import GdalUtils
-from processing.tools.vector import ogrConnectionString, ogrLayerName
+
+from ntv2_transformations.transformations import it_transformation
+
+pluginPath = os.path.dirname(__file__)
 
 
-class VectorIT_RER_ETRS89DirInv(GeoAlgorithm):
+class VectorIT_RER_ETRS89DirInv(GdalAlgorithm):
 
     INPUT = 'INPUT'
-    OUTPUT = 'OUTPUT'
     TRANSF = 'TRANSF'
-    TRANSF_OPTIONS = ['Direct: Old Data -> ETRS89 [EPSG:4258]',
-                      'Inverse: ETRS89 [EPSG:4258] -> Old Data']
     CRS = 'CRS'
-    CRS_OPTIONS = ['Monte Mario - GBO [EPSG:3003]',
-                   'UTM - ED50 [EPSG:23032]']
     GRID = 'GRID'
-    GRID_OPTIONS = ['Grigliati NTv2 RER 2013 la trasformazione di coordinate in Emilia-Romagna']
+    OUTPUT = 'OUTPUT'
 
-    def getIcon(self):
-        return  QIcon(os.path.dirname(__file__) + '/icons/it.png')
+    def __init__(self):
+        super().__init__()
 
-    def help(self):
-        name = self.commandLineName().split(':')[1].lower()
-        filename = os.path.join(os.path.dirname(inspect.getfile(self.__class__)), 'help', name + '.rst')
-        try:
-          html = getHtmlFromRstFile(filename)
-          return True, html
-        except:
-          return False, None
+    def name(self):
+        return 'itvectortransform'
 
-    def defineCharacteristics(self):
-        self.name = '[IT] Direct and inverse Vector transformation'
-        self.group = '[IT] Italy (Emilia-Romagna)'
-        self.addParameter(ParameterVector(self.INPUT, 'Input vector',
-                          [ParameterVector.VECTOR_TYPE_ANY]))
-        self.addParameter(ParameterSelection(self.TRANSF, 'Transformation',
-                          self.TRANSF_OPTIONS))
-        self.addParameter(ParameterSelection(self.CRS, 'Old Datum',
-                          self.CRS_OPTIONS))
-        self.addParameter(ParameterSelection(self.GRID, 'NTv2 Grid',
-                          self.GRID_OPTIONS))
-        self.addOutput(OutputVector(self.OUTPUT, 'Output'))
+    def displayName(self):
+        return '[IT] Direct and inverse Vector Tranformation'
 
-    def processAlgorithm(self, progress):
-        inLayer = self.getParameterValue(self.INPUT)
-        conn = ogrConnectionString(inLayer)[1:-1]
+    def group(self):
+        return '[IT] Italy (Emilia-Romagna)'
 
-        output = self.getOutputFromName(self.OUTPUT)
-        outFile = output.value
+    def groupId(self):
+        return 'italy'
 
-        if self.getParameterValue(self.TRANSF) == 0:
+    def tags(self):
+        return 'vector,grid,ntv2,direct,inverse,italy'.split(',')
+
+    def shortHelpString(self):
+        return 'Direct and inverse vector transformations using Italy (Emilia-Romagna) NTv2 grids.'
+
+    def icon(self):
+        return QIcon(os.path.join(pluginPath, 'icons', 'it.png'))
+
+    def initAlgorithm(self, config=None):
+        self.directions = ['Direct: Old Data -> ETRS89 [EPSG:4258]',
+                           'Inverse: ETRS89 [EPSG:4258] -> Old Data'
+                          ]
+
+        self.datums = (('Monte Mario - GBO [EPSG:3003]', 3003),
+                       ('UTM - ED50 [EPSG:23032]', 23032),
+                      )
+
+        self.grids = (('Grigliati NTv2 RER 2013 la trasformazione di coordinate in Emilia-Romagna', 'RER_ETRS89'),
+                     )
+
+        self.addParameter(QgsProcessingParameterFeatureSource(self.INPUT,
+                                                              'Input vector'))
+        self.addParameter(QgsProcessingParameterEnum(self.TRANSF,
+                                                     'Transformation',
+                                                     options=self.directions,
+                                                     defaultValue=0))
+        self.addParameter(QgsProcessingParameterEnum(self.CRS,
+                                                     'Old Datum',
+                                                     options=[i[0] for i in self.datums],
+                                                     defaultValue=0))
+        self.addParameter(QgsProcessingParameterEnum(self.GRID,
+                                                     'NTv2 Grid',
+                                                     options=[i[0] for i in self.grids],
+                                                     defaultValue=0))
+        self.addParameter(QgsProcessingParameterVectorDestination(self.OUTPUT,
+                                                                  'Output'))
+
+    def getConsoleCommands(self, parameters, context, feedback, executing=True):
+        ogrLayer, layerName = self.getOgrCompatibleSource(self.INPUT, parameters, context, feedback, executing)
+        outFile = self.parameterAsOutputLayer(parameters, self.OUTPUT, context)
+        self.setOutputValue(self.OUTPUT, outFile)
+
+        output, outputFormat = GdalUtils.ogrConnectionStringAndFormat(outFile, context)
+        if outputFormat in ('SQLite', 'GPKG') and os.path.isfile(output):
+            raise QgsProcessingException('Output file "{}" already exists.'.format(output))
+
+        direction = self.parameterAsEnum(parameters, self.TRANSF, context)
+        epsg = self.datums[self.parameterAsEnum(parameters, self.CRS, context)][1]
+        grid = self.grids[self.parameterAsEnum(parameters, self.GRID, context)][1]
+
+        found, text = it_transformation(epsg, grid)
+        if not found:
+           raise QgsProcessingException(text)
+
+        arguments = []
+
+        if direction == 0:
             # Direct transformation
-            arguments = ['-s_srs']
-            if self.getParameterValue(self.CRS) == 0:
-                # Monte Mario - GBO
-                if self.getParameterValue(self.GRID) == 0:
-                    # Grigliati NTv2 RER 2013 la trasformazione di coordinate in Emilia-Romagna
-                    arguments.append('+proj=tmerc +lat_0=0 +lon_0=9 +k=0.9996 +x_0=1500000 +y_0=0 +ellps=intl +nadgrids=' + os.path.dirname(__file__) + '/grids/RER_AD400_MM_ETRS89_V1A.gsb +wktext +units=m +no_defs')
-            else:
-                # UTM - ED50
-                if self.getParameterValue(self.GRID) == 0:
-                    # Grigliati NTv2 RER 2013 la trasformazione di coordinate in Emilia-Romagna
-                    arguments.append('+proj=utm +zone=32 +ellps=intl +nadgrids=' + os.path.dirname(__file__) + '/grids/RER_ED50_ETRS89_GPS7_K2.GSB +wktext +units=m +no_defs')
+            arguments.append('-s_srs')
+            arguments.append(text)
             arguments.append('-t_srs')
             arguments.append('EPSG:4258')
 
-            arguments.append('-f')
-            arguments.append('ESRI Shapefile')
+            arguments.append('-f {}'.format(outputFormat))
+            arguments.append('-lco')
+            arguments.append('ENCODING=UTF-8')
 
-            arguments.append(outFile)
-            arguments.append(conn)
-            arguments.append(ogrLayerName(inLayer))
-
+            arguments.append(output)
+            arguments.append(ogrLayer)
+            arguments.append(layerName)
         else:
             # Inverse transformation
-            arguments = ['-s_srs']
+            arguments.append('-s_srs')
             arguments.append('EPSG:4258')
             arguments.append('-t_srs')
-            if self.getParameterValue(self.CRS) == 0:
-                # Monte Mario - GBO
-                if self.getParameterValue(self.GRID) == 0:
-                    # Grigliati NTv2 RER 2013 la trasformazione di coordinate in Emilia-Romagna
-                    arguments.append('+proj=tmerc +lat_0=0 +lon_0=9 +k=0.9996 +x_0=1500000 +y_0=0 +ellps=intl +nadgrids=' + os.path.dirname(__file__) + '/grids/RER_AD400_MM_ETRS89_V1A.gsb +wktext +units=m +no_defs')
-                arguments.append('-f')
-                arguments.append('\"Geojson\"')
-                arguments.append('/vsistdout/')
-                arguments.append(conn)
-                arguments.append(ogrLayerName(inLayer))
-                arguments.append('-lco')
-                arguments.append('ENCODING=UTF-8')
-                arguments.append('|')
-                arguments.append('ogr2ogr')
-                arguments.append('-f')
-                arguments.append('ESRI Shapefile')
-                arguments.append('-a_srs')
-                arguments.append('EPSG:3003')
-                arguments.append(outFile)
-                arguments.append('/vsistdin/')
-            else:
-                # UTM - ED50
-                if self.getParameterValue(self.GRID) == 0:
-                    # Grigliati NTv2 RER 2013 la trasformazione di coordinate in Emilia-Romagna
-                    arguments.append('+proj=utm +zone=32 +ellps=intl +nadgrids=' + os.path.dirname(__file__) + '/grids/RER_ED50_ETRS89_GPS7_K2.GSB +wktext +units=m +no_defs')
-                arguments.append('-f')
-                arguments.append('\"Geojson\"')
-                arguments.append('/vsistdout/')
-                arguments.append(conn)
-                arguments.append(ogrLayerName(inLayer))
-                arguments.append('-lco')
-                arguments.append('ENCODING=UTF-8')
-                arguments.append('|')
-                arguments.append('ogr2ogr')
-                arguments.append('-f')
-                arguments.append('ESRI Shapefile')
-                arguments.append('-a_srs')
-                arguments.append('EPSG:23032')
-                arguments.append(outFile)
-                arguments.append('/vsistdin/')
+            arguments.append(text)
 
-        arguments.append('-lco')
-        arguments.append('ENCODING=UTF-8')
+            arguments.append('-f')
+            arguments.append('Geojson')
+            arguments.append('/vsistdout/')
+            arguments.append(ogrLayer)
+            arguments.append(layerName)
+            arguments.append('-lco')
+            arguments.append('ENCODING=UTF-8')
+            arguments.append('|')
+            arguments.append('ogr2ogr')
+            arguments.append('-f {}'.format(outputFormat))
+            arguments.append('-a_srs')
+            arguments.append('EPSG:3003')
+            arguments.append(output)
+            arguments.append('/vsistdin/')
 
-        if os.path.isfile(os.path.dirname(__file__) + '/grids/RER_AD400_MM_ETRS89_V1A.gsb') is False:
-            try:
-                from urllib import urlretrieve
-            except ImportError:
-                from urllib.request import urlretrieve
-            urlretrieve ("https://github.com/NaturalGIS/ntv2_transformations_grids_and_sample_data/raw/master/it_rer/RER_AD400_MM_ETRS89_V1A.gsb", os.path.dirname(__file__) + "/grids/RER_AD400_MM_ETRS89_V1A.gsb")
-            urlretrieve ("https://github.com/NaturalGIS/ntv2_transformations_grids_and_sample_data/raw/master/it_rer/RER_ED50_ETRS89_GPS7_K2.GSB", os.path.dirname(__file__) + "/grids/RER_ED50_ETRS89_GPS7_K2.GSB")
+        if not os.path.isfile(os.path.join(pluginPath, 'grids', 'RER_AD400_MM_ETRS89_V1A.gsb')):
+            urlretrieve('http://www.naturalgis.pt/downloads/ntv2grids/it_rer/RER_AD400_MM_ETRS89_V1A.gsb', os.path.join(pluginPath, 'grids', 'RER_AD400_MM_ETRS89_V1A.gsb'))
+            urlretrieve('http://www.naturalgis.pt/downloads/ntv2grids/it_rer/RER_ED50_ETRS89_GPS7_K2.GSB', os.path.join(pluginPath, 'grids', 'RER_ED50_ETRS89_GPS7_K2.GSB'))
 
-        commands = ['ogr2ogr', GdalUtils.escapeAndJoin(arguments)]
-        GdalUtils.runGdal(commands, progress)
+        return ['ogr2ogr', GdalUtils.escapeAndJoin(arguments)]

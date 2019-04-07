@@ -16,9 +16,6 @@
 *                                                                         *
 ***************************************************************************
 """
-from future import standard_library
-standard_library.install_aliases()
-from builtins import str
 
 __author__ = 'Giovanni Manghi'
 __date__ = 'October 2015'
@@ -28,160 +25,147 @@ __copyright__ = '(C) 2015, Giovanni Manghi'
 
 __revision__ = '$Format:%H$'
 
-import inspect
 import os
+from urllib.request import urlretrieve
 
 from qgis.PyQt.QtGui import QIcon
 
-from processing.gui.Help2Html import getHtmlFromRstFile
+from qgis.core import (QgsProcessingException,
+                       QgsProcessingParameterFeatureSource,
+                       QgsProcessingParameterEnum,
+                       QgsProcessingParameterVectorDestination
+                      )
 
-try:
-    from processing.parameters.ParameterVector import ParameterVector
-    from processing.parameters.ParameterSelection import ParameterSelection
-    from processing.outputs.OutputVector import OutputVector
-except:
-    from processing.core.parameters import ParameterVector
-    from processing.core.parameters import ParameterSelection
-    from processing.core.outputs import OutputVector
-
-from processing.core.GeoAlgorithm import GeoAlgorithm
+from processing.algs.gdal.GdalAlgorithm import GdalAlgorithm
 from processing.algs.gdal.GdalUtils import GdalUtils
-from processing.tools.vector import ogrConnectionString, ogrLayerName
+
+from ntv2_transformations.transformations import at_transformation
+
+pluginPath = os.path.dirname(__file__)
 
 
-class VectorAT_MGIETRS89DirInv(GeoAlgorithm):
+class VectorAT_MGIETRS89DirInv(GdalAlgorithm):
 
     INPUT = 'INPUT'
-    OUTPUT = 'OUTPUT'
     TRANSF = 'TRANSF'
-    TRANSF_OPTIONS = ['Direct: Old Data -> ETRS89 [EPSG:4258]',
-                      'Inverse: ETRS89 [EPSG:4258] -> Old Data']
     CRS = 'CRS'
-    CRS_OPTIONS = ['MGI [EPSG:4312]',
-                   'MGI/Austria GK west [EPSG:31254]',
-                   'MGI/Austria GK central [EPSG:31255]',
-                   'MGI/Austria GK east [EPSG:31256]',
-                   'MGI/Austria GK M28 [EPSG:31257]',
-                   'MGI/Austria GK M31 [EPSG:31258]',
-                   'MGI/Austria GK M34 [EPSG:31259]']
-
     GRID = 'GRID'
-    GRID_OPTIONS = ['AT_GIS_GRID']
+    OUTPUT = 'OUTPUT'
 
-    def getIcon(self):
-        return  QIcon(os.path.dirname(__file__) + '/icons/at.png')
+    def __init__(self):
+        super().__init__()
 
-    def help(self):
-        name = self.commandLineName().split(':')[1].lower()
-        filename = os.path.join(os.path.dirname(inspect.getfile(self.__class__)), 'help', name + '.rst')
-        try:
-          html = getHtmlFromRstFile(filename)
-          return True, html
-        except:
-          return False, None
+    def name(self):
+        return 'atvectortransform'
 
-    def defineCharacteristics(self):
-        self.name = '[AT] Direct and inverse Vector tranformation'
-        self.group = '[AT] Austria'
-        self.addParameter(ParameterVector(self.INPUT, 'Input vector',
-                          [ParameterVector.VECTOR_TYPE_ANY]))
-        self.addParameter(ParameterSelection(self.TRANSF, 'Transformation',
-                          self.TRANSF_OPTIONS))
-        self.addParameter(ParameterSelection(self.CRS, 'Old Datum',
-                          self.CRS_OPTIONS))
-        self.addParameter(ParameterSelection(self.GRID, 'Ntv2 Grid',
-                          self.GRID_OPTIONS))
-        self.addOutput(OutputVector(self.OUTPUT, 'Output'))
+    def displayName(self):
+        return '[AT] Direct and inverse Vector Tranformation'
 
+    def group(self):
+        return '[AT] Austria'
 
-    def transfList(self):
-        return [
-            [
-                # MGI
-                ['+proj=longlat +ellps=bessel +nadgrids=' + os.path.dirname(__file__) + '/grids/AT_GIS_GRID.gsb +wktext +no_defs']
-            ],
-            [
-                # MGI/Austria GK west
-                ['+proj=tmerc +lat_0=0 +lon_0=10.33333333333333 +k=1 +x_0=0 +y_0=-5000000 +ellps=bessel +nadgrids=' + os.path.dirname(__file__) + '/grids/AT_GIS_GRID.gsb +wktext +units=m +no_defs']
-            ],
-            [
-                # MGI/Austria GK central
-                ['+proj=tmerc +lat_0=0 +lon_0=13.33333333333333 +k=1 +x_0=0 +y_0=-5000000 +ellps=bessel +nadgrids=' + os.path.dirname(__file__) + '/grids/AT_GIS_GRID.gsb +wktext +units=m +no_defs']
-            ],
-            [
-                # MGI/Austria GK east
-                ['+proj=tmerc +lat_0=0 +lon_0=16.33333333333333 +k=1 +x_0=0 +y_0=-5000000 +ellps=bessel +nadgrids=' + os.path.dirname(__file__) + '/grids/AT_GIS_GRID.gsb +wktext +units=m +no_defs']
-            ],
-            [
-                # MGI/Austria GK M28
-                ['+proj=tmerc +lat_0=0 +lon_0=10.33333333333333 +k=1 +x_0=150000 +y_0=-5000000 +ellps=bessel +nadgrids=' + os.path.dirname(__file__) + '/grids/AT_GIS_GRID.gsb +wktext +units=m +no_defs']
-            ],
-            [
-                # MGI/Austria GK M31
-                ['+proj=tmerc +lat_0=0 +lon_0=13.33333333333333 +k=1 +x_0=450000 +y_0=-5000000 +ellps=bessel +nadgrids=' + os.path.dirname(__file__) + '/grids/AT_GIS_GRID.gsb +wktext +units=m +no_defs']
-            ],
-            [
-                # MGI/Austria GK M34
-                ['+proj=tmerc +lat_0=0 +lon_0=16.33333333333333 +k=1 +x_0=750000 +y_0=-5000000 +ellps=bessel +nadgrids=' + os.path.dirname(__file__) + '/grids/AT_GIS_GRID.gsb +wktext +units=m +no_defs']
-            ]
-        ]
+    def groupId(self):
+        return 'austria'
 
+    def tags(self):
+        return 'vector,grid,ntv2,direct,inverse,austria'.split(',')
 
-    def processAlgorithm(self, progress):
+    def shortHelpString(self):
+        return 'Direct and inverse vector tranformations using Austrian NTv2 grids.'
 
-        doTransf = self.transfList()
+    def icon(self):
+        return QIcon(os.path.join(pluginPath, 'icons', 'at.png'))
 
-        inLayer = self.getParameterValue(self.INPUT)
-        conn = ogrConnectionString(inLayer)[1:-1]
+    def initAlgorithm(self, config=None):
+        self.directions = ['Direct: Old Data -> ETRS89 [EPSG:4258]',
+                           'Inverse: ETRS89 [EPSG:4258] -> Old Data'
+                          ]
 
-        output = self.getOutputFromName(self.OUTPUT)
-        outFile = output.value
+        self.datums = (('MGI [EPSG:4312]', 4312),
+                       ('MGI/Austria GK west [EPSG:31254]', 31254),
+                       ('MGI/Austria GK central [EPSG:31255]', 31255),
+                       ('MGI/Austria GK east [EPSG:31256]', 31256),
+                       ('MGI/Austria GK M28 [EPSG:31257]', 31257),
+                       ('MGI/Austria GK M31 [EPSG:31258]', 31258),
+                       ('MGI/Austria GK M34 [EPSG:31259]', 31259)
+                      )
 
-        if self.getParameterValue(self.TRANSF) == 0:
+        self.grids = (('AT_GIS_GRID', 'AT_GIS_GRID'),
+                     )
+
+        self.addParameter(QgsProcessingParameterFeatureSource(self.INPUT,
+                                                              'Input vector'))
+        self.addParameter(QgsProcessingParameterEnum(self.TRANSF,
+                                                     'Transformation',
+                                                     options=self.directions,
+                                                     defaultValue=0))
+        self.addParameter(QgsProcessingParameterEnum(self.CRS,
+                                                     'Old Datum',
+                                                     options=[i[0] for i in self.datums],
+                                                     defaultValue=0))
+        self.addParameter(QgsProcessingParameterEnum(self.GRID,
+                                                     'NTv2 Grid',
+                                                     options=[i[0] for i in self.grids],
+                                                     defaultValue=0))
+        self.addParameter(QgsProcessingParameterVectorDestination(self.OUTPUT,
+                                                                  'Output'))
+
+    def getConsoleCommands(self, parameters, context, feedback, executing=True):
+        ogrLayer, layerName = self.getOgrCompatibleSource(self.INPUT, parameters, context, feedback, executing)
+        outFile = self.parameterAsOutputLayer(parameters, self.OUTPUT, context)
+        self.setOutputValue(self.OUTPUT, outFile)
+
+        output, outputFormat = GdalUtils.ogrConnectionStringAndFormat(outFile, context)
+        if outputFormat in ('SQLite', 'GPKG') and os.path.isfile(output):
+            raise QgsProcessingException('Output file "{}" already exists.'.format(output))
+
+        direction = self.parameterAsEnum(parameters, self.TRANSF, context)
+        epsg = self.datums[self.parameterAsEnum(parameters, self.CRS, context)][1]
+        grid = self.grids[self.parameterAsEnum(parameters, self.GRID, context)][1]
+
+        found, text = at_transformation(epsg, grid)
+        if not found:
+           raise QgsProcessingException(text)
+
+        arguments = []
+
+        if direction == 0:
             # Direct transformation
-            arguments = ['-s_srs']
-            arguments.append(str(doTransf[self.getParameterValue(self.CRS)][self.getParameterValue(self.GRID)])[2:-2])
+            arguments.append('-s_srs')
+            arguments.append(text)
             arguments.append('-t_srs')
             arguments.append('EPSG:4258')
 
-            arguments.append('-f')
-            arguments.append('ESRI Shapefile')
+            arguments.append('-f {}'.format(outputFormat))
+            arguments.append('-lco')
+            arguments.append('ENCODING=UTF-8')
 
-            arguments.append(outFile)
-            arguments.append(conn)
-            arguments.append(ogrLayerName(inLayer))
-
+            arguments.append(output)
+            arguments.append(ogrLayer)
+            arguments.append(layerName)
         else:
             # Inverse transformation
-            arguments = ['-s_srs']
+            arguments.append('-s_srs')
             arguments.append('EPSG:4258')
             arguments.append('-t_srs')
-            arguments.append(str(doTransf[self.getParameterValue(self.CRS)][self.getParameterValue(self.GRID)])[2:-2])
+            arguments.append(text)
             arguments.append('-f')
-            arguments.append('\"Geojson\"')
+            arguments.append('Geojson')
             arguments.append('/vsistdout/')
-            arguments.append(conn)
-            arguments.append(ogrLayerName(inLayer))
+            arguments.append(ogrLayer)
+            arguments.append(layerName)
             arguments.append('-lco')
             arguments.append('ENCODING=UTF-8')
             arguments.append('|')
             arguments.append('ogr2ogr')
-            arguments.append('-f')
-            arguments.append('ESRI Shapefile')
+            arguments.append('-f {}'.format(outputFormat))
             arguments.append('-a_srs')
             arguments.append('EPSG:4312')
-            arguments.append(outFile)
+            arguments.append(output)
             arguments.append('/vsistdin/')
 
-        arguments.append('-lco')
-        arguments.append('ENCODING=UTF-8')
+        gridFile = os.path.join(pluginPath, 'grids', 'AT_GIS_GRID.gsb')
+        if not os.path.isfile(gridFile):
+            urlretrieve('http://www.naturalgis.pt/downloads/ntv2grids/at/AT_GIS_GRID.gsb', gridFile)
 
-        if os.path.isfile(os.path.dirname(__file__) + '/grids/AT_GIS_GRID.gsb') is False:
-            try:
-                from urllib.request import urlretrieve
-            except ImportError:
-                from urllib.request import urlretrieve
-            urlretrieve ("https://github.com/NaturalGIS/ntv2_transformations_grids_and_sample_data/raw/master/at/AT_GIS_GRID.gsb", os.path.dirname(__file__) + "/grids/AT_GIS_GRID.gsb")
-
-        commands = ['ogr2ogr', GdalUtils.escapeAndJoin(arguments)]
-        GdalUtils.runGdal(commands, progress)
+        return ['ogr2ogr', GdalUtils.escapeAndJoin(arguments)]

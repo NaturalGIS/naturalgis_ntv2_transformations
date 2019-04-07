@@ -25,162 +25,176 @@ __copyright__ = '(C) 2015, Giovanni Manghi'
 
 __revision__ = '$Format:%H$'
 
-import inspect
 import os
+from urllib.request import urlretrieve
 
-from PyQt4.QtGui import QIcon
+from qgis.PyQt.QtGui import QIcon
 
-from processing.gui.Help2Html import getHtmlFromRstFile
+from qgis.core import (QgsProcessingException,
+                       QgsProcessingParameterFeatureSource,
+                       QgsProcessingParameterEnum,
+                       QgsProcessingParameterVectorDestination
+                      )
 
-try:
-    from processing.parameters.ParameterVector import ParameterVector
-    from processing.parameters.ParameterSelection import ParameterSelection
-    from processing.outputs.OutputVector import OutputVector
-except:
-    from processing.core.parameters import ParameterVector
-    from processing.core.parameters import ParameterSelection
-    from processing.core.outputs import OutputVector
-
-from processing.core.GeoAlgorithm import GeoAlgorithm
+from processing.algs.gdal.GdalAlgorithm import GdalAlgorithm
 from processing.algs.gdal.GdalUtils import GdalUtils
-from processing.tools.vector import ogrConnectionString, ogrLayerName
+
+pluginPath = os.path.dirname(__file__)
 
 
-class VectorCH_LV95ETRS89DirInv(GeoAlgorithm):
+class VectorCH_LV95ETRS89DirInv(GdalAlgorithm):
 
     INPUT = 'INPUT'
-    OUTPUT = 'OUTPUT'
     TRANSF = 'TRANSF'
-    TRANSF_OPTIONS = ['Direct: CH1903 [EPSG:21781] -> New Data',
-                      'Inverse: New Data -> CH1903 [EPSG:21781]']
     CRS = 'CRS'
-    CRS_OPTIONS = ['ETRS89 [EPSG:4258]',
-           'CH1903+ [EPSG:2056]']
-
     GRID = 'GRID'
-    GRID_OPTIONS = ['CHENyx06']
+    OUTPUT = 'OUTPUT'
 
-    def getIcon(self):
-        return  QIcon(os.path.dirname(__file__) + '/icons/ch.png')
+    def __init__(self):
+        super().__init__()
 
-    def help(self):
-        name = self.commandLineName().split(':')[1].lower()
-        filename = os.path.join(os.path.dirname(inspect.getfile(self.__class__)), 'help', name + '.rst')
-        try:
-          html = getHtmlFromRstFile(filename)
-          return True, html
-        except:
-          return False, None
+    def name(self):
+        return 'chvectortransform'
 
-    def defineCharacteristics(self):
-        self.name = '[CH] Direct and inverse Vector transformation'
-        self.group = '[CH] Switzerland'
-        self.addParameter(ParameterVector(self.INPUT, 'Input vector',
-                          [ParameterVector.VECTOR_TYPE_ANY]))
-        self.addParameter(ParameterSelection(self.TRANSF, 'Transformation',
-                          self.TRANSF_OPTIONS))
-        self.addParameter(ParameterSelection(self.CRS, 'New Datum',
-                          self.CRS_OPTIONS))
-        self.addParameter(ParameterSelection(self.GRID, 'NTv2 Grid',
-                          self.GRID_OPTIONS))
-        self.addOutput(OutputVector(self.OUTPUT, 'Output'))
+    def displayName(self):
+        return '[CH] Direct and inverse Vector Tranformation'
 
-    def processAlgorithm(self, progress):
-        inLayer = self.getParameterValue(self.INPUT)
-        conn = ogrConnectionString(inLayer)[1:-1]
+    def group(self):
+        return '[CH] Switzerland'
 
-        output = self.getOutputFromName(self.OUTPUT)
-        outFile = output.value
+    def groupId(self):
+        return 'switzerland'
 
-        if self.getParameterValue(self.TRANSF) == 0:
+    def tags(self):
+        return 'vector,grid,ntv2,direct,inverse,switzerland'.split(',')
+
+    def shortHelpString(self):
+        return 'Direct and inverse vector tranformations using Switzerland NTv2 grids.'
+
+    def icon(self):
+        return QIcon(os.path.join(pluginPath, 'icons', 'ch.png'))
+
+    def initAlgorithm(self, config=None):
+        self.directions = ['Direct: CH1903/LV03 [EPSG:21781] -> New Data',
+                           'Inverse: New Data -> CH1903/LV03 [EPSG:21781]'
+                          ]
+
+        self.datums = ['ETRS89 [EPSG:4258]',
+                       'CH1903+ [EPSG:2056]'
+                      ]
+
+        self.grids = ['CHENyx06']
+
+        self.addParameter(QgsProcessingParameterFeatureSource(self.INPUT,
+                                                              'Input vector'))
+        self.addParameter(QgsProcessingParameterEnum(self.TRANSF,
+                                                     'Transformation',
+                                                     options=self.directions,
+                                                     defaultValue=0))
+        self.addParameter(QgsProcessingParameterEnum(self.CRS,
+                                                     'New Datum',
+                                                     options=[i[0] for i in self.datums],
+                                                     defaultValue=0))
+        self.addParameter(QgsProcessingParameterEnum(self.GRID,
+                                                     'NTv2 Grid',
+                                                     options=self.grids,
+                                                     defaultValue=0))
+        self.addParameter(QgsProcessingParameterVectorDestination(self.OUTPUT,
+                                                                  'Output'))
+
+    def getConsoleCommands(self, parameters, context, feedback, executing=True):
+        ogrLayer, layerName = self.getOgrCompatibleSource(self.INPUT, parameters, context, feedback, executing)
+        outFile = self.parameterAsOutputLayer(parameters, self.OUTPUT, context)
+        self.setOutputValue(self.OUTPUT, outFile)
+
+        output, outputFormat = GdalUtils.ogrConnectionStringAndFormat(outFile, context)
+        if outputFormat in ('SQLite', 'GPKG') and os.path.isfile(output):
+            raise QgsProcessingException('Output file "{}" already exists.'.format(output))
+
+        direction = self.parameterAsEnum(parameters, self.TRANSF, context)
+        crs = self.parameterAsEnum(parameters, self.CRS, context)
+        grid = self.parameterAsEnum(parameters, self.GRID, context)
+
+        arguments = []
+
+        if direction == 0:
             # Direct transformation
-            arguments = ['-t_srs']
-            if self.getParameterValue(self.CRS) == 0:
-               #untested
+            arguments.append('-t_srs')
+            if crs == 0:
                arguments.append('EPSG:4258')
-               gridname = 'chenyx06etrs.gsb'
+               gridFile = os.path.join(pluginPath, 'grids', 'chenyx06etrs.gsb')
                arguments.append('-s_srs')
-               arguments.append('+proj=somerc +lat_0=46.95240555555556 +lon_0=7.439583333333333 +k_0=1 +x_0=600000 +y_0=200000 +ellps=bessel +nadgrids=' + os.path.dirname(__file__) + '/grids/' + gridname + ' +wktext +units=m +no_defs')
-               arguments.append('-f')
-               arguments.append('ESRI Shapefile')
-               arguments.append(outFile)
-               arguments.append(conn)
-               arguments.append(ogrLayerName(inLayer))
+               arguments.append('+proj=somerc +lat_0=46.95240555555556 +lon_0=7.439583333333333 +k_0=1 +x_0=600000 +y_0=200000 +ellps=bessel +nadgrids={} +wktext +units=m +no_defs'.format(gridFile))
+               arguments.append('-f {}'.format(outputFormat))
+               arguments.append('-lco')
+               arguments.append('ENCODING=UTF-8')
+
+               arguments.append(output)
+               arguments.append(ogrLayer)
+               arguments.append(layerName)
             else:
                arguments.append('+proj=somerc +lat_0=46.95240555555556 +lon_0=7.439583333333333 +k_0=1 +x_0=2600000 +y_0=1200000 +ellps=bessel +nadgrids=@null +wktext +units=m')
-               gridname = 'CHENYX06a.gsb'
+               gridFile = os.path.join(pluginPath, 'grids', 'CHENYX06a.gsb')
                arguments.append('-s_srs')
-               arguments.append('+proj=somerc +lat_0=46.95240555555556 +lon_0=7.439583333333333 +k_0=1 +x_0=600000 +y_0=200000 +ellps=bessel +nadgrids=' + os.path.dirname(__file__) + '/grids/' + gridname + ' +wktext +units=m +no_defs')
+               arguments.append('+proj=somerc +lat_0=46.95240555555556 +lon_0=7.439583333333333 +k_0=1 +x_0=600000 +y_0=200000 +ellps=bessel +nadgrids={} +wktext +units=m +no_defs'.format(gridFile))
                arguments.append('-f')
-               arguments.append('\"Geojson\"')
+               arguments.append('Geojson')
                arguments.append('/vsistdout/')
-               arguments.append(conn)
-               arguments.append(ogrLayerName(inLayer))
+               arguments.append(ogrLayer)
+               arguments.append(layerName)
                arguments.append('-lco')
                arguments.append('ENCODING=UTF-8')
                arguments.append('|')
                arguments.append('ogr2ogr')
-               arguments.append('-f')
-               arguments.append('ESRI Shapefile')
+               arguments.append('-f {}'.format(outputFormat))
                arguments.append('-a_srs')
                arguments.append('EPSG:2056')
-               arguments.append(outFile)
+               arguments.append(output)
                arguments.append('/vsistdin/')
         else:
             # Inverse transformation
             arguments = ['-s_srs']
-            if self.getParameterValue(self.CRS) == 0:
-               #untested
-               arguments.append('EPSG:4258')
-               gridname = 'chenyx06etrs.gsb'
-               arguments.append('-t_srs')
-               arguments.append('+proj=somerc +lat_0=46.95240555555556 +lon_0=7.439583333333333 +k_0=1 +x_0=600000 +y_0=200000 +ellps=bessel +nadgrids=' + os.path.dirname(__file__) + '/grids/' + gridname + ' +wktext +units=m +no_defs')
-               arguments.append('-f')
-               arguments.append('\"Geojson\"')
-               arguments.append('/vsistdout/')
-               arguments.append(conn)
-               arguments.append(ogrLayerName(inLayer))
-               arguments.append('-lco')
-               arguments.append('ENCODING=UTF-8')
-               arguments.append('|')
-               arguments.append('ogr2ogr')
-               arguments.append('-f')
-               arguments.append('ESRI Shapefile')
-               arguments.append('-a_srs')
-               arguments.append('EPSG:21781')
-               arguments.append(outFile)
-               arguments.append('/vsistdin/')
+            if crs == 0:
+                arguments.append('EPSG:4258')
+                gridFile = os.path.join(pluginPath, 'grids', 'chenyx06etrs.gsb')
+                arguments.append('-t_srs')
+                arguments.append('+proj=somerc +lat_0=46.95240555555556 +lon_0=7.439583333333333 +k_0=1 +x_0=600000 +y_0=200000 +ellps=bessel +nadgrids={} +wktext +units=m +no_defs'.format(gridFile))
+                arguments.append('-f')
+                arguments.append('Geojson')
+                arguments.append('/vsistdout/')
+                arguments.append(ogrLayer)
+                arguments.append(layerName)
+                arguments.append('-lco')
+                arguments.append('ENCODING=UTF-8')
+                arguments.append('|')
+                arguments.append('ogr2ogr')
+                arguments.append('-f {}'.format(outputFormat))
+                arguments.append('-a_srs')
+                arguments.append('EPSG:21781')
+                arguments.append(output)
+                arguments.append('/vsistdin/')
             else:
-               gridname = 'CHENYX06a.gsb'
-               arguments.append('+proj=somerc +lat_0=46.95240555555556 +lon_0=7.439583333333333 +k_0=1 +x_0=2600000 +y_0=1200000 +ellps=bessel +nadgrids=@null +wktext +units=m')
-               arguments.append('-t_srs')
-               arguments.append('+proj=somerc +lat_0=46.95240555555556 +lon_0=7.439583333333333 +k_0=1 +x_0=600000 +y_0=200000 +ellps=bessel +nadgrids=' + os.path.dirname(__file__) + '/grids/' + gridname + ' +wktext +units=m +no_defs')
-               arguments.append('-f')
-               arguments.append('\"Geojson\"')
-               arguments.append('/vsistdout/')
-               arguments.append(conn)
-               arguments.append(ogrLayerName(inLayer))
-               arguments.append('-lco')
-               arguments.append('ENCODING=UTF-8')
-               arguments.append('|')
-               arguments.append('ogr2ogr')
-               arguments.append('-f')
-               arguments.append('ESRI Shapefile')
-               arguments.append('-a_srs')
-               arguments.append('EPSG:21781')
-               arguments.append(outFile)
-               arguments.append('/vsistdin/')
+                gridFile = os.path.join(pluginPath, 'grids', 'CHENYX06a.gsb')
+                arguments.append('+proj=somerc +lat_0=46.95240555555556 +lon_0=7.439583333333333 +k_0=1 +x_0=2600000 +y_0=1200000 +ellps=bessel +nadgrids=@null +wktext +units=m')
+                arguments.append('-t_srs')
+                arguments.append('+proj=somerc +lat_0=46.95240555555556 +lon_0=7.439583333333333 +k_0=1 +x_0=600000 +y_0=200000 +ellps=bessel +nadgrids={} +wktext +units=m +no_defs'.format(gridFile))
+                arguments.append('-f')
+                arguments.append('Geojson')
+                arguments.append('/vsistdout/')
+                arguments.append(ogrLayer)
+                arguments.append(layerName)
+                arguments.append('-lco')
+                arguments.append('ENCODING=UTF-8')
+                arguments.append('|')
+                arguments.append('ogr2ogr')
+                arguments.append('-f {}'.format(outputFormat))
+                arguments.append('-a_srs')
+                arguments.append('EPSG:21781')
+                arguments.append(output)
+                arguments.append('/vsistdin/')
 
-        arguments.append('-lco')
-        arguments.append('ENCODING=UTF-8')
+        if not os.path.isfile(os.path.join(pluginPath, 'grids', 'CHENYX06a.gsb')):
+            urlretrieve('http://www.naturalgis.pt/downloads/ntv2grids/ch/CHENYX06a.gsb', os.path.join(pluginPath, 'grids', 'CHENYX06a.gsb'))
+            urlretrieve('http://www.naturalgis.pt/downloads/ntv2grids/ch/chenyx06etrs.gsb', os.path.join(pluginPath, 'grids', 'chenyx06etrs.gsb'))
 
-        if os.path.isfile(os.path.dirname(__file__) + '/grids/CHENYX06a.gsb') is False:
-            try:
-                from urllib import urlretrieve
-            except ImportError:
-                from urllib.request import urlretrieve
-            urlretrieve ("https://github.com/NaturalGIS/ntv2_transformations_grids_and_sample_data/raw/master/ch/CHENYX06a.gsb", os.path.dirname(__file__) + "/grids/CHENYX06a.gsb")
-            urlretrieve ("https://github.com/NaturalGIS/ntv2_transformations_grids_and_sample_data/raw/master/ch/chenyx06etrs.gsb", os.path.dirname(__file__) + "/grids/chenyx06etrs.gsb")
-
-        commands = ['ogr2ogr', GdalUtils.escapeAndJoin(arguments)]
-        GdalUtils.runGdal(commands, progress)
+        return ['ogr2ogr', GdalUtils.escapeAndJoin(arguments)]
