@@ -25,183 +25,144 @@ __copyright__ = '(C) 2015, Giovanni Manghi'
 
 __revision__ = '$Format:%H$'
 
-import inspect
 import os
+from urllib.request import urlretrieve
 
-from PyQt4.QtGui import QIcon
+from qgis.PyQt.QtGui import QIcon
 
-from processing.gui.Help2Html import getHtmlFromRstFile
+from qgis.core import (QgsProcessingException,
+                       QgsProcessingParameterFeatureSource,
+                       QgsProcessingParameterEnum,
+                       QgsProcessingParameterVectorDestination
+                      )
 
-try:
-    from processing.parameters.ParameterVector import ParameterVector
-    from processing.parameters.ParameterSelection import ParameterSelection
-    from processing.outputs.OutputVector import OutputVector
-except:
-    from processing.core.parameters import ParameterVector
-    from processing.core.parameters import ParameterSelection
-    from processing.core.outputs import OutputVector
-
-from processing.core.GeoAlgorithm import GeoAlgorithm
+from processing.algs.gdal.GdalAlgorithm import GdalAlgorithm
 from processing.algs.gdal.GdalUtils import GdalUtils
-from processing.tools.vector import ogrConnectionString, ogrLayerName
+
+from ntv2_transformations.transformations import es_transformation
+
+pluginPath = os.path.dirname(__file__)
 
 
-class VectorES_ED50ERTS89DirInv(GeoAlgorithm):
+class VectorES_ED50ERTS89DirInv(GdalAlgorithm):
 
     INPUT = 'INPUT'
-    OUTPUT = 'OUTPUT'
     TRANSF = 'TRANSF'
-    TRANSF_OPTIONS = ['Direct: Old Data -> ETRS89 [EPSG:4258]',
-                      'Inverse: ETRS89 [EPSG:4258] -> Old Data']
     CRS = 'CRS'
-    CRS_OPTIONS = ['ED50/UTM 29N [EPSG:23029]',
-                   'ED50/UTM 30N [EPSG:23030]',
-                   'ED50/UTM 31N [EPSG:23031]']
     GRID = 'GRID'
-    GRID_OPTIONS = ['PENR2009']
+    OUTPUT = 'OUTPUT'
 
-    def getIcon(self):
-        return  QIcon(os.path.dirname(__file__) + '/icons/es.png')
+    def __init__(self):
+        super().__init__()
 
-    def help(self):
-        name = self.commandLineName().split(':')[1].lower()
-        filename = os.path.join(os.path.dirname(inspect.getfile(self.__class__)), 'help', name + '.rst')
-        try:
-          html = getHtmlFromRstFile(filename)
-          return True, html
-        except:
-          return False, None
+    def name(self):
+        return 'esvectortransform'
 
-    def defineCharacteristics(self):
-        self.name = '[ES] Direct and inverse Vector transformation'
-        self.group = '[ES] Spain (mainland)'
-        self.addParameter(ParameterVector(self.INPUT, 'Input vector',
-                          [ParameterVector.VECTOR_TYPE_ANY]))
-        self.addParameter(ParameterSelection(self.TRANSF, 'Transformation',
-                          self.TRANSF_OPTIONS))
-        self.addParameter(ParameterSelection(self.CRS, 'Old Datum',
-                          self.CRS_OPTIONS))
-        self.addParameter(ParameterSelection(self.GRID, 'NTv2 Grid',
-                          self.GRID_OPTIONS))
-        self.addOutput(OutputVector(self.OUTPUT, 'Output'))
+    def displayName(self):
+        return '[ES] Direct and inverse Vector Tranformation'
 
-    def processAlgorithm(self, progress):
-        inLayer = self.getParameterValue(self.INPUT)
-        conn = ogrConnectionString(inLayer)[1:-1]
+    def group(self):
+        return '[ES] Spain (mainland)'
 
-        output = self.getOutputFromName(self.OUTPUT)
-        outFile = output.value
+    def groupId(self):
+        return 'spain'
 
-        if self.getParameterValue(self.TRANSF) == 0:
+    def tags(self):
+        return 'vector,grid,ntv2,direct,inverse,spain'.split(',')
+
+    def shortHelpString(self):
+        return 'Direct and inverse vector tranformations using Spain (mainland) NTv2 grids.'
+
+    def icon(self):
+        return QIcon(os.path.join(pluginPath, 'icons', 'es.png'))
+
+    def initAlgorithm(self, config=None):
+        self.directions = ['Direct: Old Data -> ETRS89 [EPSG:4258]',
+                           'Inverse: ETRS89 [EPSG:4258] -> Old Data'
+                          ]
+
+        self.datums = (('ED50/UTM 29N [EPSG:23029]', 23029),
+                       ('ED50/UTM 30N [EPSG:23030]', 23030),
+                       ('ED50/UTM 31N [EPSG:23031]', 23031),
+                      )
+
+        self.grids = (('PENR2009', 'PENR2009'),
+                     )
+
+        self.addParameter(QgsProcessingParameterFeatureSource(self.INPUT,
+                                                              'Input vector'))
+        self.addParameter(QgsProcessingParameterEnum(self.TRANSF,
+                                                     'Transformation',
+                                                     options=self.directions,
+                                                     defaultValue=0))
+        self.addParameter(QgsProcessingParameterEnum(self.CRS,
+                                                     'Old Datum',
+                                                     options=[i[0] for i in self.datums],
+                                                     defaultValue=0))
+        self.addParameter(QgsProcessingParameterEnum(self.GRID,
+                                                     'NTv2 Grid',
+                                                     options=[i[0] for i in self.grids],
+                                                     defaultValue=0))
+        self.addParameter(QgsProcessingParameterVectorDestination(self.OUTPUT,
+                                                                  'Output'))
+
+    def getConsoleCommands(self, parameters, context, feedback, executing=True):
+        ogrLayer, layerName = self.getOgrCompatibleSource(self.INPUT, parameters, context, feedback, executing)
+        outFile = self.parameterAsOutputLayer(parameters, self.OUTPUT, context)
+        self.setOutputValue(self.OUTPUT, outFile)
+
+        output, outputFormat = GdalUtils.ogrConnectionStringAndFormat(outFile, context)
+        if outputFormat in ('SQLite', 'GPKG') and os.path.isfile(output):
+            raise QgsProcessingException('Output file "{}" already exists.'.format(output))
+
+        direction = self.parameterAsEnum(parameters, self.TRANSF, context)
+        epsg = self.datums[self.parameterAsEnum(parameters, self.CRS, context)][1]
+        grid = self.grids[self.parameterAsEnum(parameters, self.GRID, context)][1]
+
+        found, text = es_transformation(epsg, grid)
+        if not found:
+           raise QgsProcessingException(text)
+
+        arguments = []
+
+        if direction == 0:
             # Direct transformation
-            arguments = ['-s_srs']
-            if self.getParameterValue(self.CRS) == 0:
-                # ED50/UTM 29N [EPSG:23029]
-                if self.getParameterValue(self.GRID) == 0:
-                    # PENR2009
-                    arguments.append('+proj=utm +zone=29 +ellps=intl +nadgrids=' + os.path.dirname(__file__) + '/grids/PENR2009.gsb +wktext +units=m +no_defs')
-                    arguments.append('-t_srs')
-                    arguments.append('EPSG:4258')
-            elif self.getParameterValue(self.CRS) == 1:
-                # ED50/UTM 30N [EPSG:23030]
-                if self.getParameterValue(self.GRID) == 0:
-                    # PENR2009
-                    arguments.append('+proj=utm +zone=30 +ellps=intl +nadgrids=' + os.path.dirname(__file__) + '/grids/PENR2009.gsb +wktext +units=m +no_defs')
-                    arguments.append('-t_srs')
-                    arguments.append('EPSG:4258')
-            elif self.getParameterValue(self.CRS) == 2:
-                # ED50/UTM 31N [EPSG:23031]
-                if self.getParameterValue(self.GRID) == 0:
-                    # PENR2009
-                    arguments.append('+proj=utm +zone=31 +ellps=intl +nadgrids=' + os.path.dirname(__file__) + '/grids/PENR2009.gsb +wktext +units=m +no_defs')
-                    arguments.append('-t_srs')
-                    arguments.append('EPSG:4258')
-            arguments.append('-f')
-            arguments.append('ESRI Shapefile')
+            arguments.append('-s_srs')
+            arguments.append(text)
+            arguments.append('-t_srs')
+            arguments.append('EPSG:4258')
 
-            arguments.append(outFile)
-            arguments.append(conn)
-            arguments.append(ogrLayerName(inLayer))
+            arguments.append('-f {}'.format(outputFormat))
+            arguments.append('-lco')
+            arguments.append('ENCODING=UTF-8')
 
+            arguments.append(output)
+            arguments.append(ogrLayer)
+            arguments.append(layerName)
         else:
             # Inverse transformation
-            arguments = ['-t_srs']
-            if self.getParameterValue(self.CRS) == 0:
-                # ED50/UTM 29N [EPSG:23029]
-                if self.getParameterValue(self.GRID) == 0:
-                    # PENR2009
-                    arguments.append('+proj=utm +zone=29 +ellps=intl +nadgrids=' + os.path.dirname(__file__) + '/grids/PENR2009.gsb +wktext +units=m +no_defs')
-                    arguments.append('-s_srs')
-                    arguments.append('EPSG:4258')
-                    arguments.append('-f')
-                    arguments.append('\"Geojson\"')
-                    arguments.append('/vsistdout/')
-                    arguments.append(conn)
-                    arguments.append(ogrLayerName(inLayer))
-                    arguments.append('-lco')
-                    arguments.append('ENCODING=UTF-8')
-                    arguments.append('|')
-                    arguments.append('ogr2ogr')
-                    arguments.append('-f')
-                    arguments.append('ESRI Shapefile')
-                    arguments.append('-a_srs')
-                    arguments.append('EPSG:23029')
-                    arguments.append(outFile)
-                    arguments.append('/vsistdin/')
-            elif self.getParameterValue(self.CRS) == 1:
-                # ED50/UTM 30N [EPSG:23030]
-                if self.getParameterValue(self.GRID) == 0:
-                    # PENR2009
-                    arguments.append('+proj=utm +zone=30 +ellps=intl +nadgrids=' + os.path.dirname(__file__) + '/grids/PENR2009.gsb +wktext +units=m +no_defs')
-                    arguments.append('-s_srs')
-                    arguments.append('EPSG:4258')
-                    arguments.append('-f')
-                    arguments.append('\"Geojson\"')
-                    arguments.append('/vsistdout/')
-                    arguments.append(conn)
-                    arguments.append(ogrLayerName(inLayer))
-                    arguments.append('-lco')
-                    arguments.append('ENCODING=UTF-8')
-                    arguments.append('|')
-                    arguments.append('ogr2ogr')
-                    arguments.append('-f')
-                    arguments.append('ESRI Shapefile')
-                    arguments.append('-a_srs')
-                    arguments.append('EPSG:23030')
-                    arguments.append(outFile)
-                    arguments.append('/vsistdin/')
-            elif self.getParameterValue(self.CRS) == 2:
-                # ED50/UTM 31N [EPSG:23031]
-                if self.getParameterValue(self.GRID) == 0:
-                    # PENR2009
-                    arguments.append('+proj=utm +zone=31 +ellps=intl +nadgrids=' + os.path.dirname(__file__) + '/grids/PENR2009.gsb +wktext +units=m +no_defs')
-                    arguments.append('-s_srs')
-                    arguments.append('EPSG:4258')
-                    arguments.append('-f')
-                    arguments.append('\"Geojson\"')
-                    arguments.append('/vsistdout/')
-                    arguments.append(conn)
-                    arguments.append(ogrLayerName(inLayer))
-                    arguments.append('-lco')
-                    arguments.append('ENCODING=UTF-8')
-                    arguments.append('|')
-                    arguments.append('ogr2ogr')
-                    arguments.append('-f')
-                    arguments.append('ESRI Shapefile')
-                    arguments.append('-a_srs')
-                    arguments.append('EPSG:23031')
-                    arguments.append(outFile)
-                    arguments.append('/vsistdin/')
+            arguments.append('-s_srs')
+            arguments.append('EPSG:4258')
+            arguments.append('-t_srs')
+            arguments.append(text)
 
-        arguments.append('-lco')
-        arguments.append('ENCODING=UTF-8')
+            arguments.append('-f')
+            arguments.append('Geojson')
+            arguments.append('/vsistdout/')
+            arguments.append(ogrLayer)
+            arguments.append(layerName)
+            arguments.append('-lco')
+            arguments.append('ENCODING=UTF-8')
+            arguments.append('|')
+            arguments.append('ogr2ogr')
+            arguments.append('-f {}'.format(outputFormat))
+            arguments.append('-a_srs')
+            arguments.append('EPSG:23029')
+            arguments.append(output)
+            arguments.append('/vsistdin/')
 
-        if os.path.isfile(os.path.dirname(__file__) + '/grids/PENR2009.gsb') is False:
-            try:
-                from urllib import urlretrieve
-            except ImportError:
-                from urllib.request import urlretrieve
-            urlretrieve ("https://github.com/NaturalGIS/ntv2_transformations_grids_and_sample_data/raw/master/es/PENR2009.gsb", os.path.dirname(__file__) + "/grids/PENR2009.gsb")
+        gridFile = os.path.join(pluginPath, 'grids', 'PENR2009.gsb')
+        if not os.path.isfile(gridFile):
+            urlretrieve('http://www.naturalgis.pt/downloads/ntv2grids/es/PENR2009.gsb', gridFile)
 
-        commands = ['ogr2ogr', GdalUtils.escapeAndJoin(arguments)]
-        GdalUtils.runGdal(commands, progress)
+        return ['ogr2ogr', GdalUtils.escapeAndJoin(arguments)]

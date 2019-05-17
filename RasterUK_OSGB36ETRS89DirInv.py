@@ -25,72 +25,108 @@ __copyright__ = '(C) 2015, Giovanni Manghi'
 
 __revision__ = '$Format:%H$'
 
-import inspect
 import os
+from urllib.request import urlretrieve
 
-from PyQt4.QtGui import QIcon
+from qgis.PyQt.QtGui import QIcon
 
-from processing.gui.Help2Html import getHtmlFromRstFile
+from qgis.core import (QgsRasterFileWriter,
+                       QgsProcessingException,
+                       QgsProcessingParameterRasterLayer,
+                       QgsProcessingParameterEnum,
+                       QgsProcessingParameterRasterDestination
+                      )
 
-try:
-    from processing.parameters.ParameterRaster import ParameterRaster
-    from processing.parameters.ParameterSelection import ParameterSelection
-    from processing.outputs.OutputRaster import OutputRaster
-except:
-    from processing.core.parameters import ParameterRaster
-    from processing.core.parameters import ParameterSelection
-    from processing.core.outputs import OutputRaster
-
-from processing.core.GeoAlgorithm import GeoAlgorithm
+from processing.algs.gdal.GdalAlgorithm import GdalAlgorithm
 from processing.algs.gdal.GdalUtils import GdalUtils
 
+from ntv2_transformations.transformations import uk_transformation
 
-class RasterUK_OSGB36ETRS89DirInv(GeoAlgorithm):
+pluginPath = os.path.dirname(__file__)
+
+
+class RasterUK_OSGB36ETRS89DirInv(GdalAlgorithm):
 
     INPUT = 'INPUT'
-    OUTPUT = 'OUTPUT'
     TRANSF = 'TRANSF'
-    TRANSF_OPTIONS = ['Direct: Old Data -> ETRS89 [EPSG:4258]',
-                      'Inverse: ETRS89 [EPSG:4258] -> Old Data']
     CRS = 'CRS'
-    CRS_OPTIONS = ['OSGB 1936/British National Grid [EPSG:27700]']
     GRID = 'GRID'
-    GRID_OPTIONS = ['OSTN02_NTv2']
+    OUTPUT = 'OUTPUT'
 
-    def getIcon(self):
-        return  QIcon(os.path.dirname(__file__) + '/icons/uk.png')
+    def __init__(self):
+        super().__init__()
 
-    def help(self):
-        name = self.commandLineName().split(':')[1].lower()
-        filename = os.path.join(os.path.dirname(inspect.getfile(self.__class__)), 'help', name + '.rst')
-        try:
-          html = getHtmlFromRstFile(filename)
-          return True, html
-        except:
-          return False, None
+    def name(self):
+        return 'ukrastertransform'
 
-    def defineCharacteristics(self):
-        self.name = '[UK] Direct and inverse Raster Tranformation'
-        self.group = '[UK] United Kingdom'
-        self.addParameter(ParameterRaster(self.INPUT, 'Input raster', False))
-        self.addParameter(ParameterSelection(self.TRANSF, 'Transformation',
-                          self.TRANSF_OPTIONS))
-        self.addParameter(ParameterSelection(self.CRS, 'Old Datum',
-                          self.CRS_OPTIONS))
-        self.addParameter(ParameterSelection(self.GRID, 'NTv2 Grid',
-                          self.GRID_OPTIONS))
-        self.addOutput(OutputRaster(self.OUTPUT, 'Output'))
+    def displayName(self):
+        return '[UK] Direct and inverse Raster Tranformation'
 
-    def processAlgorithm(self, progress):
+    def group(self):
+        return '[UK] United Kingdom'
 
-        if self.getParameterValue(self.TRANSF) == 0:
+    def groupId(self):
+        return 'unitedkingdom'
+
+    def tags(self):
+        return 'raster,grid,ntv2,direct,inverse,united kingdom'.split(',')
+
+    def shortHelpString(self):
+        return 'Direct and inverse raster tranformations using United Kingdom NTv2 grids.'
+
+    def icon(self):
+        return QIcon(os.path.join(pluginPath, 'icons', 'uk.png'))
+
+    def initAlgorithm(self, config=None):
+        self.directions = ['Direct: Old Data -> ETRS89 [EPSG:4258]',
+                           'Inverse: ETRS89 [EPSG:4258] -> Old Data'
+                          ]
+
+        self.datums = (('OSGB 1936/British National Grid [EPSG:27700]', 27700),
+                      )
+
+        self.grids = (('OSTN02_NTv2', 'OSTN02_NTv2'),
+                     )
+
+        self.addParameter(QgsProcessingParameterRasterLayer(self.INPUT,
+                                                            'Input raster'))
+        self.addParameter(QgsProcessingParameterEnum(self.TRANSF,
+                                                     'Transformation',
+                                                     options=self.directions,
+                                                     defaultValue=0))
+        self.addParameter(QgsProcessingParameterEnum(self.CRS,
+                                                     'Old Datum',
+                                                     options=[i[0] for i in self.datums],
+                                                     defaultValue=0))
+        self.addParameter(QgsProcessingParameterEnum(self.GRID,
+                                                     'NTv2 Grid',
+                                                     options=[i[0] for i in self.grids],
+                                                     defaultValue=0))
+        self.addParameter(QgsProcessingParameterRasterDestination(self.OUTPUT,
+                                                                  'Output'))
+
+    def getConsoleCommands(self, parameters, context, feedback, executing=True):
+        inLayer = self.parameterAsRasterLayer(parameters, self.INPUT, context)
+        if inLayer is None:
+            raise QgsProcessingException(self.invalidRasterError(parameters, self.INPUT))
+
+        outFile = self.parameterAsOutputLayer(parameters, self.OUTPUT, context)
+        self.setOutputValue(self.OUTPUT, outFile)
+
+        direction = self.parameterAsEnum(parameters, self.TRANSF, context)
+        epsg = self.datums[self.parameterAsEnum(parameters, self.CRS, context)][1]
+        grid = self.grids[self.parameterAsEnum(parameters, self.GRID, context)][1]
+
+        found, text = uk_transformation(epsg, grid)
+        if not found:
+           raise QgsProcessingException(text)
+
+        arguments = []
+
+        if direction == 0:
             # Direct transformation
-            arguments = ['-s_srs']
-            if self.getParameterValue(self.CRS) == 0:
-                # GOSGB 1936/British National Grid
-                if self.getParameterValue(self.GRID) == 0:
-                    # OSTN02_NTv2
-                    arguments.append('+proj=tmerc +lat_0=49 +lon_0=-2 +k=0.9996012717 +x_0=400000 +y_0=-100000 +ellps=airy +nadgrids=' + os.path.dirname(__file__) + '/grids/OSTN02_NTv2.gsb +wktext +units=m +no_defs')
+            arguments.append('-s_srs')
+            arguments.append(text)
             arguments.append('-t_srs')
             arguments.append('EPSG:4258')
         else:
@@ -98,25 +134,16 @@ class RasterUK_OSGB36ETRS89DirInv(GeoAlgorithm):
             arguments = ['-s_srs']
             arguments.append('EPSG:4258')
             arguments.append('-t_srs')
-            if self.getParameterValue(self.CRS) == 0:
-                # OSGB 1936/British National Grid
-                if self.getParameterValue(self.GRID) == 0:
-                    # OSTN02_NTv2
-                    arguments.append('+proj=tmerc +lat_0=49 +lon_0=-2 +k=0.9996012717 +x_0=400000 +y_0=-100000 +ellps=airy +nadgrids=' + os.path.dirname(__file__) + '/grids/OSTN02_NTv2.gsb +wktext +units=m +no_defs')
+            arguments.append(text)
 
         arguments.append('-multi')
         arguments.append('-of')
-        out = self.getOutputValue(self.OUTPUT)
-        arguments.append(GdalUtils.getFormatShortNameFromFilename(out))
-        arguments.append(self.getParameterValue(self.INPUT))
-        arguments.append(out)
+        arguments.append(QgsRasterFileWriter.driverForExtension(os.path.splitext(outFile)[1]))
+        arguments.append(inLayer.source())
+        arguments.append(outFile)
 
-        if os.path.isfile(os.path.dirname(__file__) + '/grids/OSTN02_NTv2.gsb') is False:
-            try:
-                from urllib import urlretrieve
-            except ImportError:
-                from urllib.request import urlretrieve
-            urlretrieve ("https://github.com/NaturalGIS/ntv2_transformations_grids_and_sample_data/raw/master/uk/OSTN02_NTv2.gsb", os.path.dirname(__file__) + "/grids/OSTN02_NTv2.gsb")
+        gridFile = os.path.join(pluginPath, 'grids', 'OSTN02_NTv2.gsb')
+        if not os.path.isfile(gridFile):
+            urlretrieve('http://www.naturalgis.pt/downloads/ntv2grids/uk/OSTN02_NTv2.gsb', gridFile)
 
-        GdalUtils.runGdal(['gdalwarp', GdalUtils.escapeAndJoin(arguments)],
-                          progress)
+        return ['gdalwarp', GdalUtils.escapeAndJoin(arguments)]

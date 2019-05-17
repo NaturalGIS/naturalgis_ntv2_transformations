@@ -16,7 +16,6 @@
 *                                                                         *
 ***************************************************************************
 """
-from builtins import object
 
 __author__ = 'Giovanni Manghi'
 __date__ = 'March 2015'
@@ -26,26 +25,18 @@ __copyright__ = '(C) 2015, Giovanni Manghi'
 
 __revision__ = '$Format:%H$'
 
-import os
-import sys
-import inspect
 
-from processing.core.Processing import Processing
+from qgis.core import QgsApplication
 from ntv2_transformations.DETransformProvider import DETransformProvider
 
-cmd_folder = os.path.split(inspect.getfile(inspect.currentframe()))[0]
 
-if cmd_folder not in sys.path:
-    sys.path.insert(0, cmd_folder)
-
-
-class DETransformProviderPlugin(object):
+class DETransformProviderPlugin:
 
     def __init__(self):
         self.provider = DETransformProvider()
 
     def initGui(self):
-        Processing.addProvider(self.provider, updateList=True)
+        QgsApplication.processingRegistry().addProvider(self.provider)
 
     def unload(self):
-        Processing.removeProvider(self.provider)
+        QgsApplication.processingRegistry().removeProvider(self.provider)
