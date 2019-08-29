@@ -3,7 +3,7 @@ name=NTv2 Datum Transformations
 description=NTv2 Datum Transformations for the QGIS Processing toolbox. This plugin is directly derived from https://github.com/qgispt/processing_pttransform originally developed by Alexander Bruy, Pedro Venâncio and NaturalGIS (http://www.naturalgis.pt/), with the support of the Portuguese QGIS user group (http://www.qgis.pt/).
 about=Developed by Alexander Bruy and Manghi for NaturalGIS (http://www.naturalgis.pt/)
 category=Plugins
-version=0.2
+version=0.20
 qgisMinimumVersion=3.4
 icon=icons/naturalgis_32.png
 tags=processing,grids,ntv2,transformations,datum
@@ -14,8 +14,16 @@ tracker=https://github.com/NaturalGIS/ntv2_transfomations/issues
 repository=https://github.com/NaturalGIS/ntv2_transfomations
 experimental=False
 deprecated=False
-changelog=0.2
+changelog=0.20
     - Porting of the plugin to QGIS 3.*
+    0.16
+    - Change source for NTV2 grids to avoid SSL/TLS errors when grids are download on Windows
+    0.15
+    - Improved transformations for Australia
+    0.14
+    - Fixed the name of Australia grids
+    0.13
+    - Support for Australia "AGD66_to_GDA94_2001_09_13.gsb" and "AGD84_to_GDA94_2001_07_02.gsb" NTv2 grids for transformations between "AGD66/AGD84" and "GDA94"
     0.12
     - Plugin update to work on QGIS >= 2.14. The plugin nows also work only with Processing shipped with QGIS >= 2.14
     0.11
