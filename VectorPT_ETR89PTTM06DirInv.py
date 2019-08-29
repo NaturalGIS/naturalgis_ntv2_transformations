@@ -134,7 +134,7 @@ class VectorPT_ETR89PTTM06DirInv(GdalAlgorithm):
             arguments.append('-s_srs')
             arguments.append(text)
             arguments.append('-t_srs')
-            arguments.append('EPSG:4258')
+            arguments.append('EPSG:3763')
 
             arguments.append('-f {}'.format(outputFormat))
             arguments.append('-lco')
@@ -146,7 +146,7 @@ class VectorPT_ETR89PTTM06DirInv(GdalAlgorithm):
         else:
             # Inverse transformation
             arguments = ['-s_srs']
-            arguments.append('EPSG:4258')
+            arguments.append('EPSG:3763')
             arguments.append('-t_srs')
             arguments.append(text)
             arguments.append('-f')
