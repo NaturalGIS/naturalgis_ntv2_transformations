@@ -19,7 +19,7 @@
 
 __author__ = 'Alexander Bruy, Giovanni Manghi'
 __date__ = 'August 2019'
-__copyright__ = '(C) 2019, Giovanni Manghi
+__copyright__ = '(C) 2019, Giovanni Manghi'
 
 # This will get replaced with a git SHA1 when you do a git archive
 
