@@ -1,10 +1,10 @@
 [general]
 name=NTv2 Datum Transformations
 description=NTv2 Datum Transformations for the QGIS Processing toolbox. This plugin is directly derived from https://github.com/qgispt/processing_pttransform originally developed by Alexander Bruy, Pedro Venâncio and NaturalGIS (http://www.naturalgis.pt/), with the support of the Portuguese QGIS user group (http://www.qgis.pt/).
-about=Developed by Giovanni Manghi for NaturalGIS (http://www.naturalgis.pt/)
+about=Developed by Alexander Bruy and Manghi for NaturalGIS (http://www.naturalgis.pt/)
 category=Plugins
-version=0.12
-qgisMinimumVersion=3.0
+version=0.2
+qgisMinimumVersion=3.4
 icon=icons/naturalgis_32.png
 tags=processing,grids,ntv2,transformations,datum
 author=Giovanni Manghi for NaturalGIS
@@ -14,7 +14,9 @@ tracker=https://github.com/NaturalGIS/ntv2_transfomations/issues
 repository=https://github.com/NaturalGIS/ntv2_transfomations
 experimental=False
 deprecated=False
-changelog=0.12
+changelog=0.2
+    - Porting of the plugin to QGIS 3.*
+    0.12
     - Plugin update to work on QGIS >= 2.14. The plugin nows also work only with Processing shipped with QGIS >= 2.14
     0.11
     - Fix a bug in inverse transformations for Portugal

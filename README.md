@@ -3,7 +3,7 @@ A plugin for the QGIS Processing toolbox to allow users do Datum transformations
 
 ![](/icons/naturalgis.png)
 
-Developed by NaturalGIS 
+Developed by/for NaturalGIS 
 
 web: http://www.naturalgis.pt/ 
 
@@ -11,7 +11,7 @@ email: giovanni.manghi@naturalgis.pt
 
 This plugin allows QGIS user to do easily direct/inverse Datum transformations (for vectors and rasters) using NTv2 grids. Available transformations are the ones supported by NTv2 grids that will be possible to redistribute legally with the plugin itself.
 
-The plugin needs QGIS >= 2.8 to work.
+The plugin needs QGIS >= 3.4 to work.
 
 This plugin is directly derived from https://github.com/qgispt/processing_pttransform originally developed by Alexander Bruy, Pedro Venâncio and NaturalGIS (http://www.naturalgis.pt/), with the support of the Portuguese QGIS user group (http://www.qgis.pt/).
 
@@ -19,14 +19,28 @@ If you have a NTv2 grid that can be legally redistributed and you would like to 
 
 https://github.com/NaturalGIS/ntv2_transformations/issues
 
-Contributors:
+Main contributors:
 
-- Alexander Bruy
+- Alexander Bruy: developer of the QGIS/GDAL-OGR Processing based tools that gave the idea for this plugin, porting of the code to the QGIS 3 API
+- Pedro Venâncio (pedrongvenancio@gmail.com): first version of the plugin specific for the Portuguese use case
+- Pedro Venâncio (giovanni.manghi@naturalgis.pt): addition of transformations for several countries other than Portugal
+
+Other contributors:
+
 - Carlos López Quintanilla (carlos.lopez@psig.es)
 - Fernando Ribeiro aka The Geocrafter (fernandinand@gmail.com)
-- Pedro Venâncio (pedrongvenancio@gmail.com)
+- Alex Leith (alexgleith@gmail.com)
 
 Supported transformations:
+
+![](/icons/au.png)
+
+- Australia: AGD66 <==> GDA94 [EPSG:283XX] [A66_National_13_09_01.gsb]
+- Australia: AGD84 <==> GDA94 [EPSG:283XX] [National_84_02_07_01.gsb]
+
+Source for Australian files:
+
+https://github.com/icsm-au/transformation_grids
 
 ![](/icons/at.png)
 

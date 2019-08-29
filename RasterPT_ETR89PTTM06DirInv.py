@@ -4,9 +4,8 @@
 ***************************************************************************
     RasterPT_ETR89PTTM06DirInv.py
     ---------------------
-    Date                 : March 2015
-    Copyright            : (C) 2015 by Giovanni Manghi
-                           (C) 2015 by Fernando Ribeiro aka The Geocrafter
+    Date                 : August 2019
+    Copyright            : (C) 2019 by Giovanni Manghi
     Email                : giovanni dot manghi at naturalgis dot pt
 ***************************************************************************
 *                                                                         *
@@ -18,9 +17,9 @@
 ***************************************************************************
 """
 
-__author__ = 'Giovanni Manghi'
-__date__ = 'March 2015'
-__copyright__ = '(C) 2015, Giovanni Manghi'
+__author__ = 'Alexander Bruy, Giovanni Manghi'
+__date__ = 'August 2019'
+__copyright__ = '(C) 2019, Giovanni Manghi'
 
 # This will get replaced with a git SHA1 when you do a git archive
 

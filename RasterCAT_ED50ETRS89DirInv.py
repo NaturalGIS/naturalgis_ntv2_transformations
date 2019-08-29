@@ -4,9 +4,9 @@
 ***************************************************************************
     RasterCAT_ED50ETRS89DirInv.py
     ---------------------
-    Date                 : July 2015
-    Copyright            : (C) 2015 by Carlos López (PSIG)
-    Email                : carlos dot lopez at psig dot es
+    Date                 : August 2019
+    Copyright            : (C) 2019 by Giovanni Manghi
+    Email                : giovanni dot manghi at naturalgis dot pt
 ***************************************************************************
 *                                                                         *
 *   This program is free software; you can redistribute it and/or modify  *
@@ -17,9 +17,9 @@
 ***************************************************************************
 """
 
-__author__ = 'Carlos López (PSIG)'
-__date__ = 'July 2015'
-__copyright__ = '(C) 2015, Carlos López (PSIG)'
+__author__ = 'Alexander Bruy, Giovanni Manghi'
+__date__ = 'August 2019'
+__copyright__ = '(C) 2019, Giovanni Manghi'
 
 # This will get replaced with a git SHA1 when you do a git archive
 
