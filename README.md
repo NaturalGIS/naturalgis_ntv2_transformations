@@ -23,7 +23,7 @@ Main contributors:
 
 - Alexander Bruy: developer of the QGIS/GDAL-OGR Processing based tools that gave the idea for this plugin, porting of the code to the QGIS 3 API
 - Pedro Venâncio (pedrongvenancio@gmail.com): first version of the plugin specific for the Portuguese use case
-- Pedro Venâncio (giovanni.manghi@naturalgis.pt): addition of transformations for several countries other than Portugal
+- Giovanni Manghi (giovanni.manghi@naturalgis.pt): addition of transformations for several countries other than Portugal
 
 Other contributors:
 
