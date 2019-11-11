@@ -93,7 +93,7 @@ class VectorPT_ETR89PTTM06DirInv(GdalAlgorithm):
                      )
 
         self.addParameter(QgsProcessingParameterFeatureSource(self.INPUT,
-                                                              'Input raster'))
+                                                              'Input vector'))
         self.addParameter(QgsProcessingParameterEnum(self.TRANSF,
                                                      'Transformation',
                                                      options=self.directions,
