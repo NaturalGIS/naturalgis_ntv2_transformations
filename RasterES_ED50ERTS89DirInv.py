@@ -60,7 +60,7 @@ class RasterES_ED50ERTS89DirInv(GdalAlgorithm):
         return 'esrastertransform'
 
     def displayName(self):
-        return '[ES] Direct and inverse Raster Tranformation'
+        return '[ES] Direct and inverse Raster Transformation'
 
     def group(self):
         return '[ES] Spain (mainland)'
@@ -72,7 +72,7 @@ class RasterES_ED50ERTS89DirInv(GdalAlgorithm):
         return 'raster,grid,ntv2,direct,inverse,spain'.split(',')
 
     def shortHelpString(self):
-        return 'Direct and inverse raster tranformations using Spain (mainland) NTv2 grids.'
+        return 'Direct and inverse raster transformations using Spain (mainland) NTv2 grids.'
 
     def icon(self):
         return QIcon(os.path.join(pluginPath, 'icons', 'es.png'))

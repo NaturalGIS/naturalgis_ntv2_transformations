@@ -57,7 +57,7 @@ class VectorCH_LV95ETRS89DirInv(GdalAlgorithm):
         return 'chvectortransform'
 
     def displayName(self):
-        return '[CH] Direct and inverse Vector Tranformation'
+        return '[CH] Direct and inverse Vector Transformation'
 
     def group(self):
         return '[CH] Switzerland'
@@ -69,7 +69,7 @@ class VectorCH_LV95ETRS89DirInv(GdalAlgorithm):
         return 'vector,grid,ntv2,direct,inverse,switzerland'.split(',')
 
     def shortHelpString(self):
-        return 'Direct and inverse vector tranformations using Switzerland NTv2 grids.'
+        return 'Direct and inverse vector transformations using Switzerland NTv2 grids.'
 
     def icon(self):
         return QIcon(os.path.join(pluginPath, 'icons', 'ch.png'))

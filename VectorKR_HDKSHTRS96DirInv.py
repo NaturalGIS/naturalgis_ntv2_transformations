@@ -59,7 +59,7 @@ class VectorKR_HDKSHTRS96DirInv(GdalAlgorithm):
         return 'hrvectortransform'
 
     def displayName(self):
-        return '[HR] Direct and inverse Vector Tranformation'
+        return '[HR] Direct and inverse Vector Transformation'
 
     def group(self):
         return '[HR] Croatia'
@@ -71,7 +71,7 @@ class VectorKR_HDKSHTRS96DirInv(GdalAlgorithm):
         return 'vector,grid,ntv2,direct,inverse,croatia'.split(',')
 
     def shortHelpString(self):
-        return 'Direct and inverse vector tranformations using Croatia NTv2 grids.'
+        return 'Direct and inverse vector transformations using Croatia NTv2 grids.'
 
     def icon(self):
         return QIcon(os.path.join(pluginPath, 'icons', 'hr.png'))

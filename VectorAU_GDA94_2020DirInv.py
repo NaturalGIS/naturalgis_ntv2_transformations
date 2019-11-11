@@ -60,7 +60,7 @@ class VectorAU_GDA94_2020DirInv(GdalAlgorithm):
         return 'auvectortransformgda'
 
     def displayName(self):
-        return '[AU] GDA94 to GDA2020 Direct and inverse Vector Tranformation'
+        return '[AU] GDA94 to GDA2020 Direct and inverse Vector Transformation'
 
     def group(self):
         return '[AU] Australia'
@@ -72,7 +72,7 @@ class VectorAU_GDA94_2020DirInv(GdalAlgorithm):
         return 'vector,grid,ntv2,direct,inverse,australia'.split(',')
 
     def shortHelpString(self):
-        return 'Direct and inverse vector tranformations using Australia NTv2 grids.'
+        return 'Direct and inverse vector transformations using Australia NTv2 grids.'
 
     def icon(self):
         return QIcon(os.path.join(pluginPath, 'icons', 'au.png'))

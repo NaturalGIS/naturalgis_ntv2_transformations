@@ -59,7 +59,7 @@ class VectorPT_ETR89PTTM06DirInv(GdalAlgorithm):
         return 'ptvectortransform'
 
     def displayName(self):
-        return '[PT] Direct and inverse Vector Tranformation'
+        return '[PT] Direct and inverse Vector Transformation'
 
     def group(self):
         return '[PT] Portugal (mainland)'
@@ -71,7 +71,7 @@ class VectorPT_ETR89PTTM06DirInv(GdalAlgorithm):
         return 'vector,grid,ntv2,direct,inverse,portugal'.split(',')
 
     def shortHelpString(self):
-        return 'Direct and inverse vector tranformations using Portugal (mainland) NTv2 grids.'
+        return 'Direct and inverse vector transformations using Portugal (mainland) NTv2 grids.'
 
     def icon(self):
         return QIcon(os.path.join(pluginPath, 'icons', 'pt.png'))

@@ -60,7 +60,7 @@ class RasterDE_GK3ETRS8932NDirInv(GdalAlgorithm):
         return 'derastertransform'
 
     def displayName(self):
-        return '[DE] Direct and inverse Raster Tranformation'
+        return '[DE] Direct and inverse Raster Transformation'
 
     def group(self):
         return '[DE] Germany'
@@ -72,7 +72,7 @@ class RasterDE_GK3ETRS8932NDirInv(GdalAlgorithm):
         return 'raster,grid,ntv2,direct,inverse,germany'.split(',')
 
     def shortHelpString(self):
-        return 'Direct and inverse raster tranformations using Germany NTv2 grids.'
+        return 'Direct and inverse raster transformations using Germany NTv2 grids.'
 
     def icon(self):
         return QIcon(os.path.join(pluginPath, 'icons', 'de.png'))

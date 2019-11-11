@@ -59,7 +59,7 @@ class VectorIT_RER_ETRS89DirInv(GdalAlgorithm):
         return 'itvectortransform'
 
     def displayName(self):
-        return '[IT] Direct and inverse Vector Tranformation'
+        return '[IT] Direct and inverse Vector Transformation'
 
     def group(self):
         return '[IT] Italy (Emilia-Romagna)'

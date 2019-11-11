@@ -60,7 +60,7 @@ class RasterNL_RDNAPETRS89DirInv(GdalAlgorithm):
         return 'nlrastertransform'
 
     def displayName(self):
-        return '[NL] Direct and inverse Raster Tranformation'
+        return '[NL] Direct and inverse Raster Transformation'
 
     def group(self):
         return '[NL] Netherlands'
@@ -72,7 +72,7 @@ class RasterNL_RDNAPETRS89DirInv(GdalAlgorithm):
         return 'raster,grid,ntv2,direct,inverse,netherlands'.split(',')
 
     def shortHelpString(self):
-        return 'Direct and inverse raster tranformations using Netherlands NTv2 grids.'
+        return 'Direct and inverse raster transformations using Netherlands NTv2 grids.'
 
     def icon(self):
         return QIcon(os.path.join(pluginPath, 'icons', 'nl.png'))
