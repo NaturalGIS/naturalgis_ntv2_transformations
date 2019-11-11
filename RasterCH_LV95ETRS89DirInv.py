@@ -58,7 +58,7 @@ class RasterCH_LV95ETRS89DirInv(GdalAlgorithm):
         return 'chrastertransform'
 
     def displayName(self):
-        return '[CH] Direct and inverse Raster Tranformation'
+        return '[CH] Direct and inverse Raster Transformation'
 
     def group(self):
         return '[CH] Switzerland'
@@ -70,7 +70,7 @@ class RasterCH_LV95ETRS89DirInv(GdalAlgorithm):
         return 'raster,grid,ntv2,direct,inverse,switzerland'.split(',')
 
     def shortHelpString(self):
-        return 'Direct and inverse raster tranformations using Switzerland NTv2 grids.'
+        return 'Direct and inverse raster transformations using Switzerland NTv2 grids.'
 
     def icon(self):
         return QIcon(os.path.join(pluginPath, 'icons', 'ch.png'))

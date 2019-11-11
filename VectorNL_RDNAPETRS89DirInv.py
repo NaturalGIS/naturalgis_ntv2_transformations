@@ -59,7 +59,7 @@ class VectorNL_RDNAPETRS89DirInv(GdalAlgorithm):
         return 'nlvectortransform'
 
     def displayName(self):
-        return '[NL] Direct and inverse Vector Tranformation'
+        return '[NL] Direct and inverse Vector Transformation'
 
     def group(self):
         return '[NL] Netherlands'
@@ -71,7 +71,7 @@ class VectorNL_RDNAPETRS89DirInv(GdalAlgorithm):
         return 'vector,grid,ntv2,direct,inverse,netherlands'.split(',')
 
     def shortHelpString(self):
-        return 'Direct and inverse vector tranformations using Netherlands NTv2 grids.'
+        return 'Direct and inverse vector transformations using Netherlands NTv2 grids.'
 
     def icon(self):
         return QIcon(os.path.join(pluginPath, 'icons', 'nl.png'))

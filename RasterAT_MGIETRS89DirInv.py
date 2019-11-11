@@ -60,7 +60,7 @@ class RasterAT_MGIETRS89DirInv(GdalAlgorithm):
         return 'atrastertransform'
 
     def displayName(self):
-        return '[AT] Direct and inverse Raster Tranformation'
+        return '[AT] Direct and inverse Raster Transformation'
 
     def group(self):
         return '[AT] Austria'
@@ -72,7 +72,7 @@ class RasterAT_MGIETRS89DirInv(GdalAlgorithm):
         return 'raster,grid,ntv2,direct,inverse,austria'.split(',')
 
     def shortHelpString(self):
-        return 'Direct and inverse raster tranformations using Austrian NTv2 grids.'
+        return 'Direct and inverse raster transformations using Austrian NTv2 grids.'
 
     def icon(self):
         return QIcon(os.path.join(pluginPath, 'icons', 'at.png'))

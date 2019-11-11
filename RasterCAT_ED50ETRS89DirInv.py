@@ -60,7 +60,7 @@ class RasterCAT_ED50ETRS89DirInv(GdalAlgorithm):
         return 'catrastertransform'
 
     def displayName(self):
-        return '[CAT] Direct and inverse Raster Tranformation'
+        return '[CAT] Direct and inverse Raster Transformation'
 
     def group(self):
         return '[CAT] Catalonia'
@@ -72,7 +72,7 @@ class RasterCAT_ED50ETRS89DirInv(GdalAlgorithm):
         return 'raster,grid,ntv2,direct,inverse,catalonia'.split(',')
 
     def shortHelpString(self):
-        return 'Direct and inverse raster tranformations using Catalonian NTv2 grids.'
+        return 'Direct and inverse raster transformations using Catalonian NTv2 grids.'
 
     def icon(self):
         return QIcon(os.path.join(pluginPath, 'icons', 'cat.png'))

@@ -59,7 +59,7 @@ class VectorDE_GK3ETRS8932NDirInv(GdalAlgorithm):
         return 'devectortransform'
 
     def displayName(self):
-        return '[DE] Direct and inverse Vector Tranformation'
+        return '[DE] Direct and inverse Vector Transformation'
 
     def group(self):
         return '[DE] Germany'
@@ -71,7 +71,7 @@ class VectorDE_GK3ETRS8932NDirInv(GdalAlgorithm):
         return 'vector,grid,ntv2,direct,inverse,germany'.split(',')
 
     def shortHelpString(self):
-        return 'Direct and inverse vector tranformations using Germany NTv2 grids.'
+        return 'Direct and inverse vector transformations using Germany NTv2 grids.'
 
     def icon(self):
         return QIcon(os.path.join(pluginPath, 'icons', 'de.png'))

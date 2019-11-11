@@ -60,7 +60,7 @@ class RasterIT_RER_ETRS89DirInv(GdalAlgorithm):
         return 'itrastertransform'
 
     def displayName(self):
-        return '[IT] Direct and inverse Raster Tranformation'
+        return '[IT] Direct and inverse Raster Transformation'
 
     def group(self):
         return '[IT] Italy (Emilia-Romagna)'
@@ -72,7 +72,7 @@ class RasterIT_RER_ETRS89DirInv(GdalAlgorithm):
         return 'raster,grid,ntv2,direct,inverse,italy'.split(',')
 
     def shortHelpString(self):
-        return 'Direct and inverse raster tranformations using Italy (Emilia-Romagna) NTv2 grids.'
+        return 'Direct and inverse raster transformations using Italy (Emilia-Romagna) NTv2 grids.'
 
     def icon(self):
         return QIcon(os.path.join(pluginPath, 'icons', 'it.png'))

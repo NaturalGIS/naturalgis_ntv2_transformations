@@ -59,7 +59,7 @@ class VectorUK_OSGB36ETRS89DirInv(GdalAlgorithm):
         return 'ukvectortransform'
 
     def displayName(self):
-        return '[UK] Direct and inverse Vector Tranformation'
+        return '[UK] Direct and inverse Vector Transformation'
 
     def group(self):
         return '[UK] United Kingdom'
@@ -71,7 +71,7 @@ class VectorUK_OSGB36ETRS89DirInv(GdalAlgorithm):
         return 'vector,grid,ntv2,direct,inverse,united kingdom'.split(',')
 
     def shortHelpString(self):
-        return 'Direct and inverse vector tranformations using United Kingdom NTv2 grids.'
+        return 'Direct and inverse vector transformations using United Kingdom NTv2 grids.'
 
     def icon(self):
         return QIcon(os.path.join(pluginPath, 'icons', 'uk.png'))

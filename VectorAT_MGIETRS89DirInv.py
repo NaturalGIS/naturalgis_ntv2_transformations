@@ -59,7 +59,7 @@ class VectorAT_MGIETRS89DirInv(GdalAlgorithm):
         return 'atvectortransform'
 
     def displayName(self):
-        return '[AT] Direct and inverse Vector Tranformation'
+        return '[AT] Direct and inverse Vector Transformation'
 
     def group(self):
         return '[AT] Austria'
@@ -71,7 +71,7 @@ class VectorAT_MGIETRS89DirInv(GdalAlgorithm):
         return 'vector,grid,ntv2,direct,inverse,austria'.split(',')
 
     def shortHelpString(self):
-        return 'Direct and inverse vector tranformations using Austrian NTv2 grids.'
+        return 'Direct and inverse vector transformations using Austrian NTv2 grids.'
 
     def icon(self):
         return QIcon(os.path.join(pluginPath, 'icons', 'at.png'))

@@ -59,7 +59,7 @@ class VectorES_ED50ERTS89DirInv(GdalAlgorithm):
         return 'esvectortransform'
 
     def displayName(self):
-        return '[ES] Direct and inverse Vector Tranformation'
+        return '[ES] Direct and inverse Vector Transformation'
 
     def group(self):
         return '[ES] Spain (mainland)'
@@ -71,7 +71,7 @@ class VectorES_ED50ERTS89DirInv(GdalAlgorithm):
         return 'vector,grid,ntv2,direct,inverse,spain'.split(',')
 
     def shortHelpString(self):
-        return 'Direct and inverse vector tranformations using Spain (mainland) NTv2 grids.'
+        return 'Direct and inverse vector transformations using Spain (mainland) NTv2 grids.'
 
     def icon(self):
         return QIcon(os.path.join(pluginPath, 'icons', 'es.png'))

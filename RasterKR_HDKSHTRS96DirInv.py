@@ -60,7 +60,7 @@ class RasterKR_HDKSHTRS96DirInv(GdalAlgorithm):
         return 'hrrastertransform'
 
     def displayName(self):
-        return '[HR] Direct and inverse Raster Tranformation'
+        return '[HR] Direct and inverse Raster Transformation'
 
     def group(self):
         return '[HR] Croatia'
@@ -72,7 +72,7 @@ class RasterKR_HDKSHTRS96DirInv(GdalAlgorithm):
         return 'raster,grid,ntv2,direct,inverse,croatia'.split(',')
 
     def shortHelpString(self):
-        return 'Direct and inverse raster tranformations using Croatia NTv2 grids.'
+        return 'Direct and inverse raster transformations using Croatia NTv2 grids.'
 
     def icon(self):
         return QIcon(os.path.join(pluginPath, 'icons', 'hr.png'))
