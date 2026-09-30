@@ -39,6 +39,8 @@ from qgis.core import (QgsProcessingException,
 from processing.algs.gdal.GdalAlgorithm import GdalAlgorithm
 from processing.algs.gdal.GdalUtils import GdalUtils
 
+from ntv2_transformations.compat import ogr_input, ogr_output
+
 from ntv2_transformations.transformations import es_transformation
 
 pluginPath = os.path.dirname(__file__)
@@ -107,11 +109,11 @@ class VectorES_ED50ERTS89DirInv(GdalAlgorithm):
                                                                   'Output'))
 
     def getConsoleCommands(self, parameters, context, feedback, executing=True):
-        ogrLayer, layerName = self.getOgrCompatibleSource(self.INPUT, parameters, context, feedback, executing)
+        ogrLayer, layerName = ogr_input(self, self.INPUT, parameters, context, feedback, executing)
         outFile = self.parameterAsOutputLayer(parameters, self.OUTPUT, context)
         self.setOutputValue(self.OUTPUT, outFile)
 
-        output, outputFormat = GdalUtils.ogrConnectionStringAndFormat(outFile, context)
+        output, outputFormat = ogr_output(outFile, context)
         if outputFormat in ('SQLite', 'GPKG') and os.path.isfile(output):
             raise QgsProcessingException('Output file "{}" already exists.'.format(output))
 
